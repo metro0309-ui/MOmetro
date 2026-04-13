@@ -200,7 +200,7 @@ html, body {
 /* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
 #col-l {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 2fr 3fr 5fr;
   gap: 3px;
   min-height: 0;
 }
@@ -525,6 +525,34 @@ html, body {
 .badge-up { background:var(--upd); border-color:var(--up); color:var(--up); }
 .badge-dn { background:var(--dnd); border-color:var(--dn); color:var(--dn); }
 
+/* 속보 패널 공통 스타일 (데스크톱+모바일) */
+.news-item {
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--bd0);
+  animation: newsIn 0.4s ease;
+  flex-shrink: 0;
+}
+@keyframes newsIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.news-time { color: var(--tx3); font-size: 9px; flex-shrink: 0; min-width: 42px; }
+.news-badge {
+  flex-shrink: 0;
+  font-size: 8.5px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.news-badge.nb-red { background: var(--dnd); color: var(--dn); border: 1px solid var(--dn); }
+.news-badge.nb-grn { background: var(--upd); color: var(--up); border: 1px solid var(--up); }
+.news-badge.nb-ylw { background: rgba(240,180,41,.12); color: var(--yl); border: 1px solid var(--yl); }
+.news-badge.nb-blu { background: rgba(74,158,255,.12); color: var(--bl); border: 1px solid var(--bl); }
+.news-badge.nb-cyn { background: rgba(51,214,245,.12); color: var(--cy); border: 1px solid var(--cy); }
+.news-text { color: var(--tx0); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#news-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+
 /* ═══════════════════════════════════════════════════════
    청산 임팩트 이펙트
 ═══════════════════════════════════════════════════════ */
@@ -836,8 +864,8 @@ html, body {
   /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
   #col-l.mob-active {
     display: grid !important;
-    grid-template-rows: 1fr 1fr;
-    gap: 3px;
+    grid-template-rows: 2fr 3fr 5fr;
+    gap: 2px;
     overflow: hidden;
   }
   #col-l.mob-active .panel {
@@ -847,11 +875,38 @@ html, body {
     flex-direction: column;
   }
   #col-l.mob-active #tr-list,
-  #col-l.mob-active #ev-list {
+  #col-l.mob-active #ev-list,
+  #col-l.mob-active #news-list {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
+  /* 속보 패널 스타일 */
+  #news-panel { order: 0; }
+  #news-panel .news-item {
+    display: flex;
+    gap: 6px;
+    padding: 5px 8px;
+    font-size: 11.5px;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--bd0);
+    animation: newsIn 0.4s ease;
+  }
+  @keyframes newsIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .news-time { color: var(--tx3); font-size: 10px; flex-shrink: 0; min-width: 42px; }
+  .news-badge {
+    flex-shrink: 0;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .news-badge.nb-red  { background: var(--dnd); color: var(--dn); border: 1px solid var(--dn); }
+  .news-badge.nb-grn  { background: var(--upd); color: var(--up); border: 1px solid var(--up); }
+  .news-badge.nb-ylw  { background: rgba(240,180,41,.12); color: var(--yl); border: 1px solid var(--yl); }
+  .news-badge.nb-blu  { background: rgba(74,158,255,.12); color: var(--bl); border: 1px solid var(--bl); }
+  .news-badge.nb-cyn  { background: rgba(51,214,245,.12); color: var(--cy); border: 1px solid var(--cy); }
+  .news-text { color: var(--tx0); flex: 1; }
   /* 모바일에서 패널 폭 100% */
   #col-l .panel, #col-c .panel, #col-r .panel {
     border-radius: 0;
@@ -1041,7 +1096,7 @@ html, body {
   <!-- ─ 좌측 컬럼 ──────────────────────────────────── -->
   <div id="col-l">
 
-    <!-- 실시간 체결 -->
+    <!-- 실시간 체결 (비율 2) -->
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 5px var(--cy)"></div>실시간 체결</div>
@@ -1050,7 +1105,16 @@ html, body {
       <div id="tr-list"></div>
     </div>
 
-    <!-- 청산 피드 -->
+    <!-- 실시간 속보 (비율 3) -->
+    <div class="panel" id="news-panel" style="display:flex;flex-direction:column;min-height:0">
+      <div class="panel-hd">
+        <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>실시간 속보</div>
+        <span style="font-size:9px;color:var(--tx2)">자동 생성</span>
+      </div>
+      <div id="news-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:2px 0"></div>
+    </div>
+
+    <!-- 청산 피드 (비율 5) -->
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title">
@@ -2123,6 +2187,7 @@ function updateIntelBars() {
   // 모바일 스코어 + Edge Lighting
   updateMobileScore(compInt, compLabel, compCls);
   updateEdgeLighting();
+  checkScoreNews(compInt);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2355,8 +2420,8 @@ function addLiqEvent(side, price, qty, symbol) {
   addEv(cls, msg);
 
   // ── 임팩트 이펙트 ──
-  if(huge)     triggerLiqImpact(isLong, usdStr, sym, 'mega');
-  else if(big) triggerLiqImpact(isLong, usdStr, sym, 'big');
+  if(huge)     { triggerLiqImpact(isLong, usdStr, sym, 'mega'); addLiqNews(isLong, usdStr, sym); }
+  else if(big) { triggerLiqImpact(isLong, usdStr, sym, 'big');  addLiqNews(isLong, usdStr, sym); }
 
   // 대형 청산이면 상태바도 업데이트
   if(big) updateLiqStats();
@@ -2682,6 +2747,8 @@ window.addEventListener('load', async()=>{
   initSummaryTracking();
   setInterval(showAutoSummary, 1800000);
   initMobileNav();
+  setInterval(newsCheckLoop, 5000);  // 속보 체크 5초마다
+  addNewsItem('시작', 'nb-cyn', 'METRO PRO 실시간 속보 시스템 가동');
   addEv('eo','모든 피드 연결 완료 ✓ — 실시간 데이터 수신 중');
 });
 
@@ -2780,6 +2847,140 @@ function updateEdgeLighting() {
   nav.classList.remove('nav-buy', 'nav-sell');
   if(cvd > 0) nav.classList.add('nav-buy');
   else if(cvd < 0) nav.classList.add('nav-sell');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   실시간 속보 엔진 — 내부 데이터 기반 자동 생성
+═══════════════════════════════════════════════════════════ */
+const NEWS = {
+  items: [],
+  maxItems: 5,
+  lastPrice: 0,
+  lastRsi: 50,
+  lastScore: 50,
+  lastKp: 0,
+  lastOi: 0,
+  cooldowns: {},  // 카테고리별 쿨다운
+};
+
+function addNewsItem(badge, badgeCls, text) {
+  const list = $('news-list');
+  if(!list) return;
+  const t = now();
+  const item = { time: t, badge, badgeCls, text, ts: Date.now() };
+  NEWS.items.unshift(item);
+  if(NEWS.items.length > NEWS.maxItems) NEWS.items.pop();
+  renderNews();
+}
+
+function renderNews() {
+  const list = $('news-list');
+  if(!list) return;
+  list.innerHTML = NEWS.items.map(n =>
+    `<div class="news-item"><span class="news-time">${n.time}</span><span class="news-badge ${n.badgeCls}">${n.badge}</span><span class="news-text">${n.text}</span></div>`
+  ).join('');
+}
+
+function canPostNews(category, cooldownMs) {
+  const now = Date.now();
+  if(NEWS.cooldowns[category] && now - NEWS.cooldowns[category] < cooldownMs) return false;
+  NEWS.cooldowns[category] = now;
+  return true;
+}
+
+/* 가격 급변 감지 */
+function checkPriceNews() {
+  const p = D.price;
+  if(!p || !NEWS.lastPrice) { NEWS.lastPrice = p; return; }
+  const diff = p - NEWS.lastPrice;
+  const pct = (diff / NEWS.lastPrice) * 100;
+
+  // 1분간 $80+ 변동
+  if(Math.abs(diff) >= 80 && canPostNews('price', 60000)) {
+    if(diff > 0) {
+      addNewsItem('급등', 'nb-grn', `BTC ${Math.abs(diff).toFixed(0)}달러 급등 ($${fp(p)}) | ${pct>=0?'+':''}${pct.toFixed(2)}%`);
+    } else {
+      addNewsItem('급락', 'nb-red', `BTC ${Math.abs(diff).toFixed(0)}달러 급락 ($${fp(p)}) | ${pct.toFixed(2)}%`);
+    }
+  }
+  NEWS.lastPrice = p;
+}
+
+/* RSI 극단값 감지 */
+function checkRsiNews() {
+  const rsi = D.rsi;
+  if(rsi <= 30 && NEWS.lastRsi > 30 && canPostNews('rsi-low', 120000)) {
+    addNewsItem('과매도', 'nb-red', `RSI ${rsi.toFixed(1)} 과매도 구간 진입 | 반등 가능성 주시`);
+  } else if(rsi >= 70 && NEWS.lastRsi < 70 && canPostNews('rsi-high', 120000)) {
+    addNewsItem('과매수', 'nb-ylw', `RSI ${rsi.toFixed(1)} 과매수 구간 진입 | 조정 가능성`);
+  }
+  NEWS.lastRsi = rsi;
+}
+
+/* 종합 스코어 전환 감지 */
+function checkScoreNews(score) {
+  if(score >= 70 && NEWS.lastScore < 70 && canPostNews('score-up', 120000)) {
+    addNewsItem('매수', 'nb-grn', `종합 스코어 ${score}pt 돌파 → 강한 매수 시그널`);
+  } else if(score <= 30 && NEWS.lastScore > 30 && canPostNews('score-dn', 120000)) {
+    addNewsItem('매도', 'nb-red', `종합 스코어 ${score}pt 하락 → 강한 매도 시그널`);
+  } else if(score >= 55 && NEWS.lastScore < 55 && canPostNews('score-buy', 90000)) {
+    addNewsItem('전환', 'nb-cyn', `스코어 ${score} 매수 우세 전환`);
+  } else if(score <= 45 && NEWS.lastScore > 45 && canPostNews('score-sell', 90000)) {
+    addNewsItem('전환', 'nb-ylw', `스코어 ${score} 매도 우세 전환`);
+  }
+  NEWS.lastScore = score;
+}
+
+/* 김치프리미엄 이상치 감지 */
+function checkKpNews() {
+  const kp = D.kp;
+  if(kp >= 3 && NEWS.lastKp < 3 && canPostNews('kp-high', 180000)) {
+    addNewsItem('과열', 'nb-red', `김치프리미엄 +${kp.toFixed(2)}% 과열 경고 | FOMO 주의`);
+  } else if(kp <= -2 && NEWS.lastKp > -2 && canPostNews('kp-low', 180000)) {
+    addNewsItem('역프', 'nb-blu', `역김치프리미엄 ${kp.toFixed(2)}% | 해외 매도 압력`);
+  }
+  NEWS.lastKp = kp;
+}
+
+/* 대형 청산 속보 */
+function addLiqNews(isLong, usdStr, sym) {
+  if(!canPostNews('liq', 5000)) return;
+  const side = isLong ? '롱' : '숏';
+  const cls = isLong ? 'nb-red' : 'nb-grn';
+  addNewsItem('청산', cls, `${sym} 대형 ${side} 청산 ${usdStr} 발생`);
+}
+
+/* OI 급변 감지 */
+function checkOiNews() {
+  if(!D.oi || !NEWS.lastOi) { NEWS.lastOi = D.oi; return; }
+  const pct = ((D.oi - NEWS.lastOi) / NEWS.lastOi) * 100;
+  if(pct >= 2 && canPostNews('oi-up', 300000)) {
+    addNewsItem('OI', 'nb-blu', `OI ${pct.toFixed(1)}% 급증 ($${D.oi.toFixed(2)}B) | 변동성 확대 임박`);
+  } else if(pct <= -2 && canPostNews('oi-dn', 300000)) {
+    addNewsItem('OI', 'nb-ylw', `OI ${Math.abs(pct).toFixed(1)}% 급감 ($${D.oi.toFixed(2)}B) | 포지션 정리`);
+  }
+  NEWS.lastOi = D.oi;
+}
+
+/* 펀딩레이트 극단값 */
+function checkFundingNews() {
+  const f = D.funding;
+  if(f === null) return;
+  const fPct = f * 100;
+  if(fPct >= 0.05 && canPostNews('fund-high', 300000)) {
+    addNewsItem('펀딩', 'nb-ylw', `펀딩레이트 +${fPct.toFixed(4)}% 과열 | 숏 유리 구간`);
+  } else if(fPct <= -0.03 && canPostNews('fund-low', 300000)) {
+    addNewsItem('펀딩', 'nb-cyn', `펀딩레이트 ${fPct.toFixed(4)}% 음수 | 롱 유리 구간`);
+  }
+}
+
+/* 메인 속보 체크 루프 (5초마다) */
+function newsCheckLoop() {
+  checkPriceNews();
+  checkRsiNews();
+  checkKpNews();
+  checkOiNews();
+  checkFundingNews();
 }
 </script>
 </body>
