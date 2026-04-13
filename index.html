@@ -833,6 +833,25 @@ html, body {
     flex-direction: column;
     gap: 3px;
   }
+  /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
+  #col-l.mob-active {
+    display: grid !important;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    overflow: hidden;
+  }
+  #col-l.mob-active .panel {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  #col-l.mob-active #tr-list,
+  #col-l.mob-active #ev-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
   /* 모바일에서 패널 폭 100% */
   #col-l .panel, #col-c .panel, #col-r .panel {
     border-radius: 0;
