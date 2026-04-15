@@ -216,7 +216,7 @@ html, body {
 /* 우측: 김치P + 골드/나스닥 + CVD인텔 */
 #col-r {
   display: grid;
-  grid-template-rows: 220px 260px 1fr;
+  grid-template-rows: 190px 230px 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -402,35 +402,35 @@ html, body {
    김치프리미엄
 ═══════════════════════════════════════════════════════ */
 .kp-main {
-  padding: 5px 10px;
+  padding: 3px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .kp-big {
   font-family: var(--fm);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 600;
   line-height: 1;
 }
-.kp-sub { font-size: 9.5px; color: var(--tx2); margin-top: 2px; }
+.kp-sub { font-size: 9px; color: var(--tx2); margin-top: 1px; }
 .kp-r { text-align:right; }
-.kp-label { font-size: 10px; color: var(--tx2); }
-.kp-val { font-size: 14px; font-weight: 600; }
+.kp-label { font-size: 9px; color: var(--tx2); }
+.kp-val { font-size: 13px; font-weight: 600; }
 .kp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  padding: 0 8px 6px;
+  gap: 2px;
+  padding: 0 8px 3px;
 }
 .kd {
   background: var(--bg3);
   border: 1px solid var(--bd0);
   border-radius: 4px;
-  padding: 3px 5px;
+  padding: 2px 5px;
 }
-.kd-k { font-size: 9.5px; color: var(--tx2); margin-bottom: 2px; }
-.kd-v { font-size: 11.5px; font-weight: 600; }
+.kd-k { font-size: 9px; color: var(--tx2); margin-bottom: 1px; }
+.kd-v { font-size: 11px; font-weight: 600; }
 
 /* ═══════════════════════════════════════════════════════
    CVD + 인텔리전스
@@ -1580,7 +1580,7 @@ function initCandleChart() {
             const i  = ctx3.dataIndex;
             const raw = cChart?.data?.datasets?.[0]?._ohlc?.[i];
             if(!raw) return 'rgba(30,40,64,.7)';
-            return raw.c >= raw.o ? 'rgba(0,192,118,.2)' : 'rgba(255,73,74,.2)';
+            return raw.c >= raw.o ? 'rgba(0,192,118,.12)' : 'rgba(255,73,74,.12)';
           },
           borderWidth: 0, yAxisID: 'y2', order: 10,
         },
@@ -1633,6 +1633,9 @@ function updateCandleChart() {
   cChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   cChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
   cChart.data.datasets[3].data  = sl.map(cd => cd.vol);
+  // 거래량 y2축: 최대값의 5배로 설정 → 바가 하단 20%에만 표시
+  const maxVol = Math.max(...sl.map(cd => cd.vol)) || 1;
+  cChart.options.scales.y2.max = maxVol * 5;
   cChart.update('active');
 
   // ── 기술적 지표 실시간 업데이트 ──
@@ -1678,7 +1681,7 @@ function initEthChart() {
             const i   = ctx3.dataIndex;
             const raw = eChart?.data?.datasets?.[0]?._ohlc?.[i];
             if(!raw) return 'rgba(30,40,64,.7)';
-            return raw.c >= raw.o ? 'rgba(38,192,226,.22)' : 'rgba(226,74,107,.22)';
+            return raw.c >= raw.o ? 'rgba(38,192,226,.12)' : 'rgba(226,74,107,.12)';
           },
           borderWidth: 0, yAxisID: 'y2', order: 10,
         },
@@ -1731,6 +1734,8 @@ function updateEthChart() {
   eChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   eChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
   eChart.data.datasets[3].data  = sl.map(cd => cd.vol);
+  const maxVolE = Math.max(...sl.map(cd => cd.vol)) || 1;
+  eChart.options.scales.y2.max = maxVolE * 5;
   eChart.update('active');
 }
 
@@ -2759,7 +2764,9 @@ window.addEventListener('load', async()=>{
   initSummaryTracking();
   setInterval(showAutoSummary, 1800000);
   initMobileNav();
-  setInterval(newsCheckLoop, 5000);  // 속보 체크 5초마다
+  setInterval(newsCheckLoop, 5000);
+  fetchExternalNews();
+  setInterval(fetchExternalNews, 120000);  // 외부 뉴스 2분마다
   addNewsItem('시작', 'nb-cyn', 'METRO PRO 실시간 속보 시스템 가동');
   addEv('eo','모든 피드 연결 완료 ✓ — 실시간 데이터 수신 중');
 });
@@ -2993,6 +3000,46 @@ function newsCheckLoop() {
   checkKpNews();
   checkOiNews();
   checkFundingNews();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   외부 뉴스 소스 — Binance 공지 (CORS 허용, 키 불필요)
+═══════════════════════════════════════════════════════════ */
+let _lastNewsIds = new Set();
+async function fetchExternalNews() {
+  try {
+    // Binance 공지사항 (한국어)
+    const r = await fetch('https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&pageNo=1&pageSize=5', {
+      signal: AbortSignal.timeout(8000)
+    });
+    if(!r.ok) return;
+    const d = await r.json();
+    const articles = d?.data?.catalogs?.[0]?.articles || [];
+    articles.reverse().forEach(a => {
+      if(_lastNewsIds.has(a.id)) return;
+      _lastNewsIds.add(a.id);
+      // 최초 로드 시 전부 올리지 않음
+      if(_lastNewsIds.size <= 5) return;
+      const title = a.title || '';
+      if(title.length > 2) {
+        addNewsItem('공지', 'nb-ylw', title.length > 40 ? title.slice(0,40)+'...' : title);
+      }
+    });
+  } catch(e) {}
+
+  try {
+    // CoinGecko 트렌딩 (무료, CORS 허용)
+    const r2 = await fetch('https://api.coingecko.com/api/v3/search/trending', {
+      signal: AbortSignal.timeout(8000)
+    });
+    if(!r2.ok) return;
+    const d2 = await r2.json();
+    const coins = d2?.coins?.slice(0,3) || [];
+    if(coins.length && canPostNews('trending', 600000)) {
+      const names = coins.map(c => c.item?.name || c.item?.symbol).filter(Boolean).join(', ');
+      if(names) addNewsItem('트렌드', 'nb-cyn', `코인 트렌딩: ${names}`);
+    }
+  } catch(e) {}
 }
 </script>
 </body>
