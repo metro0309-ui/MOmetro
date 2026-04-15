@@ -1228,53 +1228,54 @@ html, body {
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>트레이딩 인텔</div>
-        <span style="font-size:9px;color:var(--tx2)">실시간</span>
+        <span style="font-size:10px;color:var(--tx2)">LIVE</span>
       </div>
       <!-- 펀딩레이트 -->
-      <div style="padding:4px 8px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-          <span style="font-size:10px;color:var(--tx2)">펀딩레이트</span>
-          <span id="ti-fund-val" style="font-size:14px;font-weight:700" class="yl">--</span>
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--tx1);font-weight:500">펀딩레이트</span>
+          <span id="ti-fund-val" style="font-size:18px;font-weight:700;transition:color 0.5s" class="yl">--</span>
         </div>
-        <div id="ti-fund-hist" style="display:flex;align-items:flex-end;gap:2px;height:20px"></div>
-        <div style="display:flex;justify-content:space-between;margin-top:2px">
-          <span style="font-size:8px;color:var(--tx3)">8회전</span>
-          <span id="ti-fund-next" style="font-size:8px;color:var(--tx2)">다음 정산 --</span>
+        <div id="ti-fund-hist" style="display:flex;align-items:flex-end;gap:2px;height:24px"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-size:9px;color:var(--tx3)">최근 8회</span>
+          <span id="ti-fund-next" style="font-size:9px;color:var(--cy)">다음 정산 --</span>
         </div>
       </div>
       <!-- 롱/숏 비율 -->
-      <div style="padding:4px 8px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-          <span style="font-size:10px;color:var(--tx2)">롱/숏 비율</span>
-          <span id="ti-ls-ratio" style="font-size:12px;font-weight:600" class="tx0">--</span>
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--tx1);font-weight:500">롱/숏 비율</span>
+          <span id="ti-ls-ratio" style="font-size:16px;font-weight:700" class="tx0">--</span>
         </div>
-        <div style="display:flex;gap:2px;height:14px;border-radius:3px;overflow:hidden">
-          <div id="ti-long-bar" style="background:var(--up);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:600;color:#fff" id="ti-long-pct">50%</span></div>
-          <div id="ti-short-bar" style="background:var(--dn);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:600;color:#fff" id="ti-short-pct">50%</span></div>
+        <div style="display:flex;gap:2px;height:20px;border-radius:4px;overflow:hidden">
+          <div id="ti-long-bar" style="background:linear-gradient(90deg,#007a4a,var(--up));transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)" id="ti-long-pct">50%</span></div>
+          <div id="ti-short-bar" style="background:linear-gradient(90deg,var(--dn),#cc2020);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)" id="ti-short-pct">50%</span></div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:2px">
-          <span style="font-size:9px;color:var(--up);font-weight:600" id="ti-long-label">롱 --</span>
-          <span style="font-size:9px;color:var(--dn);font-weight:600" id="ti-short-label">숏 --</span>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span style="font-size:10px;color:var(--up);font-weight:600" id="ti-long-label">롱 --</span>
+          <span style="font-size:10px;color:var(--dn);font-weight:600" id="ti-short-label">숏 --</span>
         </div>
       </div>
       <!-- 청산 집중 구간 -->
-      <div style="padding:4px 8px">
-        <div style="font-size:10px;color:var(--tx2);margin-bottom:3px">청산 집중 구간</div>
-        <div style="display:flex;flex-direction:column;gap:3px">
+      <div style="padding:6px 10px">
+        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:4px">청산 집중 구간</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:9px;color:var(--dn)">▲ 롱 청산대</span>
-            <span id="ti-liq-long" style="font-size:12px;font-weight:700;color:var(--dn)">--</span>
+            <span style="font-size:10px;color:var(--dn)">▲ 롱 청산대</span>
+            <span id="ti-liq-long" style="font-size:15px;font-weight:700;color:var(--dn);text-shadow:0 0 8px rgba(255,73,74,.3)">--</span>
           </div>
-          <div style="height:4px;background:var(--bg3);border-radius:2px;position:relative;overflow:hidden">
-            <div id="ti-price-pos" style="position:absolute;height:100%;width:3px;background:var(--yl);border-radius:2px;left:50%;transition:left 1s ease"></div>
+          <div style="height:6px;background:var(--bg3);border-radius:3px;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,var(--up),transparent 20%,transparent 80%,var(--dn));opacity:.15"></div>
+            <div id="ti-price-pos" style="position:absolute;height:100%;width:4px;background:var(--yl);border-radius:2px;left:50%;transition:left 1s ease;box-shadow:0 0 6px var(--yl)"></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:9px;color:var(--up)">▼ 숏 청산대</span>
-            <span id="ti-liq-short" style="font-size:12px;font-weight:700;color:var(--up)">--</span>
+            <span style="font-size:10px;color:var(--up)">▼ 숏 청산대</span>
+            <span id="ti-liq-short" style="font-size:15px;font-weight:700;color:var(--up);text-shadow:0 0 8px rgba(0,192,118,.3)">--</span>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-top:1px">
-            <span style="font-size:8px;color:var(--tx3)">OI $<span id="ti-oi">--</span>B</span>
-            <span style="font-size:8px;color:var(--tx3)">탑트레이더 롱 <span id="ti-top-long">--</span>%</span>
+          <div style="display:flex;justify-content:space-between;margin-top:2px">
+            <span style="font-size:9px;color:var(--tx2)">OI $<span id="ti-oi" style="font-weight:600;color:var(--bl)">--</span>B</span>
+            <span style="font-size:9px;color:var(--tx2)">탑트레이더 롱 <span id="ti-top-long" style="font-weight:600;color:var(--cy)">--</span>%</span>
           </div>
         </div>
       </div>
@@ -1305,25 +1306,20 @@ html, body {
         <div class="ir"><div class="ir-hd"><span class="ir-k">CVD 매수압력</span><span id="iv7" class="cy">--</span></div><div class="ir-bg"><div class="ir-bar bar-cy" id="ib7" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">VWAP 괴리</span><span id="iv8" class="bl">--</span></div><div class="ir-bg"><div class="ir-bar bar-bl" id="ib8" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">MACD 히스토그램</span><span id="iv9" class="yl">--</span></div><div class="ir-bg"><div class="ir-bar bar-yl" id="ib9" style="width:0%"></div></div></div>
-        <!-- 종합 스코어 — 대형 게이지 -->
-        <div style="margin-top:6px;padding:8px 10px;border-top:1px solid var(--bd1);display:flex;align-items:center;gap:12px">
-          <div style="position:relative;width:70px;height:70px;flex-shrink:0">
-            <canvas id="gaugeCanvas2" width="140" height="140" style="width:70px;height:70px"></canvas>
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
-              <div id="composite-score" style="font-family:var(--fv);font-size:26px;font-weight:700;line-height:1" class="yl">--</div>
-            </div>
+        <!-- 종합 스코어 — 심플 바 -->
+        <div style="margin-top:6px;padding:8px 10px;border-top:1px solid var(--bd1)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
+            <span style="display:flex;align-items:baseline;gap:6px">
+              <span id="composite-score" style="font-family:var(--fv);font-size:28px;font-weight:700" class="yl">--</span>
+              <span id="composite-label" style="font-size:11px;font-weight:600" class="yl">분석중</span>
+            </span>
           </div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
-              <span id="composite-label" style="font-size:12px;font-weight:700;letter-spacing:1px" class="yl">분석중</span>
-            </div>
-            <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
-              <div id="composite-bar" style="width:50%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 50%,var(--up) 100%);border-radius:4px;transition:width 1s ease"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--tx3)">
-              <span>0 매도</span><span>50 중립</span><span>100 매수</span>
-            </div>
+          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
+            <div id="composite-bar" style="width:50%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 50%,var(--up) 100%);border-radius:4px;transition:width 1s ease"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--tx3);margin-top:2px">
+            <span>0 강한매도</span><span>50 중립</span><span>100 강한매수</span>
           </div>
         </div>
       </div>
@@ -2342,7 +2338,7 @@ function updateDeltaCounter() {
 ═══════════════════════════════════════════════════════════ */
 function drawBigGauge(score, label, cls) {
   // 두 캔버스 모두 그리기 (BTC 오버레이 + 우측 하단)
-  ['gaugeCanvas', 'gaugeCanvas2'].forEach(canvasId => {
+  ['gaugeCanvas'].forEach(canvasId => {
     const canvas = $(canvasId);
     if(!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -3033,10 +3029,12 @@ function renderFundingHist() {
   const el = $('ti-fund-hist');
   if(!el || !TI.fundHist.length) return;
   const max = Math.max(...TI.fundHist.map(Math.abs)) || 0.001;
-  el.innerHTML = TI.fundHist.map(v => {
-    const h = Math.max(3, Math.abs(v) / max * 18);
+  el.innerHTML = TI.fundHist.map((v, i) => {
+    const h = Math.max(4, Math.abs(v) / max * 22);
     const c = v >= 0 ? 'var(--up)' : 'var(--dn)';
-    return `<div style="flex:1;height:${h}px;background:${c};border-radius:1px;opacity:.7"></div>`;
+    const isLast = i === TI.fundHist.length - 1;
+    const glow = isLast ? `box-shadow:0 0 6px ${v >= 0 ? 'var(--up)' : 'var(--dn)'}` : '';
+    return `<div style="flex:1;height:${h}px;background:${c};border-radius:2px;opacity:${isLast?'1':'.6'};${glow};transition:height 0.5s ease"></div>`;
   }).join('');
 }
 
