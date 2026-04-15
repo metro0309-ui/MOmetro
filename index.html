@@ -213,10 +213,10 @@ html, body {
   min-height: 0;
 }
 
-/* 우측: 김치P + 골드/나스닥 + CVD인텔 */
+/* 우측: 트레이딩 인텔 + CVD인텔 */
 #col-r {
   display: grid;
-  grid-template-rows: 165px 200px 1fr;
+  grid-template-rows: auto 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -1224,72 +1224,58 @@ html, body {
   <!-- ─ 우측 컬럼 ──────────────────────────────────── -->
   <div id="col-r">
 
-    <!-- 김치프리미엄 -->
-    <div class="panel">
-      <div class="panel-hd">
-        <div class="hd-title"><div class="hd-dot" style="background:var(--pu);box-shadow:0 0 5px var(--pu)"></div>김치프리미엄</div>
-        <span class="badge">빗썸/바이낸스</span>
-      </div>
-      <div class="kp-main">
-        <div>
-          <div class="kp-label">괴리율</div>
-          <div class="kp-big pu" id="kp-pct">--</div>
-          <div class="kp-sub" id="kp-status">--</div>
-        </div>
-        <div class="kp-r">
-          <div class="kp-label">빗썸 BTC</div>
-          <div class="kp-val up" id="kp-upbit">--</div>
-          <div class="kp-label" style="margin-top:5px">환율 (USD/KRW)</div>
-          <div class="kp-val tx1" id="kp-rate">--</div>
-        </div>
-      </div>
-      <div class="kp-grid">
-        <div class="kd">
-          <div class="kd-k">기대가(KRW)</div>
-          <div class="kd-v tx1" id="kp-exp">--</div>
-        </div>
-        <div class="kd">
-          <div class="kd-k">바이낸스(USD)</div>
-          <div class="kd-v up" id="kp-bin">--</div>
-        </div>
-        <div class="kd">
-          <div class="kd-k">24H 최대P</div>
-          <div class="kd-v pu" id="kp-max">--</div>
-        </div>
-        <div class="kd">
-          <div class="kd-k">24H 최소P</div>
-          <div class="kd-v tx1" id="kp-min">--</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 골드(XAU) + 나스닥100 차트 -->
+    <!-- 트레이딩 인텔 (펀딩 + 롱숏 + 청산구간) -->
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd" style="padding:4px 8px">
-        <div style="display:flex;width:100%;gap:0">
-          <!-- 골드 탭 헤더 -->
-          <div style="flex:1;display:flex;align-items:center;gap:6px;border-right:1px solid var(--bd0);padding-right:8px">
-            <div class="hd-dot" style="background:#f0b429;box-shadow:0 0 5px #f0b429"></div>
-            <span style="font-size:12px;font-weight:600;color:var(--tx0)">G-1 (골드)</span>
-            <span id="xau-price" style="font-family:var(--fm);font-size:13px;font-weight:700;color:#f0b429;margin-left:auto">--</span>
-            <span id="xau-chg" style="font-size:10px">--</span>
-          </div>
-          <!-- 나스닥 탭 헤더 -->
-          <div style="flex:1;display:flex;align-items:center;gap:6px;padding-left:8px">
-            <div class="hd-dot" style="background:#9f7aea;box-shadow:0 0 5px #9f7aea"></div>
-            <span style="font-size:12px;font-weight:600;color:var(--tx0)">나스닥 · QQQ</span>
-            <span id="ndx-price" style="font-family:var(--fm);font-size:13px;font-weight:700;color:#9f7aea;margin-left:auto">--</span>
-            <span id="ndx-chg" style="font-size:10px">--</span>
-          </div>
+      <div class="panel-hd">
+        <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>트레이딩 인텔</div>
+        <span style="font-size:9px;color:var(--tx2)">실시간</span>
+      </div>
+      <!-- 펀딩레이트 -->
+      <div style="padding:4px 8px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:10px;color:var(--tx2)">펀딩레이트</span>
+          <span id="ti-fund-val" style="font-size:14px;font-weight:700" class="yl">--</span>
+        </div>
+        <div id="ti-fund-hist" style="display:flex;align-items:flex-end;gap:2px;height:20px"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <span style="font-size:8px;color:var(--tx3)">8회전</span>
+          <span id="ti-fund-next" style="font-size:8px;color:var(--tx2)">다음 정산 --</span>
         </div>
       </div>
-      <!-- 두 차트 나란히 -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;flex:1;min-height:0;padding:2px">
-        <div style="position:relative;min-height:0;overflow:hidden">
-          <canvas id="xauChart" style="position:absolute;inset:0"></canvas>
+      <!-- 롱/숏 비율 -->
+      <div style="padding:4px 8px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:10px;color:var(--tx2)">롱/숏 비율</span>
+          <span id="ti-ls-ratio" style="font-size:12px;font-weight:600" class="tx0">--</span>
         </div>
-        <div style="position:relative;min-height:0;overflow:hidden">
-          <canvas id="ndxChart" style="position:absolute;inset:0"></canvas>
+        <div style="display:flex;gap:2px;height:14px;border-radius:3px;overflow:hidden">
+          <div id="ti-long-bar" style="background:var(--up);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:600;color:#fff" id="ti-long-pct">50%</span></div>
+          <div id="ti-short-bar" style="background:var(--dn);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;font-weight:600;color:#fff" id="ti-short-pct">50%</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <span style="font-size:9px;color:var(--up);font-weight:600" id="ti-long-label">롱 --</span>
+          <span style="font-size:9px;color:var(--dn);font-weight:600" id="ti-short-label">숏 --</span>
+        </div>
+      </div>
+      <!-- 청산 집중 구간 -->
+      <div style="padding:4px 8px">
+        <div style="font-size:10px;color:var(--tx2);margin-bottom:3px">청산 집중 구간</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:9px;color:var(--dn)">▲ 롱 청산대</span>
+            <span id="ti-liq-long" style="font-size:12px;font-weight:700;color:var(--dn)">--</span>
+          </div>
+          <div style="height:4px;background:var(--bg3);border-radius:2px;position:relative;overflow:hidden">
+            <div id="ti-price-pos" style="position:absolute;height:100%;width:3px;background:var(--yl);border-radius:2px;left:50%;transition:left 1s ease"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:9px;color:var(--up)">▼ 숏 청산대</span>
+            <span id="ti-liq-short" style="font-size:12px;font-weight:700;color:var(--up)">--</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1px">
+            <span style="font-size:8px;color:var(--tx3)">OI $<span id="ti-oi">--</span>B</span>
+            <span style="font-size:8px;color:var(--tx3)">탑트레이더 롱 <span id="ti-top-long">--</span>%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -2757,31 +2743,27 @@ function updateMiniPriceDOM(storeKey, priceId, chgId) {
 ═══════════════════════════════════════════════════════════ */
 window.addEventListener('load', async()=>{
   initCandleChart(); initEthChart(); initCvdChart();
-  // 골드 + 나스닥 미니 차트 초기화
-  xauChart = initMiniCandleChart('xauChart', '#f0b429');
-  ndxChart = initMiniCandleChart('ndxChart', '#9f7aea');
 
   addEv('eo','METRO PRO v4.1 초기화...');
   connectTicker(); connectTrades(); connectKlineWS('5m');
   connectEthTicker(); connectEthKlineWS('5m');
-  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchKimchi(), fetchCG()]);
+  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchCG()]);
 
   // 골드 + 나스닥 데이터 로드
   fetchTwelveData('XAU/USD', 'xau', 'xau-price', 'xau-chg');
   fetchTwelveData('QQQ',   'ndx', 'ndx-price', 'ndx-chg');  // QQQ ETF = 나스닥100 추종
 
   setInterval(fetchFutures,  20000);
-  setInterval(fetchKimchi,   15000);
   setInterval(fetchCG,      120000);
   setInterval(updateIntelBars,5000);
   setInterval(tick,1000);
-  // 골드/나스닥 3분마다 갱신 (API rate limit 고려)
-  setInterval(()=>{
-    fetchTwelveData('XAU/USD', 'xau', 'xau-price', 'xau-chg');
-  }, 180000);
-  setInterval(()=>{
-    fetchTwelveData('QQQ',   'ndx', 'ndx-price', 'ndx-chg');
-  }, 185000);
+
+  // 트레이딩 인텔
+  fetchFundingHist();
+  fetchTopTraders();
+  setInterval(fetchFundingHist, 480000);  // 펀딩 히스토리 8분마다
+  setInterval(fetchTopTraders, 30000);    // 탑트레이더 30초마다
+  setInterval(updateTradingIntel, 5000);  // DOM 업데이트 5초마다
 
   connectLiqWS();
   schedQuiet();
@@ -2796,7 +2778,7 @@ window.addEventListener('load', async()=>{
 });
 
 window.addEventListener('resize',()=>{
-  [cChart,eChart,cvChart,xauChart,ndxChart].forEach(c=>{ if(c) c.resize(); });
+  [cChart,eChart,cvChart].forEach(c=>{ if(c) c.resize(); });
 });
 
 /* ═══════════════════════════════════════════════════════════
@@ -2822,7 +2804,7 @@ function initMobileNav() {
       if(target) target.classList.add('mob-active');
       // 차트 탭 전환 시 리사이즈 트리거
       setTimeout(() => {
-        [cChart,eChart,cvChart,xauChart,ndxChart].forEach(c=>{ if(c) c.resize(); });
+        [cChart,eChart,cvChart].forEach(c=>{ if(c) c.resize(); });
       }, 50);
     });
   });
@@ -3019,6 +3001,98 @@ function checkFundingNews() {
 }
 
 /* 메인 속보 체크 루프 (5초마다) */
+/* ═══════════════════════════════════════════════════════════
+   트레이딩 인텔 패널 — 펀딩 + 롱숏 + 청산구간
+═══════════════════════════════════════════════════════════ */
+const TI = { fundHist:[], topLongPct:50 };
+
+/* 펀딩레이트 히스토리 (최근 8회) */
+async function fetchFundingHist() {
+  try {
+    const r = await fetch('https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=8');
+    if(!r.ok) return;
+    const d = await r.json();
+    TI.fundHist = d.map(x => +x.fundingRate);
+    renderFundingHist();
+  } catch(e) {}
+}
+
+function renderFundingHist() {
+  const el = $('ti-fund-hist');
+  if(!el || !TI.fundHist.length) return;
+  const max = Math.max(...TI.fundHist.map(Math.abs)) || 0.001;
+  el.innerHTML = TI.fundHist.map(v => {
+    const h = Math.max(3, Math.abs(v) / max * 18);
+    const c = v >= 0 ? 'var(--up)' : 'var(--dn)';
+    return `<div style="flex:1;height:${h}px;background:${c};border-radius:1px;opacity:.7"></div>`;
+  }).join('');
+}
+
+/* 펀딩 + 롱숏 DOM 업데이트 */
+function updateTradingIntel() {
+  // 펀딩레이트
+  const f = D.funding;
+  if(f !== null) {
+    const fPct = (f * 100).toFixed(4);
+    const fCls = f > 0 ? 'up' : f < 0 ? 'dn' : 'yl';
+    st('ti-fund-val', `${f>=0?'+':''}${fPct}%`, fCls);
+    // 다음 정산 시간 계산 (UTC 0/8/16시)
+    const now = new Date();
+    const utcH = now.getUTCHours();
+    const nextH = utcH < 8 ? 8 : utcH < 16 ? 16 : 24;
+    const remain = ((nextH - utcH - 1) * 60 + (60 - now.getUTCMinutes()));
+    st('ti-fund-next', `다음 정산 ${Math.floor(remain/60)}h ${remain%60}m`);
+  }
+
+  // 롱/숏 비율
+  const ls = D.ls;
+  if(ls) {
+    const longPct = (ls / (1 + ls) * 100);
+    const shortPct = 100 - longPct;
+    st('ti-ls-ratio', ls.toFixed(3));
+    st('ti-long-pct', longPct.toFixed(1) + '%');
+    st('ti-short-pct', shortPct.toFixed(1) + '%');
+    st('ti-long-label', `롱 ${longPct.toFixed(1)}%`);
+    st('ti-short-label', `숏 ${shortPct.toFixed(1)}%`);
+    const lb = $('ti-long-bar');
+    const sb = $('ti-short-bar');
+    if(lb) lb.style.flex = longPct.toFixed(0);
+    if(sb) sb.style.flex = shortPct.toFixed(0);
+  }
+
+  // OI
+  if(D.oi) st('ti-oi', D.oi.toFixed(2));
+
+  // 청산 집중 구간 추정 (현재가 기준 ±2~3% 지점)
+  const p = D.price;
+  if(p > 0) {
+    const liqLongZone  = Math.round(p * 1.025);  // 위 2.5% = 롱 청산 밀집
+    const liqShortZone = Math.round(p * 0.975);  // 아래 2.5% = 숏 청산 밀집
+    st('ti-liq-long', '$' + fp(liqLongZone));
+    st('ti-liq-short', '$' + fp(liqShortZone));
+    // 가격 위치 바 (청산대 사이에서 현재가 위치)
+    const range = liqLongZone - liqShortZone;
+    const pos = range > 0 ? ((p - liqShortZone) / range * 100) : 50;
+    const bar = $('ti-price-pos');
+    if(bar) bar.style.left = Math.max(2, Math.min(98, pos)).toFixed(0) + '%';
+  }
+
+  // 탑트레이더 롱 비율
+  st('ti-top-long', TI.topLongPct.toFixed(1));
+}
+
+/* 탑트레이더 포지션 fetch */
+async function fetchTopTraders() {
+  try {
+    const r = await fetch('https://fapi.binance.com/futures/data/topLongShortPositionRatio?symbol=BTCUSDT&period=5m&limit=1');
+    if(!r.ok) return;
+    const d = await r.json();
+    if(d && d[0]) {
+      TI.topLongPct = +d[0].longAccount * 100 / (+d[0].longAccount + +d[0].shortAccount);
+    }
+  } catch(e) {}
+}
+
 function newsCheckLoop() {
   checkPriceNews();
   checkRsiNews();
