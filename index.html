@@ -454,30 +454,30 @@ html, body {
 /* ═══════════════════════════════════════════════════════
    CVD + 인텔리전스
 ═══════════════════════════════════════════════════════ */
-#cvd-box { height: 55px; position: relative; flex-shrink:0; }
+#cvd-box { height: 70px; position: relative; flex-shrink:0; }
 #cvChart { position:absolute; inset:0; width:100%; height:100%; }
 .cvd-stat {
-  display: flex; gap: 8px; padding: 3px 8px;
+  display: flex; gap: 8px; padding: 4px 8px;
   border-top: 1px solid var(--bd0);
   border-bottom: 1px solid var(--bd0);
-  font-size: 10px; flex-shrink:0;
+  font-size: 11px; flex-shrink:0;
 }
 .intel-wrap {
-  flex: 1; overflow:hidden;
+  flex: 1; overflow-y:auto;
   display: flex; flex-direction:column;
-  gap: 1px; padding: 2px 0;
+  gap: 2px; padding: 4px 0;
 }
 .ir {
   display: flex; flex-direction:column; gap: 2px;
-  padding: 2px 8px;
+  padding: 3px 8px;
 }
 .ir-hd {
   display: flex; justify-content:space-between;
-  font-size: 10px;
+  font-size: 11px;
 }
 .ir-k { color: var(--tx2); }
 .ir-bg {
-  height: 4px; background: var(--bg3);
+  height: 6px; background: var(--bg3);
   border-radius: 2px; overflow:hidden; margin-top:1px;
 }
 .ir-bar {
@@ -1305,17 +1305,25 @@ html, body {
         <div class="ir"><div class="ir-hd"><span class="ir-k">CVD 매수압력</span><span id="iv7" class="cy">--</span></div><div class="ir-bg"><div class="ir-bar bar-cy" id="ib7" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">VWAP 괴리</span><span id="iv8" class="bl">--</span></div><div class="ir-bg"><div class="ir-bar bar-bl" id="ib8" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">MACD 히스토그램</span><span id="iv9" class="yl">--</span></div><div class="ir-bg"><div class="ir-bar bar-yl" id="ib9" style="width:0%"></div></div></div>
-        <!-- 종합 스코어 게이지 -->
-        <div class="ir" style="margin-top:4px;padding-top:5px;border-top:1px solid var(--bd1)">
-          <div class="ir-hd">
-            <span class="ir-k" style="font-weight:600;color:var(--tx0);font-size:11px">◆ 종합 스코어</span>
-            <span style="display:flex;align-items:center;gap:6px">
-              <span id="composite-score" style="font-size:16px;font-weight:700" class="yl">--</span>
-              <span id="composite-label" style="font-size:10px;font-weight:500" class="yl">분석중</span>
-            </span>
+        <!-- 종합 스코어 — 대형 게이지 -->
+        <div style="margin-top:6px;padding:8px 10px;border-top:1px solid var(--bd1);display:flex;align-items:center;gap:12px">
+          <div style="position:relative;width:70px;height:70px;flex-shrink:0">
+            <canvas id="gaugeCanvas2" width="140" height="140" style="width:70px;height:70px"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+              <div id="composite-score" style="font-family:var(--fv);font-size:26px;font-weight:700;line-height:1" class="yl">--</div>
+            </div>
           </div>
-          <div class="ir-bg" style="height:7px;margin-top:3px;border-radius:4px;overflow:hidden">
-            <div id="composite-bar" style="width:50%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 50%,var(--up) 100%);border-radius:4px;transition:width 1s ease"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
+              <span id="composite-label" style="font-size:12px;font-weight:700;letter-spacing:1px" class="yl">분석중</span>
+            </div>
+            <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
+              <div id="composite-bar" style="width:50%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 50%,var(--up) 100%);border-radius:4px;transition:width 1s ease"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--tx3)">
+              <span>0 매도</span><span>50 중립</span><span>100 매수</span>
+            </div>
           </div>
         </div>
       </div>
@@ -2333,37 +2341,41 @@ function updateDeltaCounter() {
    D. 대형 원형 게이지 (Canvas)
 ═══════════════════════════════════════════════════════════ */
 function drawBigGauge(score, label, cls) {
-  const canvas = $('gaugeCanvas');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  const cx = w/2, cy = h/2, r = w/2 - 12;
-  ctx.clearRect(0, 0, w, h);
+  // 두 캔버스 모두 그리기 (BTC 오버레이 + 우측 하단)
+  ['gaugeCanvas', 'gaugeCanvas2'].forEach(canvasId => {
+    const canvas = $(canvasId);
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2, r = w/2 - 12;
+    ctx.clearRect(0, 0, w, h);
 
-  // 배경 원호
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 2.25);
-  ctx.strokeStyle = 'rgba(30,40,64,.6)';
-  ctx.lineWidth = 8;
-  ctx.lineCap = 'round';
-  ctx.stroke();
+    // 배경 원호
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 2.25);
+    ctx.strokeStyle = 'rgba(30,40,64,.6)';
+    ctx.lineWidth = canvasId === 'gaugeCanvas2' ? 10 : 8;
+    ctx.lineCap = 'round';
+    ctx.stroke();
 
-  // 스코어 원호
-  const angle = Math.PI * 0.75 + (score / 100) * Math.PI * 1.5;
-  const color = score >= 55 ? '#00c076' : score <= 45 ? '#ff494a' : '#f0b429';
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, Math.PI * 0.75, angle);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 8;
-  ctx.lineCap = 'round';
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 15;
-  ctx.stroke();
-  ctx.shadowBlur = 0;
+    // 스코어 원호
+    const angle = Math.PI * 0.75 + (score / 100) * Math.PI * 1.5;
+    const color = score >= 55 ? '#00c076' : score <= 45 ? '#ff494a' : '#f0b429';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, Math.PI * 0.75, angle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = canvasId === 'gaugeCanvas2' ? 10 : 8;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = canvasId === 'gaugeCanvas2' ? 20 : 15;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
 
-  // 중앙 값
+  // BTC 오버레이 게이지 텍스트
   const valEl = $('gauge-value');
   const lblEl = $('gauge-label');
+  const color = score >= 55 ? '#00c076' : score <= 45 ? '#ff494a' : '#f0b429';
   if(valEl) { valEl.textContent = score; valEl.style.color = color; }
   if(lblEl) { lblEl.textContent = label; lblEl.style.color = color; }
 }
