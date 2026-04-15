@@ -216,7 +216,7 @@ html, body {
 /* 우측: 김치P + 골드/나스닥 + CVD인텔 */
 #col-r {
   display: grid;
-  grid-template-rows: 190px 230px 1fr;
+  grid-template-rows: 165px 200px 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -338,7 +338,7 @@ html, body {
 
 /* 거래량 바 (캔들 아래 분리) */
 .vol-bar-wrap {
-  height: 28px;
+  height: 56px;
   flex-shrink: 0;
   display: flex;
   align-items: flex-end;
@@ -421,35 +421,35 @@ html, body {
    김치프리미엄
 ═══════════════════════════════════════════════════════ */
 .kp-main {
-  padding: 3px 10px;
+  padding: 2px 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .kp-big {
   font-family: var(--fm);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
   line-height: 1;
 }
-.kp-sub { font-size: 9px; color: var(--tx2); margin-top: 1px; }
+.kp-sub { font-size: 8px; color: var(--tx2); margin-top: 1px; }
 .kp-r { text-align:right; }
-.kp-label { font-size: 9px; color: var(--tx2); }
-.kp-val { font-size: 13px; font-weight: 600; }
+.kp-label { font-size: 8px; color: var(--tx2); }
+.kp-val { font-size: 12px; font-weight: 600; }
 .kp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
-  padding: 0 8px 3px;
+  padding: 0 6px 2px;
 }
 .kd {
   background: var(--bg3);
   border: 1px solid var(--bd0);
-  border-radius: 4px;
-  padding: 2px 5px;
+  border-radius: 3px;
+  padding: 1px 4px;
 }
-.kd-k { font-size: 9px; color: var(--tx2); margin-bottom: 1px; }
-.kd-v { font-size: 11px; font-weight: 600; }
+.kd-k { font-size: 8px; color: var(--tx2); margin-bottom: 0; }
+.kd-v { font-size: 10px; font-weight: 600; }
 
 /* ═══════════════════════════════════════════════════════
    CVD + 인텔리전스
@@ -2787,7 +2787,7 @@ window.addEventListener('load', async()=>{
   initMobileNav();
   setInterval(newsCheckLoop, 5000);
   fetchExternalNews();
-  setInterval(fetchExternalNews, 120000);  // 외부 뉴스 2분마다
+  setInterval(fetchExternalNews, 90000);  // 외부 뉴스 90초마다
   addNewsItem('시작', 'nb-cyn', 'METRO PRO 실시간 속보 시스템 가동');
   addEv('eo','모든 피드 연결 완료 ✓ — 실시간 데이터 수신 중');
 });
@@ -2894,7 +2894,7 @@ function updateEdgeLighting() {
 ═══════════════════════════════════════════════════════════ */
 const NEWS = {
   items: [],
-  maxItems: 5,
+  maxItems: 7,
   lastPrice: 0,
   lastRsi: 50,
   lastScore: 50,
@@ -3054,37 +3054,91 @@ function renderVolBars(containerId, candles, type) {
 }
 
 async function fetchExternalNews() {
+  // 소스 1: CoinGecko 트렌딩 (확실히 CORS 허용)
   try {
-    // Binance 공지사항 (한국어)
-    const r = await fetch('https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&pageNo=1&pageSize=5', {
+    const r = await fetch('https://api.coingecko.com/api/v3/search/trending', {
       signal: AbortSignal.timeout(8000)
     });
-    if(!r.ok) return;
-    const d = await r.json();
-    const articles = d?.data?.catalogs?.[0]?.articles || [];
-    articles.reverse().forEach(a => {
-      if(_lastNewsIds.has(a.id)) return;
-      _lastNewsIds.add(a.id);
-      // 최초 로드 시 전부 올리지 않음
-      if(_lastNewsIds.size <= 5) return;
-      const title = a.title || '';
-      if(title.length > 2) {
-        addNewsItem('공지', 'nb-ylw', title.length > 40 ? title.slice(0,40)+'...' : title);
+    if(r.ok) {
+      const d = await r.json();
+      const coins = d?.coins?.slice(0,3) || [];
+      if(coins.length && canPostNews('trending', 600000)) {
+        const names = coins.map(c => c.item?.name || c.item?.symbol).filter(Boolean).join(', ');
+        if(names) addNewsItem('트렌드', 'nb-cyn', `실시간 트렌딩: ${names}`);
       }
-    });
+      // NFT 트렌딩
+      const nfts = d?.nfts?.slice(0,2) || [];
+      if(nfts.length && canPostNews('nft-trend', 600000)) {
+        const nftNames = nfts.map(n => n.name).filter(Boolean).join(', ');
+        if(nftNames) addNewsItem('NFT', 'nb-blu', `NFT 트렌딩: ${nftNames}`);
+      }
+    }
   } catch(e) {}
 
+  // 소스 2: CoinGecko BTC 마켓 데이터 변동 뉴스화
   try {
-    // CoinGecko 트렌딩 (무료, CORS 허용)
-    const r2 = await fetch('https://api.coingecko.com/api/v3/search/trending', {
+    const r2 = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false', {
       signal: AbortSignal.timeout(8000)
     });
-    if(!r2.ok) return;
-    const d2 = await r2.json();
-    const coins = d2?.coins?.slice(0,3) || [];
-    if(coins.length && canPostNews('trending', 600000)) {
-      const names = coins.map(c => c.item?.name || c.item?.symbol).filter(Boolean).join(', ');
-      if(names) addNewsItem('트렌드', 'nb-cyn', `코인 트렌딩: ${names}`);
+    if(r2.ok) {
+      const d2 = await r2.json();
+      const md = d2?.market_data;
+      if(md) {
+        // 24H 거래량 변동
+        const volChg = md.total_volume?.usd;
+        const mcapChg = md.market_cap_change_percentage_24h;
+        if(mcapChg && Math.abs(mcapChg) >= 2 && canPostNews('mcap-chg', 300000)) {
+          const dir = mcapChg > 0 ? '상승' : '하락';
+          addNewsItem('시총', mcapChg > 0 ? 'nb-grn' : 'nb-red', `BTC 시총 24H ${dir} ${Math.abs(mcapChg).toFixed(1)}% | ATH 대비 ${(md.ath_change_percentage?.usd||0).toFixed(1)}%`);
+        }
+        // ATL 대비 상승률
+        const atlPct = md.atl_change_percentage?.usd;
+        if(atlPct && canPostNews('atl-info', 1800000)) {
+          addNewsItem('시장', 'nb-blu', `BTC 역대 최저 대비 +${(atlPct/1000).toFixed(1)}K% | 24H 거래량 $${fb(volChg)}`);
+        }
+      }
+    }
+  } catch(e) {}
+
+  // 소스 3: 공포/탐욕 지수 변동 뉴스화
+  try {
+    const r3 = await fetch('https://api.alternative.me/fng/?limit=2', {
+      signal: AbortSignal.timeout(8000)
+    });
+    if(r3.ok) {
+      const d3 = await r3.json();
+      const items = d3?.data;
+      if(items && items.length >= 2) {
+        const today = +items[0].value;
+        const yesterday = +items[1].value;
+        const diff = today - yesterday;
+        if(Math.abs(diff) >= 5 && canPostNews('fng-chg', 600000)) {
+          const dir = diff > 0 ? '상승' : '하락';
+          const cls = diff > 0 ? 'nb-grn' : 'nb-red';
+          addNewsItem('심리', cls, `공포탐욕 ${today} (전일 대비 ${diff>0?'+':''}${diff}) | ${items[0].value_classification}`);
+        }
+      }
+    }
+  } catch(e) {}
+
+  // 소스 4: RSS2JSON으로 CoinDesk 뉴스 (무료, CORS 허용)
+  try {
+    const r4 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.coindesk.com/arc/outboundfeeds/rss/', {
+      signal: AbortSignal.timeout(8000)
+    });
+    if(r4.ok) {
+      const d4 = await r4.json();
+      const rssItems = d4?.items?.slice(0,3) || [];
+      rssItems.forEach(item => {
+        const id = item.guid || item.link || item.title;
+        if(_lastNewsIds.has(id)) return;
+        _lastNewsIds.add(id);
+        if(_lastNewsIds.size <= 8) return; // 최초 로드 스킵
+        const title = item.title || '';
+        if(title.length > 3 && canPostNews('rss-'+id, 10000)) {
+          addNewsItem('뉴스', 'nb-ylw', title.length > 45 ? title.slice(0,45)+'...' : title);
+        }
+      });
     }
   } catch(e) {}
 }
