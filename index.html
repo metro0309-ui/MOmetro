@@ -2934,27 +2934,28 @@ function canPostNews(category, cooldownMs) {
 /* 가격 급변 감지 */
 function checkPriceNews() {
   const p = D.price;
-  if(!p || !NEWS.lastPrice) { NEWS.lastPrice = p; return; }
-  const diff = p - NEWS.lastPrice;
-  const pct = (diff / NEWS.lastPrice) * 100;
+  if(!p) return;
+  // _priceHistory (1분 rolling)를 활용
+  if(_priceHistory.length < 2) return;
+  const oldest = _priceHistory[0].price;
+  const diff = p - oldest;
+  const pct = (diff / oldest) * 100;
 
-  // 1분간 $80+ 변동
-  if(Math.abs(diff) >= 80 && canPostNews('price', 60000)) {
+  if(Math.abs(diff) >= 30 && canPostNews('price', 30000)) {
     if(diff > 0) {
-      addNewsItem('급등', 'nb-grn', `BTC ${Math.abs(diff).toFixed(0)}달러 급등 ($${fp(p)}) | ${pct>=0?'+':''}${pct.toFixed(2)}%`);
+      addNewsItem('급등', 'nb-grn', `BTC 1분간 +$${Math.abs(diff).toFixed(0)} 급등 ($${fp(p)}) | ${pct>=0?'+':''}${pct.toFixed(2)}%`);
     } else {
-      addNewsItem('급락', 'nb-red', `BTC ${Math.abs(diff).toFixed(0)}달러 급락 ($${fp(p)}) | ${pct.toFixed(2)}%`);
+      addNewsItem('급락', 'nb-red', `BTC 1분간 -$${Math.abs(diff).toFixed(0)} 급락 ($${fp(p)}) | ${pct.toFixed(2)}%`);
     }
   }
-  NEWS.lastPrice = p;
 }
 
 /* RSI 극단값 감지 */
 function checkRsiNews() {
   const rsi = D.rsi;
-  if(rsi <= 30 && NEWS.lastRsi > 30 && canPostNews('rsi-low', 120000)) {
+  if(rsi <= 35 && NEWS.lastRsi > 35 && canPostNews('rsi-low', 45000)) {
     addNewsItem('과매도', 'nb-red', `RSI ${rsi.toFixed(1)} 과매도 구간 진입 | 반등 가능성 주시`);
-  } else if(rsi >= 70 && NEWS.lastRsi < 70 && canPostNews('rsi-high', 120000)) {
+  } else if(rsi >= 65 && NEWS.lastRsi < 65 && canPostNews('rsi-high', 45000)) {
     addNewsItem('과매수', 'nb-ylw', `RSI ${rsi.toFixed(1)} 과매수 구간 진입 | 조정 가능성`);
   }
   NEWS.lastRsi = rsi;
@@ -2962,13 +2963,13 @@ function checkRsiNews() {
 
 /* 종합 스코어 전환 감지 */
 function checkScoreNews(score) {
-  if(score >= 70 && NEWS.lastScore < 70 && canPostNews('score-up', 120000)) {
+  if(score >= 70 && NEWS.lastScore < 70 && canPostNews('score-up', 45000)) {
     addNewsItem('매수', 'nb-grn', `종합 스코어 ${score}pt 돌파 → 강한 매수 시그널`);
-  } else if(score <= 30 && NEWS.lastScore > 30 && canPostNews('score-dn', 120000)) {
+  } else if(score <= 30 && NEWS.lastScore > 30 && canPostNews('score-dn', 45000)) {
     addNewsItem('매도', 'nb-red', `종합 스코어 ${score}pt 하락 → 강한 매도 시그널`);
-  } else if(score >= 55 && NEWS.lastScore < 55 && canPostNews('score-buy', 90000)) {
+  } else if(score >= 55 && NEWS.lastScore < 55 && canPostNews('score-buy', 45000)) {
     addNewsItem('전환', 'nb-cyn', `스코어 ${score} 매수 우세 전환`);
-  } else if(score <= 45 && NEWS.lastScore > 45 && canPostNews('score-sell', 90000)) {
+  } else if(score <= 45 && NEWS.lastScore > 45 && canPostNews('score-sell', 45000)) {
     addNewsItem('전환', 'nb-ylw', `스코어 ${score} 매도 우세 전환`);
   }
   NEWS.lastScore = score;
@@ -2977,9 +2978,9 @@ function checkScoreNews(score) {
 /* 김치프리미엄 이상치 감지 */
 function checkKpNews() {
   const kp = D.kp;
-  if(kp >= 3 && NEWS.lastKp < 3 && canPostNews('kp-high', 180000)) {
+  if(kp >= 2 && NEWS.lastKp < 2 && canPostNews('kp-high', 60000)) {
     addNewsItem('과열', 'nb-red', `김치프리미엄 +${kp.toFixed(2)}% 과열 경고 | FOMO 주의`);
-  } else if(kp <= -2 && NEWS.lastKp > -2 && canPostNews('kp-low', 180000)) {
+  } else if(kp <= -1 && NEWS.lastKp > -1 && canPostNews('kp-low', 60000)) {
     addNewsItem('역프', 'nb-blu', `역김치프리미엄 ${kp.toFixed(2)}% | 해외 매도 압력`);
   }
   NEWS.lastKp = kp;
@@ -2997,9 +2998,9 @@ function addLiqNews(isLong, usdStr, sym) {
 function checkOiNews() {
   if(!D.oi || !NEWS.lastOi) { NEWS.lastOi = D.oi; return; }
   const pct = ((D.oi - NEWS.lastOi) / NEWS.lastOi) * 100;
-  if(pct >= 2 && canPostNews('oi-up', 300000)) {
+  if(pct >= 1 && canPostNews('oi-up', 90000)) {
     addNewsItem('OI', 'nb-blu', `OI ${pct.toFixed(1)}% 급증 ($${D.oi.toFixed(2)}B) | 변동성 확대 임박`);
-  } else if(pct <= -2 && canPostNews('oi-dn', 300000)) {
+  } else if(pct <= -1 && canPostNews('oi-dn', 90000)) {
     addNewsItem('OI', 'nb-ylw', `OI ${Math.abs(pct).toFixed(1)}% 급감 ($${D.oi.toFixed(2)}B) | 포지션 정리`);
   }
   NEWS.lastOi = D.oi;
@@ -3010,9 +3011,9 @@ function checkFundingNews() {
   const f = D.funding;
   if(f === null) return;
   const fPct = f * 100;
-  if(fPct >= 0.05 && canPostNews('fund-high', 300000)) {
+  if(fPct >= 0.02 && canPostNews('fund-high', 90000)) {
     addNewsItem('펀딩', 'nb-ylw', `펀딩레이트 +${fPct.toFixed(4)}% 과열 | 숏 유리 구간`);
-  } else if(fPct <= -0.03 && canPostNews('fund-low', 300000)) {
+  } else if(fPct <= -0.01 && canPostNews('fund-low', 90000)) {
     addNewsItem('펀딩', 'nb-cyn', `펀딩레이트 ${fPct.toFixed(4)}% 음수 | 롱 유리 구간`);
   }
 }
@@ -3024,6 +3025,14 @@ function newsCheckLoop() {
   checkKpNews();
   checkOiNews();
   checkFundingNews();
+  // 2분마다 시장 현황 요약 속보
+  if(canPostNews('market-pulse', 120000) && D.price > 0) {
+    const rsi = D.rsi || 50;
+    const cvd = D.cvd || 0;
+    const fund = D.funding ? (D.funding * 100).toFixed(4) : '0';
+    const cvdDir = cvd > 0 ? '매수우세' : '매도우세';
+    addNewsItem('현황', 'nb-blu', `BTC $${fp(D.price)} | RSI ${rsi.toFixed(1)} | 펀딩 ${fund}% | CVD ${cvdDir}`);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3065,13 +3074,13 @@ async function fetchExternalNews() {
     if(r.ok) {
       const d = await r.json();
       const coins = d?.coins?.slice(0,3) || [];
-      if(coins.length && canPostNews('trending', 600000)) {
+      if(coins.length && canPostNews('trending', 300000)) {
         const names = coins.map(c => c.item?.name || c.item?.symbol).filter(Boolean).join(', ');
         if(names) addNewsItem('트렌드', 'nb-cyn', `실시간 트렌딩: ${names}`);
       }
       // NFT 트렌딩
       const nfts = d?.nfts?.slice(0,2) || [];
-      if(nfts.length && canPostNews('nft-trend', 600000)) {
+      if(nfts.length && canPostNews('nft-trend', 300000)) {
         const nftNames = nfts.map(n => n.name).filter(Boolean).join(', ');
         if(nftNames) addNewsItem('NFT', 'nb-blu', `NFT 트렌딩: ${nftNames}`);
       }
@@ -3090,13 +3099,13 @@ async function fetchExternalNews() {
         // 24H 거래량 변동
         const volChg = md.total_volume?.usd;
         const mcapChg = md.market_cap_change_percentage_24h;
-        if(mcapChg && Math.abs(mcapChg) >= 2 && canPostNews('mcap-chg', 300000)) {
+        if(mcapChg && Math.abs(mcapChg) >= 1 && canPostNews('mcap-chg', 120000)) {
           const dir = mcapChg > 0 ? '상승' : '하락';
           addNewsItem('시총', mcapChg > 0 ? 'nb-grn' : 'nb-red', `BTC 시총 24H ${dir} ${Math.abs(mcapChg).toFixed(1)}% | ATH 대비 ${(md.ath_change_percentage?.usd||0).toFixed(1)}%`);
         }
         // ATL 대비 상승률
         const atlPct = md.atl_change_percentage?.usd;
-        if(atlPct && canPostNews('atl-info', 1800000)) {
+        if(atlPct && canPostNews('atl-info', 600000)) {
           addNewsItem('시장', 'nb-blu', `BTC 역대 최저 대비 +${(atlPct/1000).toFixed(1)}K% | 24H 거래량 $${fb(volChg)}`);
         }
       }
@@ -3115,7 +3124,7 @@ async function fetchExternalNews() {
         const today = +items[0].value;
         const yesterday = +items[1].value;
         const diff = today - yesterday;
-        if(Math.abs(diff) >= 5 && canPostNews('fng-chg', 600000)) {
+        if(Math.abs(diff) >= 3 && canPostNews('fng-chg', 300000)) {
           const dir = diff > 0 ? '상승' : '하락';
           const cls = diff > 0 ? 'nb-grn' : 'nb-red';
           addNewsItem('심리', cls, `공포탐욕 ${today} (전일 대비 ${diff>0?'+':''}${diff}) | ${items[0].value_classification}`);
