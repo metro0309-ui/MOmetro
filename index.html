@@ -336,6 +336,25 @@ html, body {
 #cw { flex:1; position:relative; min-height:0; }
 #cChart { position:absolute; inset:0; }
 
+/* 거래량 바 (캔들 아래 분리) */
+.vol-bar-wrap {
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  padding: 0 4px;
+  background: var(--bg2);
+  border-top: 1px solid var(--bd0);
+  overflow: hidden;
+}
+.vol-bar-wrap .vb {
+  flex: 1;
+  min-width: 0;
+  border-radius: 1px 1px 0 0;
+  transition: height 0.3s ease;
+}
+
 .cov-r {
   position: absolute; top:8px; right:8px;
   display: flex; flex-direction:column; gap:3px;
@@ -1165,6 +1184,8 @@ html, body {
           <span id="gauge-label" class="yl">분석중</span>
         </div>
       </div>
+      <!-- 거래량 바 (캔들과 분리) -->
+      <div id="btc-vol-bar" class="vol-bar-wrap"></div>
     </div>
 
     <!-- ETH/USDT 캔들차트 -->
@@ -1194,6 +1215,8 @@ html, body {
           <div class="ovpill"><span class="opk">BTC비율</span><span id="eth-btc-ratio" style="color:var(--cy)">--</span></div>
         </div>
       </div>
+      <!-- 거래량 바 (캔들과 분리) -->
+      <div id="eth-vol-bar" class="vol-bar-wrap"></div>
     </div>
 
   </div>
@@ -1599,11 +1622,12 @@ function initCandleChart() {
                    callback: v => '$'+Number(v).toLocaleString() },
           border: { color:'#1e2840' },
         },
-        y2: {
-          position: 'left', grid: { display:false },
-          ticks: { color:'#2e3d5e', font:{size:8}, callback:v=>fb(v) },
-          border: { color:'#1e2840' },
-        },
+        y2: { display: false },
+
+
+
+
+
       }
     }
   });
@@ -1632,11 +1656,11 @@ function updateCandleChart() {
   cChart.data.datasets[0]._ohlc = sl.map(cd => ({o:cd.open,h:cd.high,l:cd.low,c:cd.close}));
   cChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   cChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
-  cChart.data.datasets[3].data  = sl.map(cd => cd.vol);
-  // 거래량 y2축: 최대값의 5배로 설정 → 바가 하단 20%에만 표시
-  const maxVol = Math.max(...sl.map(cd => cd.vol)) || 1;
-  cChart.options.scales.y2.max = maxVol * 5;
+  cChart.data.datasets[3].data  = [];  // 차트 내 거래량 비활성화
   cChart.update('active');
+
+  // 거래량 별도 바 렌더링
+  renderVolBars('btc-vol-bar', sl, 'btc');
 
   // ── 기술적 지표 실시간 업데이트 ──
   const closes = D.candles.map(c => c.close);
@@ -1700,11 +1724,7 @@ function initEthChart() {
                    callback: v => '$'+Number(v).toLocaleString() },
           border: { color:'#1e2840' },
         },
-        y2: {
-          position: 'left', grid: { display:false },
-          ticks: { color:'#2e3d5e', font:{size:8}, callback:v=>fb(v) },
-          border: { color:'#1e2840' },
-        },
+        y2: { display: false },
       }
     }
   });
@@ -1733,10 +1753,11 @@ function updateEthChart() {
   eChart.data.datasets[0]._ohlc = sl.map(cd => ({o:cd.open,h:cd.high,l:cd.low,c:cd.close}));
   eChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   eChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
-  eChart.data.datasets[3].data  = sl.map(cd => cd.vol);
-  const maxVolE = Math.max(...sl.map(cd => cd.vol)) || 1;
-  eChart.options.scales.y2.max = maxVolE * 5;
+  eChart.data.datasets[3].data  = [];  // 차트 내 거래량 비활성화
   eChart.update('active');
+
+  // 거래량 별도 바 렌더링
+  renderVolBars('eth-vol-bar', sl, 'eth');
 }
 
 /* ── ETH 데이터 상태 ── */
@@ -3006,6 +3027,32 @@ function newsCheckLoop() {
    외부 뉴스 소스 — Binance 공지 (CORS 허용, 키 불필요)
 ═══════════════════════════════════════════════════════════ */
 let _lastNewsIds = new Set();
+/* ═══════════════════════════════════════════════════════════
+   거래량 바 렌더링 (캔들과 완전 분리)
+═══════════════════════════════════════════════════════════ */
+function renderVolBars(containerId, candles, type) {
+  const el = $(containerId);
+  if(!el || !candles.length) return;
+  const maxV = Math.max(...candles.map(c => c.vol)) || 1;
+  // DOM 갱신 최소화: 개수 맞추기
+  while(el.children.length > candles.length) el.removeChild(el.lastChild);
+  while(el.children.length < candles.length) {
+    const bar = document.createElement('div');
+    bar.className = 'vb';
+    el.appendChild(bar);
+  }
+  candles.forEach((cd, i) => {
+    const bar = el.children[i];
+    const pct = Math.max(2, (cd.vol / maxV) * 100);
+    const up  = cd.close >= cd.open;
+    const color = type === 'eth'
+      ? (up ? 'rgba(38,192,226,.5)' : 'rgba(226,74,107,.5)')
+      : (up ? 'rgba(0,192,118,.5)' : 'rgba(255,73,74,.5)');
+    bar.style.height = pct + '%';
+    bar.style.background = color;
+  });
+}
+
 async function fetchExternalNews() {
   try {
     // Binance 공지사항 (한국어)
