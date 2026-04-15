@@ -1642,16 +1642,16 @@ function updateCandleChart() {
   const { upper, lower } = calcBB(allC);
   const base = D.candles.length - sl.length;
 
-  // Y 범위 — 최근 20봉 기준으로 좁혀서 변동감 극대화
-  const recentN = Math.min(20, sl.length);
-  const recent  = sl.slice(-recentN);
-  const rHigh   = Math.max(...recent.map(cd => cd.high));
-  const rLow    = Math.min(...recent.map(cd => cd.low));
-  const rRange  = rHigh - rLow || 1;
-  const padding = rRange * 0.15;  // 상단 15% 여백
-  const padBot  = rRange * 0.20;  // 하단 25% 여백 (시간 라벨 침범 방지)
-  cChart.options.scales.y.min = rLow - padBot;
-  cChart.options.scales.y.max = rHigh + padding;
+  // Y 범위 — 표시되는 전체 봉 기준 + 최소 범위 보장
+  const allPx = sl.flatMap(cd => [cd.high, cd.low]);
+  const yMin = Math.min(...allPx);
+  const yMax = Math.max(...allPx);
+  const yRange = yMax - yMin || 1;
+  const minRange = yMax * 0.003;  // 최소 0.3% 범위 보장
+  const finalRange = Math.max(yRange, minRange);
+  const center = (yMax + yMin) / 2;
+  cChart.options.scales.y.min = center - finalRange * 0.55;
+  cChart.options.scales.y.max = center + finalRange * 0.55;
 
   cChart.data.labels = sl.map(cd => cd.label);
   cChart.data.datasets[0].data  = sl.map(cd => cd.close);
@@ -1740,16 +1740,16 @@ function updateEthChart() {
   const { upper, lower } = calcBB(allC);
   const base = DE.candles.length - sl.length;
 
-  // Y 범위 — 최근 20봉 기준
-  const recentN = Math.min(20, sl.length);
-  const recent  = sl.slice(-recentN);
-  const rHigh   = Math.max(...recent.map(cd => cd.high));
-  const rLow    = Math.min(...recent.map(cd => cd.low));
-  const rRange  = rHigh - rLow || 1;
-  const padding = rRange * 0.15;
-  const padBot  = rRange * 0.20;
-  eChart.options.scales.y.min = rLow - padBot;
-  eChart.options.scales.y.max = rHigh + padding;
+  // Y 범위
+  const allPx = sl.flatMap(cd => [cd.high, cd.low]);
+  const yMin = Math.min(...allPx);
+  const yMax = Math.max(...allPx);
+  const yRange = yMax - yMin || 1;
+  const minRange = yMax * 0.003;
+  const finalRange = Math.max(yRange, minRange);
+  const center = (yMax + yMin) / 2;
+  eChart.options.scales.y.min = center - finalRange * 0.55;
+  eChart.options.scales.y.max = center + finalRange * 0.55;
 
   eChart.data.labels = sl.map(cd => cd.label);
   eChart.data.datasets[0].data  = sl.map(cd => cd.close);
