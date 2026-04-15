@@ -52,7 +52,7 @@ html, body {
   background: var(--bg0);
   color: var(--tx0);
   font-family: var(--fm);
-  font-size: 11px;
+  font-size: 13px;
   height: 100%;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -84,7 +84,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: .5px;
   color: var(--tx1);
@@ -107,10 +107,10 @@ html, body {
 @keyframes dotblink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
 /* ── 좌측 패널 헤더 확대 (스트리밍 가독성) ── */
-#col-l .panel-hd { padding: 10px 12px; font-size: 15px; }
-#col-l .panel-hd .hd-title { font-size: 18px; gap: 8px; }
+#col-l .panel-hd { padding: 10px 12px; font-size: 16px; }
+#col-l .panel-hd .hd-title { font-size: 20px; gap: 8px; }
 #col-l .panel-hd .hd-dot { width: 9px; height: 9px; }
-#col-l #trade-counter, #col-l #liq-summary { font-size: 15px !important; }
+#col-l #trade-counter, #col-l #liq-summary { font-size: 17px !important; }
 
 /* ═══════════════════════════════════════════════════════
    전체 레이아웃
@@ -139,7 +139,7 @@ html, body {
 .api-tags {
   display: flex;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .atag {
   display: flex;
@@ -160,7 +160,7 @@ html, body {
 .await{ background: var(--yl); }
 #topbar-right {
   text-align: right;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--tx2);
   line-height: 1.7;
 }
@@ -178,8 +178,8 @@ html, body {
   overflow: hidden;
   white-space: nowrap;
 }
-.sb { display: flex; gap: 4px; align-items: center; font-size: 13px; }
-.sk { color: var(--tx2); font-size: 11px; }
+.sb { display: flex; gap: 4px; align-items: center; font-size: 14px; }
+.sk { color: var(--tx2); font-size: 13px; }
 .sv { font-weight: 500; }
 .ssep { color: var(--bd2); margin: 0 3px; }
 
@@ -239,7 +239,7 @@ html, body {
   background: var(--bg1);
   border: 1px solid var(--bd1);
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 14px;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -317,7 +317,7 @@ html, body {
   grid-template-columns: auto 50px 1fr auto;
   gap: 5px;
   padding: 3px 3px;
-  font-size: 12.5px;
+  font-size: 14px;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
   animation: trin .2s ease;
@@ -366,7 +366,7 @@ html, body {
   pointer-events:none;
 }
 .ovpill {
-  font-size: 9.5px; padding: 2px 6px;
+  font-size: 12px; padding: 3px 7px;
   background: rgba(14,20,32,.85);
   border: 1px solid var(--bd1);
   border-radius: 3px;
@@ -435,7 +435,7 @@ html, body {
 .kp-sub { font-size: 8px; color: var(--tx2); margin-top: 1px; }
 .kp-r { text-align:right; }
 .kp-label { font-size: 8px; color: var(--tx2); }
-.kp-val { font-size: 12px; font-weight: 600; }
+.kp-val { font-size: 13px; font-weight: 600; }
 .kp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -460,7 +460,7 @@ html, body {
   display: flex; gap: 8px; padding: 4px 8px;
   border-top: 1px solid var(--bd0);
   border-bottom: 1px solid var(--bd0);
-  font-size: 11px; flex-shrink:0;
+  font-size: 12px; flex-shrink:0;
 }
 .intel-wrap {
   flex: 1; overflow-y:auto;
@@ -473,7 +473,7 @@ html, body {
 }
 .ir-hd {
   display: flex; justify-content:space-between;
-  font-size: 11px;
+  font-size: 12px;
 }
 .ir-k { color: var(--tx2); }
 .ir-bg {
@@ -502,7 +502,7 @@ html, body {
 .ev {
   display:flex; gap:5px;
   padding: 2.5px 4px;
-  font-size: 10.5px;
+  font-size: 12px;
   line-height: 1.4;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
@@ -549,14 +549,14 @@ html, body {
   display: flex;
   gap: 6px;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   border-bottom: 1px solid var(--bd0);
   animation: newsIn 0.4s ease;
   flex-shrink: 0;
 }
 @keyframes newsIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-.news-time { color: var(--tx3); font-size: 9px; flex-shrink: 0; min-width: 42px; }
+.news-time { color: var(--tx3); font-size: 10px; flex-shrink: 0; min-width: 42px; }
 .news-badge {
   flex-shrink: 0;
   font-size: 8.5px;
@@ -855,7 +855,7 @@ html, body {
     font-weight: 600;
   }
   .mh-delta {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
   }
 
@@ -1018,7 +1018,7 @@ html, body {
   /* 모바일 자동 요약 */
   #auto-summary { 
     bottom: 60px; 
-    font-size: 11px; 
+    font-size: 12px; 
     padding: 8px 14px;
     white-space: normal;
     max-width: 95vw;
@@ -1082,7 +1082,7 @@ html, body {
 
 <!-- ═══ 상태바 ════════════════════════════════════════════ -->
 <div id="statusbar">
-  <div class="sb"><span class="sk">BTC/USDT</span>&nbsp;<span class="sv num-up" id="s-price" style="font-size:13px;font-weight:600">로딩...</span></div>
+  <div class="sb"><span class="sk">BTC/USDT</span>&nbsp;<span class="sv num-up" id="s-price" style="font-size:15px;font-weight:700">로딩...</span></div>
   <span class="ssep">│</span>
   <div class="sb"><span class="sk">24H</span>&nbsp;<span class="sv" id="s-chg">--</span></div>
   <span class="ssep">│</span>
@@ -1159,14 +1159,14 @@ html, body {
           <span>BTC/USDT</span>
           <div class="tf-row" style="border:none;padding:0;background:transparent">
             <button class="tf-btn" data-tf="1m">1분</button>
-            <button class="tf-btn on" data-tf="5m">5분</button>
+            <button class="tf-btn" data-tf="5m">5분</button>
             <button class="tf-btn" data-tf="15m">15분</button>
             <button class="tf-btn" data-tf="1h">1H</button>
-            <button class="tf-btn" data-tf="4h">4H</button>
+            <button class="tf-btn on" data-tf="4h">4H</button>
           </div>
-          <span id="ohlc-lbl" style="font-size:9px;color:var(--tx2)"></span>
+          <span id="ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
         </div>
-        <span id="ov-price-top" style="font-family:var(--fm);font-size:17px;font-weight:700;color:var(--up)">--</span>
+        <span id="ov-price-top" style="font-family:var(--fm);font-size:20px;font-weight:700;color:var(--up)">--</span>
       </div>
       <div id="cw">
         <canvas id="cChart"></canvas>
@@ -1196,14 +1196,14 @@ html, body {
           <span style="color:var(--cy)">ETH/USDT</span>
           <div class="tf-row" style="border:none;padding:0;background:transparent">
             <button class="tf-btn-e" data-tf="1m">1분</button>
-            <button class="tf-btn-e on" data-tf="5m">5분</button>
+            <button class="tf-btn-e" data-tf="5m">5분</button>
             <button class="tf-btn-e" data-tf="15m">15분</button>
             <button class="tf-btn-e" data-tf="1h">1H</button>
-            <button class="tf-btn-e" data-tf="4h">4H</button>
+            <button class="tf-btn-e on" data-tf="4h">4H</button>
           </div>
-          <span id="eth-ohlc-lbl" style="font-size:9px;color:var(--tx2)"></span>
+          <span id="eth-ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
         </div>
-        <span id="eth-price-top" style="font-family:var(--fm);font-size:17px;font-weight:700;color:var(--cy)">--</span>
+        <span id="eth-price-top" style="font-family:var(--fm);font-size:20px;font-weight:700;color:var(--cy)">--</span>
       </div>
       <div id="ew" style="position:relative;flex:1;min-height:0">
         <canvas id="eChart"></canvas>
@@ -1379,8 +1379,9 @@ const D = {
   rsi:50, macd:0, signal:0, hist:0, vwap:0,
   cvd:0, cvd1h:0, cvdArr:[],
   candles:[],
+  candles4h:[],  // 4H 전용 (스코어 계산용, 화면 TF와 무관)
   startTime: Date.now(),
-  currentTf: '5m',
+  currentTf: '4h',
 };
 
 /* ── 5분 누적 카운터 ──────────────────────────────────────── */
@@ -1653,13 +1654,7 @@ function updateCandleChart() {
 
   // 거래량 별도 바 렌더링
   renderVolBars('btc-vol-bar', sl, 'btc');
-
-  // ── 기술적 지표 실시간 업데이트 ──
-  const closes = D.candles.map(c => c.close);
-  if(closes.length > 14) D.rsi = calcRSI(closes);
-  const macd = calcMACD(closes);
-  if(macd) { D.macd = macd.lm; D.signal = macd.ls; D.hist = macd.lh; }
-  D.vwap = calcVWAP(D.candles);
+  // RSI/MACD/VWAP는 4H 전용 캔들(D.candles4h)에서 계산 — update4hIndicators()
 }
 
 /* ── ETH 캔들차트 ── */
@@ -1996,6 +1991,48 @@ function closeBtcKlineWS() {
   wsKreconnect = false;
   if(wsK) try { wsK.close(); } catch(e) {}
 }
+/* ═══════════════════════════════════════════════════════════
+   4H 전용 캔들 — 스코어/RSI/MACD 계산 전용 (화면 TF와 독립)
+═══════════════════════════════════════════════════════════ */
+async function fetch4hCandles() {
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=100');
+    if(!r.ok) return;
+    const data = await r.json();
+    D.candles4h = data.map(k => ({
+      ts: k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5]
+    }));
+    update4hIndicators();
+  } catch(e) {}
+}
+
+let _ws4h = null;
+function connect4hKlineWS() {
+  try {
+    _ws4h = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@kline_4h');
+    _ws4h.onmessage = e => {
+      try {
+        const k = JSON.parse(e.data).k;
+        const candle = { ts:+k.t, open:+k.o, high:+k.h, low:+k.l, close:+k.c, vol:+k.v };
+        if(D.candles4h.length && D.candles4h[D.candles4h.length-1].ts === +k.t)
+          D.candles4h[D.candles4h.length-1] = candle;
+        else { D.candles4h.push(candle); if(D.candles4h.length > 150) D.candles4h.shift(); }
+        update4hIndicators();
+      } catch(e) {}
+    };
+    _ws4h.onclose = () => setTimeout(connect4hKlineWS, 5000);
+  } catch(e) {}
+}
+
+function update4hIndicators() {
+  if(D.candles4h.length < 20) return;
+  const closes = D.candles4h.map(c => c.close);
+  D.rsi  = calcRSI(closes);
+  const macd = calcMACD(closes);
+  if(macd) { D.macd = macd.lm; D.signal = macd.ls; D.hist = macd.lh; }
+  D.vwap = calcVWAP(D.candles4h);
+}
+
 async function fetchFutures() {
   try {
     const [r1,r2,r3]=await Promise.allSettled([
@@ -2753,18 +2790,20 @@ window.addEventListener('load', async()=>{
   initCandleChart(); initEthChart(); initCvdChart();
 
   addEv('eo','METRO PRO v4.1 초기화...');
-  connectTicker(); connectTrades(); connectKlineWS('5m');
-  connectEthTicker(); connectEthKlineWS('5m');
-  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchCG()]);
+  connectTicker(); connectTrades(); connectKlineWS('4h');
+  connectEthTicker(); connectEthKlineWS('4h');
+  await Promise.allSettled([fetchKlines('4h',120), fetchEthKlines('4h',120), fetchFutures(), fetchCG()]);
 
-  // 골드 + 나스닥 데이터 로드
-  fetchTwelveData('XAU/USD', 'xau', 'xau-price', 'xau-chg');
-  fetchTwelveData('QQQ',   'ndx', 'ndx-price', 'ndx-chg');  // QQQ ETF = 나스닥100 추종
+  // 4H 전용 캔들 (스코어 계산용, 화면 TF와 독립)
+  await fetch4hCandles();
+  connect4hKlineWS();
 
   setInterval(fetchFutures,  20000);
   setInterval(fetchCG,      120000);
   setInterval(updateIntelBars,5000);
   setInterval(tick,1000);
+  // 4H 캔들 10분마다 보정 (WS 누락 대비)
+  setInterval(fetch4hCandles, 600000);
 
   // 트레이딩 인텔
   fetchFundingHist();
@@ -3115,7 +3154,7 @@ function newsCheckLoop() {
     const cvd = D.cvd || 0;
     const fund = D.funding ? (D.funding * 100).toFixed(4) : '0';
     const cvdDir = cvd > 0 ? '매수우세' : '매도우세';
-    addNewsItem('현황', 'nb-blu', `BTC $${fp(D.price)} | RSI ${rsi.toFixed(1)} | 펀딩 ${fund}% | CVD ${cvdDir}`);
+    addNewsItem('현황', 'nb-blu', `BTC $${fp(D.price)} | 4H RSI ${rsi.toFixed(1)} | 펀딩 ${fund}% | CVD ${cvdDir}`);
   }
 }
 
