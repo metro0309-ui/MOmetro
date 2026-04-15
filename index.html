@@ -1503,6 +1503,7 @@ function calcVWAP(candles) {
 const baseOpts = () => ({
   responsive: true, maintainAspectRatio: false,
   animation: { duration: 250 },
+  layout: { padding: { bottom: 6 } },
   interaction: { intersect: false, mode: 'index' },
   elements: {
     point: { radius: 0, hoverRadius: 0 },  // 전역 점 제거
@@ -1648,7 +1649,7 @@ function updateCandleChart() {
   const rLow    = Math.min(...recent.map(cd => cd.low));
   const rRange  = rHigh - rLow || 1;
   const padding = rRange * 0.15;  // 상단 15% 여백
-  const padBot  = rRange * 0.25;  // 하단 25% 여백 (시간 라벨 침범 방지)
+  const padBot  = rRange * 0.35;  // 하단 25% 여백 (시간 라벨 침범 방지)
   cChart.options.scales.y.min = rLow - padBot;
   cChart.options.scales.y.max = rHigh + padding;
 
@@ -1746,7 +1747,7 @@ function updateEthChart() {
   const rLow    = Math.min(...recent.map(cd => cd.low));
   const rRange  = rHigh - rLow || 1;
   const padding = rRange * 0.15;
-  const padBot  = rRange * 0.25;
+  const padBot  = rRange * 0.35;
   eChart.options.scales.y.min = rLow - padBot;
   eChart.options.scales.y.max = rHigh + padding;
 
