@@ -1647,8 +1647,9 @@ function updateCandleChart() {
   const rHigh   = Math.max(...recent.map(cd => cd.high));
   const rLow    = Math.min(...recent.map(cd => cd.low));
   const rRange  = rHigh - rLow || 1;
-  const padding = rRange * 0.15;  // 상하 15% 여백
-  cChart.options.scales.y.min = rLow - padding;
+  const padding = rRange * 0.15;  // 상단 15% 여백
+  const padBot  = rRange * 0.25;  // 하단 25% 여백 (시간 라벨 침범 방지)
+  cChart.options.scales.y.min = rLow - padBot;
   cChart.options.scales.y.max = rHigh + padding;
 
   cChart.data.labels = sl.map(cd => cd.label);
@@ -1745,7 +1746,8 @@ function updateEthChart() {
   const rLow    = Math.min(...recent.map(cd => cd.low));
   const rRange  = rHigh - rLow || 1;
   const padding = rRange * 0.15;
-  eChart.options.scales.y.min = rLow - padding;
+  const padBot  = rRange * 0.25;
+  eChart.options.scales.y.min = rLow - padBot;
   eChart.options.scales.y.max = rHigh + padding;
 
   eChart.data.labels = sl.map(cd => cd.label);
