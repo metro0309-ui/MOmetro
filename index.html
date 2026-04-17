@@ -3479,27 +3479,27 @@ async function fetchExternalNews() {
     }
   } catch(e) {}
 
-  // 소스 5: NewsData.io 무료 크립토 뉴스 — CORS 허용, 한국어 번역
+  // 소스 5: Bitcoin Magazine RSS — CORS 허용 (rss2json 경유), 한국어 번역
   try {
-    const r5 = await fetch('https://newsdata.io/api/1/news?apikey=pub_81748b8b8b8b8b8b8b8b8b8b8b8b8b8b&q=bitcoin+ethereum&language=en&category=business,technology&size=5', {
+    const r5 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fbitcoinmagazine.com%2F.rss%2Ffull%2F', {
       signal: AbortSignal.timeout(8000)
     });
     if(r5.ok) {
       const d5 = await r5.json();
-      const arr = (d5?.results || []).slice(0, 4);
+      const arr = (d5?.items || []).slice(0, 4);
       for(const item of arr) {
         const title = item.title || '';
-        const id = item.article_id || item.link || title;
+        const id = item.guid || item.link || title;
         if(!title || _lastNewsIds.has(id)) continue;
         _lastNewsIds.add(id);
-        if(canPostNews('nd-' + id, 10000)) {
+        if(canPostNews('bm-' + id, 10000)) {
           const koTitle = await translateToKo(title);
           addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
         }
       }
     }
   } catch(e) {
-    // NewsData 실패시 CoinDesk RSS 추가 호출
+    // 폴백: CoinDesk feedburner RSS
     try {
       const rb = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeeds.feedburner.com%2FCoinDesk', {
         signal: AbortSignal.timeout(6000)
