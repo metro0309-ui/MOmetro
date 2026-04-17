@@ -1042,6 +1042,29 @@ html, body {
     flex-shrink: 0;
   }
 }
+
+/* ═══ 시각 효과 애니메이션 ═════════════════════════════════ */
+@keyframes priceFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+@keyframes tradePulse {
+  0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  100% { box-shadow: 0 0 0 8px currentColor; opacity: 0; }
+}
+@keyframes volGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+.price-flash {
+  animation: priceFlash 0.3s ease-out;
+}
+.trade-pulse {
+  animation: tradePulse 0.6s ease-out;
+}
+.vol-glow {
+  animation: volGlow 0.8s ease-in-out;
+}
 </style>
 </head>
 <body>
@@ -1166,10 +1189,10 @@ html, body {
           <span>BTC/USDT</span>
           <div class="tf-row" style="border:none;padding:0;background:transparent">
             <button class="tf-btn" data-tf="1m">1분</button>
-            <button class="tf-btn" data-tf="5m">5분</button>
+            <button class="tf-btn on" data-tf="5m">5분</button>
             <button class="tf-btn" data-tf="15m">15분</button>
             <button class="tf-btn" data-tf="1h">1H</button>
-            <button class="tf-btn on" data-tf="4h">4H</button>
+            <button class="tf-btn" data-tf="4h">4H</button>
           </div>
           <span id="ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
         </div>
@@ -1203,10 +1226,10 @@ html, body {
           <span style="color:var(--cy)">ETH/USDT</span>
           <div class="tf-row" style="border:none;padding:0;background:transparent">
             <button class="tf-btn-e" data-tf="1m">1분</button>
-            <button class="tf-btn-e" data-tf="5m">5분</button>
+            <button class="tf-btn-e on" data-tf="5m">5분</button>
             <button class="tf-btn-e" data-tf="15m">15분</button>
             <button class="tf-btn-e" data-tf="1h">1H</button>
-            <button class="tf-btn-e on" data-tf="4h">4H</button>
+            <button class="tf-btn-e" data-tf="4h">4H</button>
           </div>
           <span id="eth-ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
         </div>
@@ -1408,7 +1431,7 @@ const D = {
   candles:[],
   candles4h:[],  // 4H 전용 (스코어 계산용, 화면 TF와 무관)
   startTime: Date.now(),
-  currentTf: '4h',
+  currentTf: '5m',
 };
 
 /* ── 5분 누적 카운터 ──────────────────────────────────────── */
@@ -1927,6 +1950,13 @@ function addTrade(price, qty, isBuy, ts) {
   const d=document.createElement('div');
   d.className=`tr ${cls}${big?' big':''}`;
   d.innerHTML=`<span class="ttime">${ts}</span><span class="${sc}">${side}${big?'◆':''}</span><span style="color:${isBuy?'var(--up)':'var(--dn)'};font-weight:500">$${fp(price)}</span><span style="color:var(--tx2)">${(+qty).toFixed(4)}</span>`;
+  
+  // 대형 거래 펄스 효과
+  if(big) {
+    d.classList.add('trade-pulse');
+    setTimeout(() => d.classList.remove('trade-pulse'), 600);
+  }
+  
   l.insertBefore(d,l.firstChild);
   while(l.children.length>40) l.removeChild(l.lastChild);
   // 5분 카운터
@@ -2188,6 +2218,15 @@ async function fetchCG() {
 function updateTickerDOM() {
   const p=D.price, cc=D.chg>=0;
   const pcls=cc?'sv num-up':'sv num-dn';
+  
+  // 가격 플래시 효과
+  const priceEl = $('s-price');
+  if(priceEl) {
+    priceEl.classList.remove('price-flash');
+    void priceEl.offsetWidth; // reflow
+    priceEl.classList.add('price-flash');
+  }
+  
   st('s-price','$'+fp(p), pcls);
   st('s-chg', fpct(D.chg), cc?'sv up':'sv dn');
   st('s-high','$'+fp(D.high),'sv up');
@@ -2898,9 +2937,9 @@ window.addEventListener('load', async()=>{
   initCandleChart(); initEthChart(); initCvdChart();
 
   addEv('eo','METRO PRO v4.1 초기화...');
-  connectTicker(); connectTrades(); connectKlineWS('4h');
-  connectEthTicker(); connectEthKlineWS('4h');
-  await Promise.allSettled([fetchKlines('4h',120), fetchEthKlines('4h',120), fetchFutures(), fetchCG()]);
+  connectTicker(); connectTrades(); connectKlineWS('5m');
+  connectEthTicker(); connectEthKlineWS('5m');
+  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchCG()]);
 
   // 4H 전용 캔들 (스코어 계산용, 화면 TF와 독립)
   await fetch4hCandles();
@@ -3277,6 +3316,8 @@ function renderVolBars(containerId, candles, type) {
   const el = $(containerId);
   if(!el || !candles.length) return;
   const maxV = Math.max(...candles.map(c => c.vol)) || 1;
+  const avgV = candles.reduce((sum, c) => sum + c.vol, 0) / candles.length;
+  
   // DOM 갱신 최소화: 개수 맞추기
   while(el.children.length > candles.length) el.removeChild(el.lastChild);
   while(el.children.length < candles.length) {
@@ -3293,6 +3334,12 @@ function renderVolBars(containerId, candles, type) {
       : (up ? 'rgba(0,192,118,.5)' : 'rgba(255,73,74,.5)');
     bar.style.height = pct + '%';
     bar.style.background = color;
+    
+    // 최신 바 + 거래량 급증 시 글로우
+    if(i === candles.length - 1 && cd.vol > avgV * 1.5) {
+      bar.classList.add('vol-glow');
+      setTimeout(() => bar.classList.remove('vol-glow'), 800);
+    }
   });
 }
 
