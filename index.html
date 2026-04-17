@@ -3429,22 +3429,22 @@ async function fetchExternalNews() {
     }
   } catch(e) {}
 
-  // 소스 5: CryptoPanic 무료 뉴스 API — 한국어 번역
+  // 소스 5: CoinTelegraph RSS — CORS 허용, 한국어 번역
   try {
-    const r5 = await fetch('https://cryptopanic.com/api/free/v1/posts/?auth_token=free&filter=hot&currencies=BTC,ETH&public=true', {
+    const r5 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss&count=5', {
       signal: AbortSignal.timeout(8000)
     });
     if(r5.ok) {
       const d5 = await r5.json();
-      const arr = (d5?.results || []).slice(0,4);
+      const arr = (d5?.items || []).slice(0, 4);
       for(const item of arr) {
         const title = item.title || '';
-        const id = String(item.id || title);
+        const id = item.guid || item.link || title;
         if(!title || _lastNewsIds.has(id)) continue;
         _lastNewsIds.add(id);
-        if(canPostNews('cp-'+id, 10000)) {
+        if(canPostNews('ct-' + id, 10000)) {
           const koTitle = await translateToKo(title);
-          addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0,50)+'...' : koTitle);
+          addNewsItem('CT', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
         }
       }
     }
