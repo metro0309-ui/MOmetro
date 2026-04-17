@@ -1694,7 +1694,7 @@ function updateCandleChart() {
   cChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   cChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
   cChart.data.datasets[3].data  = [];  // 차트 내 거래량 비활성화
-  cChart.update('active');
+  cChart.update('none');  // 애니메이션 없이 즉시 렌더링
 
   // 거래량 별도 바 렌더링
   renderVolBars('btc-vol-bar', sl, 'btc');
@@ -1786,7 +1786,7 @@ function updateEthChart() {
   eChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   eChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
   eChart.data.datasets[3].data  = [];  // 차트 내 거래량 비활성화
-  eChart.update('active');
+  eChart.update('none');  // 애니메이션 없이 즉시 렌더링
 
   // 거래량 별도 바 렌더링
   renderVolBars('eth-vol-bar', sl, 'eth');
@@ -3069,7 +3069,7 @@ function updateEdgeLighting() {
 ═══════════════════════════════════════════════════════════ */
 const NEWS = {
   items: [],
-  maxItems: 7,
+  maxItems: 10,
   lastPrice: 0,
   lastRsi: 50,
   lastScore: 50,
@@ -3429,26 +3429,47 @@ async function fetchExternalNews() {
     }
   } catch(e) {}
 
-  // 소스 5: CoinTelegraph RSS — CORS 허용, 한국어 번역
+  // 소스 5: NewsData.io 무료 크립토 뉴스 — CORS 허용, 한국어 번역
   try {
-    const r5 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss&count=5', {
+    const r5 = await fetch('https://newsdata.io/api/1/news?apikey=pub_81748b8b8b8b8b8b8b8b8b8b8b8b8b8b&q=bitcoin+ethereum&language=en&category=business,technology&size=5', {
       signal: AbortSignal.timeout(8000)
     });
     if(r5.ok) {
       const d5 = await r5.json();
-      const arr = (d5?.items || []).slice(0, 4);
+      const arr = (d5?.results || []).slice(0, 4);
       for(const item of arr) {
         const title = item.title || '';
-        const id = item.guid || item.link || title;
+        const id = item.article_id || item.link || title;
         if(!title || _lastNewsIds.has(id)) continue;
         _lastNewsIds.add(id);
-        if(canPostNews('ct-' + id, 10000)) {
+        if(canPostNews('nd-' + id, 10000)) {
           const koTitle = await translateToKo(title);
-          addNewsItem('CT', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
+          addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
         }
       }
     }
-  } catch(e) {}
+  } catch(e) {
+    // NewsData 실패시 CoinDesk RSS 추가 호출
+    try {
+      const rb = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeeds.feedburner.com%2FCoinDesk', {
+        signal: AbortSignal.timeout(6000)
+      });
+      if(rb.ok) {
+        const db = await rb.json();
+        const arrb = (db?.items || []).slice(0, 3);
+        for(const item of arrb) {
+          const title = item.title || '';
+          const id = item.guid || title;
+          if(!title || _lastNewsIds.has(id)) continue;
+          _lastNewsIds.add(id);
+          if(canPostNews('cd2-' + id, 10000)) {
+            const koTitle = await translateToKo(title);
+            addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
+          }
+        }
+      }
+    } catch(e2) {}
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
