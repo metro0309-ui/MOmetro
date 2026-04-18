@@ -192,7 +192,7 @@ html, body {
 ───────────────────────────────────────────────────── */
 #main {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 3fr 4fr 3fr;
   gap: 3px;
   min-height: 0;
 }
@@ -316,7 +316,7 @@ html, body {
   display: grid;
   grid-template-columns: auto 50px 1fr auto;
   gap: 5px;
-  padding: 4px 5px;
+  padding: 3px 6px;
   font-size: 14px;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
@@ -326,7 +326,7 @@ html, body {
 .tr.buy  { border-left-color: var(--up); background: var(--upd); }
 .tr.sell { border-left-color: var(--dn); background: var(--dnd); }
 .tr.big  { font-weight: 600; }
-.ttime   { color: var(--tx3); font-size: 11px; }
+.ttime   { color: var(--tx3); font-size: 12px; }
 .tbuy    { color: var(--up); }
 .tsell   { color: var(--dn); }
 
@@ -473,12 +473,12 @@ html, body {
   gap: 1px; padding: 3px 0;
 }
 .ir {
-  display: flex; flex-direction:column; gap: 3px;
-  padding: 5px 10px;
+  display: flex; flex-direction:column; gap: 2px;
+  padding: 4px 10px;
 }
 .ir-hd {
   display: flex; justify-content:space-between;
-  font-size: 13px;
+  font-size: 14px;
 }
 .ir-k { color: var(--tx1); font-weight: 500; }
 .ir-bg {
@@ -505,21 +505,21 @@ html, body {
   gap:0px; padding:2px 6px;
 }
 .ev {
-  display:flex; gap:5px;
-  padding: 4px 6px;
-  font-size: 14px;
-  line-height: 1.5;
+  display:flex; gap:6px;
+  padding: 4px 8px;
+  font-size: 15px;
+  line-height: 1.4;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
   animation: evin .3s ease;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   transition: background .1s;
   flex-shrink: 0;
-  min-height: 24px;
+  min-height: 26px;
 }
 .ev:hover { background: var(--bg3); }
 @keyframes evin { from{opacity:0;transform:translateX(-4px)} to{opacity:1;transform:translateX(0)} }
-.et  { color: var(--tx3); flex-shrink:0; font-size:13px; min-width:56px; }
+.et  { color: var(--tx3); flex-shrink:0; font-size:13px; min-width:40px; }
 .el  { border-left-color:var(--dn); color:var(--dn); }
 .ew  { border-left-color:var(--cy); color:var(--cy); }
 .ee  { border-left-color:var(--yl); color:var(--yl); }
@@ -553,16 +553,16 @@ html, body {
 .news-item {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
-  padding: 7px 10px;
-  font-size: 14px;
+  gap: 7px;
+  padding: 9px 10px;
+  font-size: 15px;
   line-height: 1.5;
   border-bottom: 1px solid var(--bd0);
   animation: newsIn 0.4s ease;
   flex-shrink: 0;
 }
 @keyframes newsIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-.news-time { color: var(--tx3); font-size: 12px; flex-shrink: 0; min-width: 50px; }
+.news-time { color: var(--tx3); font-size: 13px; flex-shrink: 0; min-width: 42px; }
 .news-badge {
   flex-shrink: 0;
   font-size: 11px;
@@ -1249,7 +1249,7 @@ html, body {
           <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 감지</span>
           <span style="font-size:11px;color:var(--tx3)">$100K+</span>
         </div>
-        <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:80px;overflow-y:auto">
+        <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:140px;overflow-y:auto">
           <div style="font-size:12px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
         </div>
       </div>
@@ -1294,21 +1294,21 @@ html, body {
         </div>
       </div>
 
-      <!-- E. 매수/매도 추천 신호 -->
-      <div style="padding:6px 10px">
-        <div style="font-size:13px;color:var(--tx1);font-weight:500;margin-bottom:3px">압력 종합</div>
-        <div style="display:flex;gap:6px">
-          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">매수 강도</div>
-            <div id="of-buy-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="up">--</div>
+      <!-- E. 압력 종합 — compact -->
+      <div style="padding:4px 10px 6px">
+        <div style="font-size:12px;color:var(--tx2);margin-bottom:2px">압력 종합</div>
+        <div style="display:flex;gap:4px">
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:10px;color:var(--tx3)">매수강도</div>
+            <div id="of-buy-strength" style="font-family:var(--fv);font-size:18px;font-weight:700" class="up">--</div>
           </div>
-          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">매도 강도</div>
-            <div id="of-sell-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="dn">--</div>
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:10px;color:var(--tx3)">매도강도</div>
+            <div id="of-sell-strength" style="font-family:var(--fv);font-size:18px;font-weight:700" class="dn">--</div>
           </div>
-          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">우세</div>
-            <div id="of-dominant" style="font-size:15px;font-weight:700" class="cy">--</div>
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:10px;color:var(--tx3)">우세</div>
+            <div id="of-dominant" style="font-size:14px;font-weight:700" class="cy">--</div>
           </div>
         </div>
       </div>
@@ -1417,11 +1417,11 @@ html, body {
             <span>0 강한매도</span><span>50 중립</span><span>100 강한매수</span>
           </div>
         </div>
-        <!-- 시크릿 지표 — 매수 안전도 -->
+        <!-- 추격매수표 — 매수 안전도 -->
         <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1);background:linear-gradient(180deg,rgba(51,214,245,.03),transparent)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
             <span style="display:flex;align-items:center;gap:4px">
-              <span style="font-size:14px;font-weight:600;color:var(--cy);text-shadow:0 0 8px rgba(51,214,245,.4)">🔒 시크릿 지표</span>
+              <span style="font-size:14px;font-weight:600;color:var(--cy);text-shadow:0 0 8px rgba(51,214,245,.4)">📈 추격매수표</span>
               <span style="font-size:11px;color:var(--tx3);font-weight:500">진입 적합도</span>
             </span>
             <span style="display:flex;align-items:baseline;gap:6px">
@@ -1527,6 +1527,7 @@ const fp  = v => v ? (+v).toLocaleString('ko-KR',{maximumFractionDigits:0}) : '-
 const fb  = v => { if(!v)return'--'; v=+v; if(v>=1e12)return(v/1e12).toFixed(2)+'T'; if(v>=1e9)return(v/1e9).toFixed(2)+'B'; if(v>=1e6)return(v/1e6).toFixed(1)+'M'; return v.toLocaleString(); };
 const fpct= v => v!=null ? `${v>=0?'+':''}${(+v).toFixed(2)}%` : '--';
 const now = () => { const d=new Date(); return [d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':'); };
+const nowHHMM = () => { const d=new Date(); return [d.getHours(),d.getMinutes()].map(x=>String(x).padStart(2,'0')).join(':'); };
 const $   = id => document.getElementById(id);
 function st(id, v, cls) {
   const e=$(id); if(!e)return;
@@ -1543,11 +1544,11 @@ function apiOk(id, ok) {
 function addEv(cls, msg) {
   const d=document.createElement('div');
   d.className=`ev ${cls}`;
-  d.innerHTML=`<span class="et">${now()}</span><span>${msg}</span>`;
+  d.innerHTML=`<span class="et">${nowHHMM()}</span><span>${msg}</span>`;
   const l=$('ev-list');
   l.insertBefore(d,l.firstChild);
-  // 패널 높이 기준으로 최대 표시 항목 수 동적 계산 (항목당 약 22px)
-  const maxItems = Math.max(8, Math.floor((l.clientHeight || 300) / 22));
+  // 항목당 약 26px 기준
+  const maxItems = Math.max(6, Math.floor((l.clientHeight || 300) / 26));
   while(l.children.length > maxItems) l.removeChild(l.lastChild);
 }
 
@@ -2235,7 +2236,7 @@ function connectTrades() {
           }
         }
         const t=new Date(d.T);
-        const ts=[t.getHours(),t.getMinutes(),t.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+        const ts=[t.getHours(),t.getMinutes()].map(x=>String(x).padStart(2,'0')).join(':');
         addTrade(tradePrice,+d.q,!d.m,ts);
       }catch(e){}
     };
@@ -2549,12 +2550,12 @@ function updateIntelBars() {
   updateEdgeLighting();
   checkScoreNews(compInt);
 
-  // 시크릿 지표 (매수 안전도) 업데이트
+  // 추격매수표 (매수 안전도) 업데이트
   updateSecretScore(compInt);
 }
 
 /* ═══════════════════════════════════════════════════════════
-   🔒 시크릿 지표 — 매수 안전도 (0~100%)
+   📈 추격매수표 — 매수 안전도 (0~100%)
    
    4가지 조건이 충족될수록 "떨어지는 칼날"을 피한 안전한 매수 타이밍.
    - 종합 스코어 낮을수록 (과매도) → 바닥 근접
@@ -3327,7 +3328,7 @@ const NEWS = {
 function addNewsItem(badge, badgeCls, text) {
   const list = $('news-list');
   if(!list) return;
-  const t = now();
+  const t = nowHHMM();  // 초단위 제거 — HH:MM만
   const item = { time: t, badge, badgeCls, text, ts: Date.now() };
   NEWS.items.unshift(item);
   if(NEWS.items.length > NEWS.maxItems) NEWS.items.pop();
