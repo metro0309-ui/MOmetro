@@ -79,12 +79,12 @@ html, body {
 .panel-hd {
   background: var(--bg2);
   border-bottom: 1px solid var(--bd0);
-  padding: 7px 10px;
+  padding: 9px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: .5px;
   color: var(--tx1);
@@ -92,13 +92,13 @@ html, body {
 .panel-hd .hd-title {
   color: var(--tx0);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 .hd-dot {
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--up);
   box-shadow: 0 0 5px var(--up);
@@ -316,7 +316,7 @@ html, body {
   display: grid;
   grid-template-columns: auto 50px 1fr auto;
   gap: 5px;
-  padding: 3px 3px;
+  padding: 4px 5px;
   font-size: 14px;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
@@ -326,7 +326,7 @@ html, body {
 .tr.buy  { border-left-color: var(--up); background: var(--upd); }
 .tr.sell { border-left-color: var(--dn); background: var(--dnd); }
 .tr.big  { font-weight: 600; }
-.ttime   { color: var(--tx3); font-size: 9px; }
+.ttime   { color: var(--tx3); font-size: 11px; }
 .tbuy    { color: var(--up); }
 .tsell   { color: var(--dn); }
 
@@ -457,28 +457,28 @@ html, body {
 #cvd-box { height: 70px; position: relative; flex-shrink:0; }
 #cvChart { position:absolute; inset:0; width:100%; height:100%; }
 .cvd-stat {
-  display: flex; gap: 8px; padding: 4px 8px;
+  display: flex; gap: 8px; padding: 5px 10px;
   border-top: 1px solid var(--bd0);
   border-bottom: 1px solid var(--bd0);
-  font-size: 12px; flex-shrink:0;
+  font-size: 13px; flex-shrink:0;
 }
 .intel-wrap {
   flex: 1; overflow-y:auto;
   display: flex; flex-direction:column;
-  gap: 2px; padding: 4px 0;
+  gap: 1px; padding: 3px 0;
 }
 .ir {
-  display: flex; flex-direction:column; gap: 2px;
-  padding: 3px 8px;
+  display: flex; flex-direction:column; gap: 3px;
+  padding: 5px 10px;
 }
 .ir-hd {
   display: flex; justify-content:space-between;
-  font-size: 12px;
+  font-size: 13px;
 }
-.ir-k { color: var(--tx2); }
+.ir-k { color: var(--tx1); font-weight: 500; }
 .ir-bg {
-  height: 6px; background: var(--bg3);
-  border-radius: 2px; overflow:hidden; margin-top:1px;
+  height: 7px; background: var(--bg3);
+  border-radius: 3px; overflow:hidden; margin-top:1px;
 }
 .ir-bar {
   height: 100%; border-radius: 2px;
@@ -497,24 +497,24 @@ html, body {
 #ev-list {
   flex:1; overflow:hidden;
   display:flex; flex-direction:column-reverse;
-  gap:0px; padding:2px 5px;
+  gap:0px; padding:2px 6px;
 }
 .ev {
   display:flex; gap:5px;
-  padding: 2.5px 4px;
-  font-size: 12px;
+  padding: 3.5px 5px;
+  font-size: 13px;
   line-height: 1.4;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
   animation: evin .3s ease;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   transition: background .1s;
-  flex-shrink: 0;        /* ← 항목이 찌그러지지 않게 */
-  min-height: 20px;      /* ← 최소 높이 보장 */
+  flex-shrink: 0;
+  min-height: 22px;
 }
 .ev:hover { background: var(--bg3); }
 @keyframes evin { from{opacity:0;transform:translateX(-4px)} to{opacity:1;transform:translateX(0)} }
-.et  { color: var(--tx3); flex-shrink:0; font-size:10px; min-width:52px; }
+.et  { color: var(--tx3); flex-shrink:0; font-size:12px; min-width:54px; }
 .el  { border-left-color:var(--dn); color:var(--dn); }
 .ew  { border-left-color:var(--cy); color:var(--cy); }
 .ee  { border-left-color:var(--yl); color:var(--yl); }
@@ -548,19 +548,19 @@ html, body {
 .news-item {
   display: flex;
   gap: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
+  padding: 5px 10px;
+  font-size: 13px;
   line-height: 1.4;
   border-bottom: 1px solid var(--bd0);
   animation: newsIn 0.4s ease;
   flex-shrink: 0;
 }
 @keyframes newsIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-.news-time { color: var(--tx3); font-size: 10px; flex-shrink: 0; min-width: 42px; }
+.news-time { color: var(--tx3); font-size: 11px; flex-shrink: 0; min-width: 46px; }
 .news-badge {
   flex-shrink: 0;
-  font-size: 8.5px;
-  padding: 1px 4px;
+  font-size: 10px;
+  padding: 1px 5px;
   border-radius: 3px;
   font-weight: 600;
 }
@@ -1087,7 +1087,7 @@ html, body {
   </div>
   <div class="mh-right">
     <div style="display:flex;align-items:baseline;gap:4px">
-      <span style="font-size:9px;color:var(--tx2)">SCORE</span>
+      <span style="font-size:11px;color:var(--tx2)">SCORE</span>
       <span class="mh-score yl" id="mh-score">--</span>
     </div>
     <span class="mh-score-label yl" id="mh-score-label">분석중</span>
@@ -1149,7 +1149,7 @@ html, body {
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 5px var(--cy)"></div>실시간 체결</div>
-        <span id="trade-counter" style="font-size:9px;color:var(--tx2)"><span class="up">BUY 0</span> / <span class="dn">SELL 0</span> &nbsp;<span class="tx2" id="trade-timer">5:00</span></span>
+        <span id="trade-counter" style="font-size:11px;color:var(--tx2)"><span class="up">BUY 0</span> / <span class="dn">SELL 0</span> &nbsp;<span class="tx2" id="trade-timer">5:00</span></span>
       </div>
       <div id="tr-list"></div>
     </div>
@@ -1158,7 +1158,7 @@ html, body {
     <div class="panel" id="news-panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>실시간 속보</div>
-        <span style="font-size:9px;color:var(--tx2)">자동 생성</span>
+        <span style="font-size:11px;color:var(--tx2)">자동 생성</span>
       </div>
       <div id="news-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:2px 0"></div>
     </div>
@@ -1170,7 +1170,7 @@ html, body {
           <div class="hd-dot" style="background:var(--dn);box-shadow:0 0 5px var(--dn)"></div>
           청산 피드 <span class="cursor"></span>
         </div>
-        <span id="liq-summary" style="font-size:9px;color:var(--tx2)">
+        <span id="liq-summary" style="font-size:11px;color:var(--tx2)">
           <span class="dn">롱 청산 0</span> / <span class="up">숏 청산 0</span> &nbsp;<span class="tx2" id="liq-timer">5:00</span>
         </span>
       </div>
@@ -1194,7 +1194,7 @@ html, body {
             <button class="tf-btn" data-tf="1h">1H</button>
             <button class="tf-btn" data-tf="4h">4H</button>
           </div>
-          <span id="ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
+          <span id="ohlc-lbl" style="font-size:12px;color:var(--tx2)"></span>
         </div>
         <span id="ov-price-top" style="font-family:var(--fm);font-size:20px;font-weight:700;color:var(--up)">--</span>
       </div>
@@ -1216,93 +1216,93 @@ html, body {
     <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow-y:auto">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 6px var(--cy)"></div>오더플로우</div>
-        <span style="font-size:10px;color:var(--cy)">매수/매도 압력</span>
+        <span style="font-size:13px;color:var(--cy)">매수/매도 압력</span>
       </div>
 
       <!-- A. 단기 매수/매도 압력 -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px;color:var(--tx1);font-weight:500">단기 압력 <span style="font-size:9px;color:var(--tx3)">(1분)</span></span>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">단기 압력 <span style="font-size:11px;color:var(--tx3)">(1분)</span></span>
           <span id="of-pressure-val" style="font-size:15px;font-weight:700" class="cy">--</span>
         </div>
         <div style="display:flex;gap:2px;height:18px;border-radius:4px;overflow:hidden">
           <div id="of-buy-bar" style="background:linear-gradient(90deg,#007a4a,var(--up));flex:50;transition:flex 0.5s ease;display:flex;align-items:center;justify-content:center">
-            <span id="of-buy-pct" style="font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
+            <span id="of-buy-pct" style="font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
           </div>
           <div id="of-sell-bar" style="background:linear-gradient(90deg,var(--dn),#cc2020);flex:50;transition:flex 0.5s ease;display:flex;align-items:center;justify-content:center">
-            <span id="of-sell-pct" style="font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
+            <span id="of-sell-pct" style="font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:2px">
-          <span style="font-size:9px;color:var(--up)">매수 <span id="of-buy-vol">--</span></span>
-          <span style="font-size:9px;color:var(--dn)">매도 <span id="of-sell-vol">--</span></span>
+          <span style="font-size:11px;color:var(--up)">매수 <span id="of-buy-vol">--</span></span>
+          <span style="font-size:11px;color:var(--dn)">매도 <span id="of-sell-vol">--</span></span>
         </div>
       </div>
 
       <!-- B. 고래 감지 (최근 대형 체결) -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px;color:var(--tx1);font-weight:500">🐋 고래 감지</span>
-          <span style="font-size:9px;color:var(--tx3)">$100K+</span>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 감지</span>
+          <span style="font-size:11px;color:var(--tx3)">$100K+</span>
         </div>
         <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:80px;overflow-y:auto">
-          <div style="font-size:10px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
+          <div style="font-size:12px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
         </div>
       </div>
 
       <!-- C. 변동성 미터 (ATR 기반) -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px;color:var(--tx1);font-weight:500">변동성</span>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">변동성</span>
           <span id="of-vol-label" style="font-size:12px;font-weight:700" class="yl">--</span>
         </div>
         <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
           <div id="of-vol-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--up),var(--yl),var(--dn));border-radius:3px;transition:width 1s ease"></div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--tx3)">
+        <div style="display:flex;justify-content:space-between;margin-top:2px;font-size:12px;color:var(--tx3)">
           <span>낮음</span><span>ATR: <span id="of-atr-val">--</span></span><span>높음</span>
         </div>
       </div>
 
       <!-- D. 지지/저항 레벨 -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:5px">지지/저항 레벨</div>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="font-size:13px;color:var(--tx1);font-weight:500;margin-bottom:5px">지지/저항 레벨</div>
         <div style="display:flex;flex-direction:column;gap:3px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--dn)">▲ 2차 저항</span>
-            <span id="of-r2" style="font-size:13px;font-weight:700;color:var(--dn)">--</span>
+            <span style="font-size:12px;color:var(--dn)">▲ 2차 저항</span>
+            <span id="of-r2" style="font-size:15px;font-weight:700;color:var(--dn)">--</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--dn)">▲ 1차 저항</span>
-            <span id="of-r1" style="font-size:13px;font-weight:700;color:var(--dn)">--</span>
+            <span style="font-size:12px;color:var(--dn)">▲ 1차 저항</span>
+            <span id="of-r1" style="font-size:15px;font-weight:700;color:var(--dn)">--</span>
           </div>
           <div style="height:2px;background:linear-gradient(90deg,transparent,var(--yl),transparent);margin:2px 0;opacity:.6"></div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--up)">▼ 1차 지지</span>
-            <span id="of-s1" style="font-size:13px;font-weight:700;color:var(--up)">--</span>
+            <span style="font-size:12px;color:var(--up)">▼ 1차 지지</span>
+            <span id="of-s1" style="font-size:15px;font-weight:700;color:var(--up)">--</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--up)">▼ 2차 지지</span>
-            <span id="of-s2" style="font-size:13px;font-weight:700;color:var(--up)">--</span>
+            <span style="font-size:12px;color:var(--up)">▼ 2차 지지</span>
+            <span id="of-s2" style="font-size:15px;font-weight:700;color:var(--up)">--</span>
           </div>
         </div>
       </div>
 
       <!-- E. 매수/매도 추천 신호 -->
       <div style="padding:6px 10px">
-        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:4px">압력 종합</div>
+        <div style="font-size:13px;color:var(--tx1);font-weight:500;margin-bottom:3px">압력 종합</div>
         <div style="display:flex;gap:6px">
           <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">매수 강도</div>
+            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">매수 강도</div>
             <div id="of-buy-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="up">--</div>
           </div>
           <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">매도 강도</div>
+            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">매도 강도</div>
             <div id="of-sell-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="dn">--</div>
           </div>
           <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
-            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">우세</div>
-            <div id="of-dominant" style="font-size:13px;font-weight:700" class="cy">--</div>
+            <div style="font-size:11px;color:var(--tx3);margin-bottom:2px">우세</div>
+            <div id="of-dominant" style="font-size:15px;font-weight:700" class="cy">--</div>
           </div>
         </div>
       </div>
@@ -1317,41 +1317,41 @@ html, body {
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>트레이딩 인텔</div>
-        <span style="font-size:10px;color:var(--tx2)">LIVE</span>
+        <span style="font-size:12px;color:var(--tx2)">LIVE</span>
       </div>
       <!-- 펀딩레이트 -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px;color:var(--tx1);font-weight:500">펀딩레이트</span>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">펀딩레이트</span>
           <span id="ti-fund-val" style="font-size:18px;font-weight:700;transition:color 0.5s" class="yl">--</span>
         </div>
         <div id="ti-fund-hist" style="display:flex;align-items:flex-end;gap:2px;height:24px"></div>
-        <div style="display:flex;justify-content:space-between;margin-top:3px">
-          <span style="font-size:9px;color:var(--tx3)">최근 8회</span>
-          <span id="ti-fund-next" style="font-size:9px;color:var(--cy)">다음 정산 --</span>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <span style="font-size:11px;color:var(--tx3)">최근 8회</span>
+          <span id="ti-fund-next" style="font-size:11px;color:var(--cy)">다음 정산 --</span>
         </div>
       </div>
       <!-- 롱/숏 비율 -->
-      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px;color:var(--tx1);font-weight:500">롱/숏 비율</span>
+      <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">롱/숏 비율</span>
           <span id="ti-ls-ratio" style="font-size:16px;font-weight:700" class="tx0">--</span>
         </div>
         <div style="display:flex;gap:2px;height:20px;border-radius:4px;overflow:hidden">
           <div id="ti-long-bar" style="background:linear-gradient(90deg,#007a4a,var(--up));transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)" id="ti-long-pct">50%</span></div>
           <div id="ti-short-bar" style="background:linear-gradient(90deg,var(--dn),#cc2020);transition:flex 0.8s ease;flex:50;display:flex;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)" id="ti-short-pct">50%</span></div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:3px">
-          <span style="font-size:10px;color:var(--up);font-weight:600" id="ti-long-label">롱 --</span>
-          <span style="font-size:10px;color:var(--dn);font-weight:600" id="ti-short-label">숏 --</span>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <span style="font-size:12px;color:var(--up);font-weight:600" id="ti-long-label">롱 --</span>
+          <span style="font-size:12px;color:var(--dn);font-weight:600" id="ti-short-label">숏 --</span>
         </div>
       </div>
       <!-- 청산 집중 구간 -->
       <div style="padding:6px 10px">
-        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:4px">청산 집중 구간</div>
+        <div style="font-size:13px;color:var(--tx1);font-weight:500;margin-bottom:3px">청산 집중 구간</div>
         <div style="display:flex;flex-direction:column;gap:4px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--dn)">▲ 롱 청산대</span>
+            <span style="font-size:12px;color:var(--dn)">▲ 롱 청산대</span>
             <span id="ti-liq-long" style="font-size:15px;font-weight:700;color:var(--dn);text-shadow:0 0 8px rgba(255,73,74,.3)">--</span>
           </div>
           <div style="height:6px;background:var(--bg3);border-radius:3px;position:relative;overflow:hidden">
@@ -1359,12 +1359,12 @@ html, body {
             <div id="ti-price-pos" style="position:absolute;height:100%;width:4px;background:var(--yl);border-radius:2px;left:50%;transition:left 1s ease;box-shadow:0 0 6px var(--yl)"></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:10px;color:var(--up)">▼ 숏 청산대</span>
+            <span style="font-size:12px;color:var(--up)">▼ 숏 청산대</span>
             <span id="ti-liq-short" style="font-size:15px;font-weight:700;color:var(--up);text-shadow:0 0 8px rgba(0,192,118,.3)">--</span>
           </div>
           <div style="display:flex;justify-content:space-between;margin-top:2px">
-            <span style="font-size:9px;color:var(--tx2)">OI $<span id="ti-oi" style="font-weight:600;color:var(--bl)">--</span>B</span>
-            <span style="font-size:9px;color:var(--tx2)">탑트레이더 롱 <span id="ti-top-long" style="font-weight:600;color:var(--cy)">--</span>%</span>
+            <span style="font-size:11px;color:var(--tx2)">OI $<span id="ti-oi" style="font-weight:600;color:var(--bl)">--</span>B</span>
+            <span style="font-size:11px;color:var(--tx2)">탑트레이더 롱 <span id="ti-top-long" style="font-weight:600;color:var(--cy)">--</span>%</span>
           </div>
         </div>
       </div>
@@ -1374,7 +1374,7 @@ html, body {
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 5px var(--cy)"></div>CVD · 인텔</div>
-        <span style="font-size:9px;color:var(--tx2)">누적 델타 볼륨</span>
+        <span style="font-size:11px;color:var(--tx2)">누적 델타 볼륨</span>
       </div>
       <div id="cvd-box"><canvas id="cvChart"></canvas></div>
       <div class="cvd-stat">
@@ -1396,40 +1396,40 @@ html, body {
         <div class="ir"><div class="ir-hd"><span class="ir-k">VWAP 괴리</span><span id="iv8" class="bl">--</span></div><div class="ir-bg"><div class="ir-bar bar-bl" id="ib8" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">MACD 히스토그램</span><span id="iv9" class="yl">--</span></div><div class="ir-bg"><div class="ir-bar bar-yl" id="ib9" style="width:0%"></div></div></div>
         <!-- 종합 스코어 — 심플 바 -->
-        <div style="margin-top:6px;padding:8px 10px;border-top:1px solid var(--bd1)">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
             <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
             <span style="display:flex;align-items:baseline;gap:6px">
               <span id="composite-score" style="font-family:var(--fv);font-size:28px;font-weight:700" class="yl">--</span>
               <span id="composite-label" style="font-size:11px;font-weight:600" class="yl">분석중</span>
             </span>
           </div>
-          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden">
+          <div style="height:9px;background:var(--bg3);border-radius:4px;overflow:hidden">
             <div id="composite-bar" style="width:50%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 50%,var(--up) 100%);border-radius:4px;transition:width 1s ease"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--tx3);margin-top:2px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-top:2px">
             <span>0 강한매도</span><span>50 중립</span><span>100 강한매수</span>
           </div>
         </div>
         <!-- 시크릿 지표 — 매수 안전도 -->
-        <div style="margin-top:4px;padding:8px 10px;border-top:1px solid var(--bd1);background:linear-gradient(180deg,rgba(51,214,245,.03),transparent)">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1);background:linear-gradient(180deg,rgba(51,214,245,.03),transparent)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
             <span style="display:flex;align-items:center;gap:4px">
-              <span style="font-size:13px;font-weight:600;color:var(--cy);text-shadow:0 0 8px rgba(51,214,245,.4)">🔒 시크릿 지표</span>
-              <span style="font-size:9px;color:var(--tx3);font-weight:500">매수 안전도</span>
+              <span style="font-size:14px;font-weight:600;color:var(--cy);text-shadow:0 0 8px rgba(51,214,245,.4)">🔒 시크릿 지표</span>
+              <span style="font-size:11px;color:var(--tx3);font-weight:500">진입 적합도</span>
             </span>
             <span style="display:flex;align-items:baseline;gap:6px">
               <span id="secret-score" style="font-family:var(--fv);font-size:28px;font-weight:700" class="cy">--</span>
-              <span id="secret-label" style="font-size:11px;font-weight:600" class="cy">분석중</span>
+              <span id="secret-label" style="font-size:12px;font-weight:600" class="cy">분석중</span>
             </span>
           </div>
-          <div style="height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative">
+          <div style="height:9px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative">
             <div id="secret-bar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--dn) 0%,var(--yl) 40%,var(--cy) 80%,var(--up) 100%);border-radius:4px;transition:width 1s ease;box-shadow:0 0 8px currentColor"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--tx3);margin-top:2px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-top:2px">
             <span>0 부적합</span><span>50 주의</span><span>100 최적</span>
           </div>
-          <div id="secret-breakdown" style="font-size:9px;color:var(--tx2);margin-top:3px;line-height:1.4">--</div>
+          <div id="secret-breakdown" style="font-size:11px;color:var(--tx2);margin-top:3px;line-height:1.5">--</div>
         </div>
       </div>
     </div>
@@ -2072,14 +2072,14 @@ function renderWhales() {
   const el = $('of-whale-list');
   if(!el) return;
   if(!OF.whales.length) {
-    el.innerHTML = '<div style="font-size:10px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>';
+    el.innerHTML = '<div style="font-size:12px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>';
     return;
   }
   el.innerHTML = OF.whales.map(w => {
     const cls = w.isBuy ? 'up' : 'dn';
     const side = w.isBuy ? '🟢 매수' : '🔴 매도';
     const amt = w.usd >= 1000000 ? `$${(w.usd/1000000).toFixed(1)}M` : `$${(w.usd/1000).toFixed(0)}K`;
-    return `<div style="display:flex;justify-content:space-between;font-size:10px;padding:1px 0">
+    return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:1px 0">
       <span style="color:var(--tx3)">${w.ts}</span>
       <span class="${cls}">${side}</span>
       <span style="font-weight:600;color:var(--tx0)">$${fp(w.price)}</span>
