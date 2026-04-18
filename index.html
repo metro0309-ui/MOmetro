@@ -192,7 +192,7 @@ html, body {
 ───────────────────────────────────────────────────── */
 #main {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(400px, 1.8fr) minmax(280px, 1fr);
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -547,6 +547,7 @@ html, body {
 /* 속보 패널 공통 스타일 (데스크톱+모바일) */
 .news-item {
   display: flex;
+  align-items: flex-start;
   gap: 6px;
   padding: 7px 10px;
   font-size: 14px;
@@ -569,7 +570,7 @@ html, body {
 .news-badge.nb-ylw { background: rgba(240,180,41,.12); color: var(--yl); border: 1px solid var(--yl); }
 .news-badge.nb-blu { background: rgba(74,158,255,.12); color: var(--bl); border: 1px solid var(--bl); }
 .news-badge.nb-cyn { background: rgba(51,214,245,.12); color: var(--cy); border: 1px solid var(--cy); }
-.news-text { color: var(--tx0); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.news-text { color: var(--tx0); flex: 1; overflow: hidden; white-space: normal; word-break: break-word; line-height: 1.5; }
 #news-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
 
 /* ═══════════════════════════════════════════════════════
@@ -925,7 +926,7 @@ html, body {
   .news-badge.nb-ylw  { background: rgba(240,180,41,.12); color: var(--yl); border: 1px solid var(--yl); }
   .news-badge.nb-blu  { background: rgba(74,158,255,.12); color: var(--bl); border: 1px solid var(--bl); }
   .news-badge.nb-cyn  { background: rgba(51,214,245,.12); color: var(--cy); border: 1px solid var(--cy); }
-  .news-text { color: var(--tx0); flex: 1; }
+  .news-text { color: var(--tx0); flex: 1; white-space: normal; word-break: break-word; line-height: 1.5; }
   /* 모바일에서 패널 폭 100% */
   #col-l .panel, #col-c .panel, #col-r .panel {
     border-radius: 0;
