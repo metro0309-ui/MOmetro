@@ -3671,9 +3671,9 @@ async function fetchExternalNews() {
     }
   } catch(e) {}
 
-  // 소스 5: Bitcoin Magazine RSS — CORS 허용 (rss2json 경유), 한국어 번역
+  // 소스 5: Decrypt RSS — rss2json 확인된 소스, 한국어 번역
   try {
-    const r5 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fbitcoinmagazine.com%2F.rss%2Ffull%2F', {
+    const r5 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fdecrypt.co%2Ffeed', {
       signal: AbortSignal.timeout(8000)
     });
     if(r5.ok) {
@@ -3684,16 +3684,16 @@ async function fetchExternalNews() {
         const id = item.guid || item.link || title;
         if(!title || _lastNewsIds.has(id)) continue;
         _lastNewsIds.add(id);
-        if(canPostNews('bm-' + id, 10000)) {
+        if(canPostNews('dc-' + id, 10000)) {
           const koTitle = await translateToKo(title);
           addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
         }
       }
     }
   } catch(e) {
-    // 폴백: CoinDesk feedburner RSS
+    // 폴백: The Block RSS
     try {
-      const rb = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeeds.feedburner.com%2FCoinDesk', {
+      const rb = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.theblock.co%2Frss.xml', {
         signal: AbortSignal.timeout(6000)
       });
       if(rb.ok) {
@@ -3704,7 +3704,7 @@ async function fetchExternalNews() {
           const id = item.guid || title;
           if(!title || _lastNewsIds.has(id)) continue;
           _lastNewsIds.add(id);
-          if(canPostNews('cd2-' + id, 10000)) {
+          if(canPostNews('tb-' + id, 10000)) {
             const koTitle = await translateToKo(title);
             addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
           }
