@@ -1212,35 +1212,100 @@ html, body {
       <div id="btc-vol-bar" class="vol-bar-wrap"></div>
     </div>
 
-    <!-- ETH/USDT 캔들차트 -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd" style="padding:5px 10px">
-        <div class="hd-title" style="gap:8px">
-          <div class="hd-dot" style="background:var(--cy);box-shadow:0 0 6px var(--cy)"></div>
-          <span style="color:var(--cy)">ETH/USDT</span>
-          <div class="tf-row" style="border:none;padding:0;background:transparent">
-            <button class="tf-btn-e" data-tf="1m">1분</button>
-            <button class="tf-btn-e on" data-tf="5m">5분</button>
-            <button class="tf-btn-e" data-tf="15m">15분</button>
-            <button class="tf-btn-e" data-tf="1h">1H</button>
-            <button class="tf-btn-e" data-tf="4h">4H</button>
+    <!-- 오더플로우 패널 — 실전 매수/매도 판단 -->
+    <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow-y:auto">
+      <div class="panel-hd">
+        <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 6px var(--cy)"></div>오더플로우</div>
+        <span style="font-size:10px;color:var(--cy)">매수/매도 압력</span>
+      </div>
+
+      <!-- A. 단기 매수/매도 압력 -->
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--tx1);font-weight:500">단기 압력 <span style="font-size:9px;color:var(--tx3)">(1분)</span></span>
+          <span id="of-pressure-val" style="font-size:15px;font-weight:700" class="cy">--</span>
+        </div>
+        <div style="display:flex;gap:2px;height:18px;border-radius:4px;overflow:hidden">
+          <div id="of-buy-bar" style="background:linear-gradient(90deg,#007a4a,var(--up));flex:50;transition:flex 0.5s ease;display:flex;align-items:center;justify-content:center">
+            <span id="of-buy-pct" style="font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
           </div>
-          <span id="eth-ohlc-lbl" style="font-size:10px;color:var(--tx2)"></span>
+          <div id="of-sell-bar" style="background:linear-gradient(90deg,var(--dn),#cc2020);flex:50;transition:flex 0.5s ease;display:flex;align-items:center;justify-content:center">
+            <span id="of-sell-pct" style="font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)">50%</span>
+          </div>
         </div>
-        <span id="eth-price-top" style="font-family:var(--fm);font-size:20px;font-weight:700;color:var(--cy)">--</span>
-      </div>
-      <div id="ew" style="position:relative;flex:1;min-height:0">
-        <canvas id="eChart"></canvas>
-        <div class="cov-l">
-          <div class="ovpill"><span class="opk">24H변동</span><span id="eth-chg">--</span></div>
-          <div class="ovpill"><span class="opk">고가</span><span class="cy" id="eth-high">--</span></div>
-          <div class="ovpill"><span class="opk">저가</span><span class="dn" id="eth-low">--</span></div>
-          <div class="ovpill"><span class="opk">거래량</span><span id="eth-vol">--</span></div>
-          <div class="ovpill"><span class="opk">BTC비율</span><span id="eth-btc-ratio" style="color:var(--cy)">--</span></div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <span style="font-size:9px;color:var(--up)">매수 <span id="of-buy-vol">--</span></span>
+          <span style="font-size:9px;color:var(--dn)">매도 <span id="of-sell-vol">--</span></span>
         </div>
       </div>
-      <!-- 거래량 바 (캔들과 분리) -->
-      <div id="eth-vol-bar" class="vol-bar-wrap"></div>
+
+      <!-- B. 고래 감지 (최근 대형 체결) -->
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--tx1);font-weight:500">🐋 고래 감지</span>
+          <span style="font-size:9px;color:var(--tx3)">$100K+</span>
+        </div>
+        <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:80px;overflow-y:auto">
+          <div style="font-size:10px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
+        </div>
+      </div>
+
+      <!-- C. 변동성 미터 (ATR 기반) -->
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px;color:var(--tx1);font-weight:500">변동성</span>
+          <span id="of-vol-label" style="font-size:12px;font-weight:700" class="yl">--</span>
+        </div>
+        <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+          <div id="of-vol-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--up),var(--yl),var(--dn));border-radius:3px;transition:width 1s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--tx3)">
+          <span>낮음</span><span>ATR: <span id="of-atr-val">--</span></span><span>높음</span>
+        </div>
+      </div>
+
+      <!-- D. 지지/저항 레벨 -->
+      <div style="padding:6px 10px;border-bottom:1px solid var(--bd0)">
+        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:5px">지지/저항 레벨</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:var(--dn)">▲ 2차 저항</span>
+            <span id="of-r2" style="font-size:13px;font-weight:700;color:var(--dn)">--</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:var(--dn)">▲ 1차 저항</span>
+            <span id="of-r1" style="font-size:13px;font-weight:700;color:var(--dn)">--</span>
+          </div>
+          <div style="height:2px;background:linear-gradient(90deg,transparent,var(--yl),transparent);margin:2px 0;opacity:.6"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:var(--up)">▼ 1차 지지</span>
+            <span id="of-s1" style="font-size:13px;font-weight:700;color:var(--up)">--</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:var(--up)">▼ 2차 지지</span>
+            <span id="of-s2" style="font-size:13px;font-weight:700;color:var(--up)">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- E. 매수/매도 추천 신호 -->
+      <div style="padding:6px 10px">
+        <div style="font-size:12px;color:var(--tx1);font-weight:500;margin-bottom:4px">압력 종합</div>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">매수 강도</div>
+            <div id="of-buy-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="up">--</div>
+          </div>
+          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">매도 강도</div>
+            <div id="of-sell-strength" style="font-family:var(--fv);font-size:20px;font-weight:700" class="dn">--</div>
+          </div>
+          <div style="flex:1;background:var(--bg2);border-radius:6px;padding:6px;text-align:center;border:1px solid var(--bd1)">
+            <div style="font-size:9px;color:var(--tx3);margin-bottom:2px">우세</div>
+            <div id="of-dominant" style="font-size:13px;font-weight:700" class="cy">--</div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -1688,6 +1753,16 @@ function updateCandleChart() {
   cChart.options.scales.y.min = yMin - finalRange * 0.08;
   cChart.options.scales.y.max = yMax + finalRange * 0.12;  // 상단 약간 더 (오버레이 공간)
 
+  // 현재(마지막) 캔들에 실시간 가격 반영 — 자연스러운 움직임
+  const lastOhlc = sl[sl.length - 1];
+  if(lastOhlc && D.price > 0) {
+    const live = { ...lastOhlc };
+    live.close = D.price;
+    live.high  = Math.max(live.high, D.price);
+    live.low   = Math.min(live.low, D.price);
+    sl[sl.length - 1] = live;
+  }
+
   cChart.data.labels = sl.map(cd => cd.label);
   cChart.data.datasets[0].data  = sl.map(cd => cd.close);
   cChart.data.datasets[0]._ohlc = sl.map(cd => ({o:cd.open,h:cd.high,l:cd.low,c:cd.close}));
@@ -1704,7 +1779,9 @@ function updateCandleChart() {
 /* ── ETH 캔들차트 ── */
 let eChart;
 function initEthChart() {
-  const ctx = $('eChart').getContext('2d');
+  const el = $('eChart');
+  if(!el) return;  // 오더플로우 패널로 교체됨 — 조용히 종료
+  const ctx = el.getContext('2d');
   eChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -1971,6 +2048,115 @@ function updateCvdChart() {
 /* ═══════════════════════════════════════════════════════════
    실시간 체결
 ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   오더플로우 — 실시간 매수/매도 압력 데이터
+═══════════════════════════════════════════════════════════ */
+const OF = {
+  buyVol: 0, sellVol: 0,
+  whales: [],          // 최근 고래 체결 (100K+)
+  resetAt: Date.now() + 60000,  // 1분마다 리셋
+};
+
+function resetOF() {
+  OF.buyVol = 0; OF.sellVol = 0;
+  OF.resetAt = Date.now() + 60000;
+}
+
+function addWhale(price, usd, isBuy, ts) {
+  OF.whales.unshift({ price, usd, isBuy, ts });
+  if(OF.whales.length > 6) OF.whales.pop();
+  renderWhales();
+}
+
+function renderWhales() {
+  const el = $('of-whale-list');
+  if(!el) return;
+  if(!OF.whales.length) {
+    el.innerHTML = '<div style="font-size:10px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>';
+    return;
+  }
+  el.innerHTML = OF.whales.map(w => {
+    const cls = w.isBuy ? 'up' : 'dn';
+    const side = w.isBuy ? '🟢 매수' : '🔴 매도';
+    const amt = w.usd >= 1000000 ? `$${(w.usd/1000000).toFixed(1)}M` : `$${(w.usd/1000).toFixed(0)}K`;
+    return `<div style="display:flex;justify-content:space-between;font-size:10px;padding:1px 0">
+      <span style="color:var(--tx3)">${w.ts}</span>
+      <span class="${cls}">${side}</span>
+      <span style="font-weight:600;color:var(--tx0)">$${fp(w.price)}</span>
+      <span class="${cls};font-weight:700">${amt}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateOrderflow() {
+  // 1분 리셋
+  if(Date.now() > OF.resetAt) resetOF();
+
+  const total = OF.buyVol + OF.sellVol || 1;
+  const buyPct = Math.round(OF.buyVol / total * 100);
+  const sellPct = 100 - buyPct;
+
+  // 압력 바
+  const buyBar = $('of-buy-bar'), sellBar = $('of-sell-bar');
+  if(buyBar) { buyBar.style.flex = buyPct; $('of-buy-pct').textContent = buyPct + '%'; }
+  if(sellBar) { sellBar.style.flex = sellPct; $('of-sell-pct').textContent = sellPct + '%'; }
+
+  // 거래량 표시
+  st('of-buy-vol', '$' + fb(OF.buyVol), 'up');
+  st('of-sell-vol', '$' + fb(OF.sellVol), 'dn');
+
+  // 압력 값
+  const diff = buyPct - 50;
+  const pressureLabel = diff > 15 ? '강한 매수압' : diff > 5 ? '매수우세' : diff < -15 ? '강한 매도압' : diff < -5 ? '매도우세' : '균형';
+  const pressCls = diff > 5 ? 'up' : diff < -5 ? 'dn' : 'yl';
+  st('of-pressure-val', pressureLabel, pressCls);
+
+  // 매수/매도 강도 (0~100)
+  const buyStr = Math.min(99, Math.round(buyPct * 1.2 - 10));
+  const sellStr = Math.min(99, Math.round(sellPct * 1.2 - 10));
+  st('of-buy-strength', Math.max(0, buyStr), buyStr > 55 ? 'up' : 'yl');
+  st('of-sell-strength', Math.max(0, sellStr), sellStr > 55 ? 'dn' : 'yl');
+  st('of-dominant', diff > 3 ? '매수' : diff < -3 ? '매도' : '중립', diff > 3 ? 'up' : diff < -3 ? 'dn' : 'cy');
+
+  // 변동성 (ATR 기반)
+  if(D.candles.length >= 14) {
+    const atr = calcATR(D.candles);
+    const atrPct = (atr / D.price) * 100;
+    const volPct = Math.min(100, atrPct * 25);  // 4% ATR = 100%
+    const volLabel = atrPct > 2 ? '매우 높음' : atrPct > 1 ? '높음' : atrPct > 0.5 ? '보통' : '낮음';
+    const volCls = atrPct > 2 ? 'dn' : atrPct > 1 ? 'yl' : 'up';
+    const volBar = $('of-vol-bar');
+    if(volBar) volBar.style.width = volPct + '%';
+    st('of-vol-label', volLabel, volCls);
+    st('of-atr-val', '$' + Math.round(atr).toLocaleString());
+  }
+
+  // 지지/저항 레벨 (피봇 포인트 기반)
+  if(D.candles.length >= 2) {
+    const prev = D.candles[D.candles.length - 2];
+    const h = prev.high, l = prev.low, c = prev.close;
+    const pivot = (h + l + c) / 3;
+    const r1 = 2 * pivot - l;
+    const r2 = pivot + (h - l);
+    const s1 = 2 * pivot - h;
+    const s2 = pivot - (h - l);
+    st('of-r2', '$' + fp(r2), 'dn');
+    st('of-r1', '$' + fp(r1), 'dn');
+    st('of-s1', '$' + fp(s1), 'up');
+    st('of-s2', '$' + fp(s2), 'up');
+  }
+}
+
+// ATR 계산
+function calcATR(candles, period = 14) {
+  const trs = candles.slice(-period - 1).map((c, i, arr) => {
+    if(i === 0) return c.high - c.low;
+    const prev = arr[i - 1];
+    return Math.max(c.high - c.low, Math.abs(c.high - prev.close), Math.abs(c.low - prev.close));
+  });
+  return trs.slice(-period).reduce((a, b) => a + b, 0) / period;
+}
+
 function addTrade(price, qty, isBuy, ts) {
   const l=$('tr-list'); if(!l) return;
   const usd=price*qty, big=usd>50000;
@@ -1996,6 +2182,11 @@ function addTrade(price, qty, isBuy, ts) {
   D.cvdArr.push((D.cvdArr[D.cvdArr.length-1]||0)+delta);
   if(D.cvdArr.length>600) D.cvdArr.shift();
   if(++cvdTick%15===0) updateCvdChart();
+
+  // 오더플로우 누적
+  if(isBuy) OF.buyVol += usd; else OF.sellVol += usd;
+  // 고래 감지 ($100K+)
+  if(usd >= 100000) addWhale(price, usd, isBuy, ts);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2994,6 +3185,7 @@ window.addEventListener('load', async()=>{
   setInterval(fetchFutures,  20000);
   setInterval(fetchCG,      120000);
   setInterval(updateIntelBars,5000);
+  setInterval(updateOrderflow, 2000);  // 오더플로우 2초마다
   setInterval(tick,1000);
   // 4H 캔들 10분마다 보정 (WS 누락 대비)
   setInterval(fetch4hCandles, 600000);
