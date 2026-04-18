@@ -361,19 +361,24 @@ html, body {
   text-align: right; pointer-events:none;
 }
 .cov-l {
-  position: absolute; top:8px; left:8px;
-  display: flex; flex-direction:column; gap:2px;
+  position: absolute; top:0; left:0; right:0;
+  display: flex; flex-direction:row; gap:0;
   pointer-events:none;
-}
-.ovpill {
-  font-size: 13px; padding: 3px 8px;
-  background: rgba(14,20,32,.85);
-  border: 1px solid var(--bd1);
-  border-radius: 3px;
-  display: flex; justify-content:space-between; gap: 8px;
+  background: rgba(10,16,28,.82);
+  border-bottom: 1px solid var(--bd1);
   backdrop-filter: blur(4px);
 }
-.opk { color: var(--tx2); }
+.ovpill {
+  font-size: 12px; padding: 4px 10px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--bd1);
+  border-radius: 0;
+  display: flex; align-items:center; gap: 5px;
+  flex: 1;
+}
+.ovpill:last-child { border-right: none; }
+.opk { color: var(--tx3); font-size: 11px; }
 .tf-row {
   display: flex; gap: 2px;
   padding: 3px 8px;
@@ -1735,7 +1740,7 @@ function initCandleChart() {
 
 function updateCandleChart() {
   if(!cChart || !D.candles.length) return;
-  const N  = 45;
+  const N  = 60;
   const sl = D.candles.slice(-N);
   const allC = D.candles.map(cd => cd.close);
   const { upper, lower } = calcBB(allC);
@@ -1830,7 +1835,7 @@ function initEthChart() {
 
 function updateEthChart() {
   if(!eChart || !DE.candles.length) return;
-  const N  = 45;
+  const N  = 60;
   const sl = DE.candles.slice(-N);
   const allC = DE.candles.map(cd => cd.close);
   const { upper, lower } = calcBB(allC);
@@ -3310,7 +3315,7 @@ function updateEdgeLighting() {
 ═══════════════════════════════════════════════════════════ */
 const NEWS = {
   items: [],
-  maxItems: 5,
+  maxItems: 10,
   lastPrice: 0,
   lastRsi: 50,
   lastScore: 50,
