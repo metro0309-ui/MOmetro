@@ -1496,6 +1496,64 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
           </div>
           <div id="secret-breakdown" style="font-size:11px;color:var(--tx2);margin-top:3px;line-height:1.5">--</div>
         </div>
+
+        <!-- 멀티 타임프레임 스코어 -->
+        <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1)">
+          <div style="font-size:13px;font-weight:600;color:var(--tx0);margin-bottom:6px">📊 멀티 타임프레임</div>
+          <div style="display:flex;gap:4px">
+            <!-- 1D -->
+            <div style="flex:1;background:var(--bg2);border-radius:5px;padding:5px 6px;border:1px solid var(--bd1);text-align:center">
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:2px">1일봉</div>
+              <div id="mtf-1d-score" style="font-family:var(--fv);font-size:20px;font-weight:700" class="yl">--</div>
+              <div id="mtf-1d-label" style="font-size:10px;font-weight:600;margin-top:1px" class="yl">--</div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:2px">RSI <span id="mtf-1d-rsi" class="tx1">--</span></div>
+            </div>
+            <!-- 4H -->
+            <div style="flex:1;background:var(--bg2);border-radius:5px;padding:5px 6px;border:1px solid var(--cy);text-align:center;box-shadow:0 0 6px rgba(51,214,245,.15)">
+              <div style="font-size:10px;color:var(--cy);margin-bottom:2px">4시간봉</div>
+              <div id="mtf-4h-score" style="font-family:var(--fv);font-size:20px;font-weight:700" class="yl">--</div>
+              <div id="mtf-4h-label" style="font-size:10px;font-weight:600;margin-top:1px" class="yl">--</div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:2px">RSI <span id="mtf-4h-rsi" class="tx1">--</span></div>
+            </div>
+            <!-- 15M -->
+            <div style="flex:1;background:var(--bg2);border-radius:5px;padding:5px 6px;border:1px solid var(--bd1);text-align:center">
+              <div style="font-size:10px;color:var(--tx3);margin-bottom:2px">15분봉</div>
+              <div id="mtf-15m-score" style="font-family:var(--fv);font-size:20px;font-weight:700" class="yl">--</div>
+              <div id="mtf-15m-label" style="font-size:10px;font-weight:600;margin-top:1px" class="yl">--</div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:2px">RSI <span id="mtf-15m-rsi" class="tx1">--</span></div>
+            </div>
+          </div>
+          <!-- 멀티TF 정렬 신호 -->
+          <div id="mtf-signal" style="margin-top:5px;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;text-align:center;background:var(--bg3);color:var(--tx2)">분석중...</div>
+        </div>
+
+        <!-- ATR 기반 손절선 -->
+        <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1)">
+          <div style="font-size:13px;font-weight:600;color:var(--tx0);margin-bottom:5px">🛡️ ATR 손절선 가이드</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:var(--tx2)">현재가</span>
+              <span id="atr-current" style="font-size:14px;font-weight:700;color:var(--tx0)">--</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:var(--dn)">✂️ 손절선 (ATR×1.5)</span>
+              <span id="atr-stop" style="font-size:14px;font-weight:700;color:var(--dn)">--</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:var(--up)">🎯 1차 목표 (ATR×2)</span>
+              <span id="atr-target1" style="font-size:14px;font-weight:700;color:var(--up)">--</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:var(--up)">🎯 2차 목표 (ATR×3)</span>
+              <span id="atr-target2" style="font-size:14px;font-weight:700;color:var(--up)">--</span>
+            </div>
+            <div style="height:1px;background:var(--bd1);margin:2px 0"></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3)">
+              <span>ATR(14): <span id="atr-value" class="yl" style="font-weight:600">--</span></span>
+              <span>리스크/리워드: <span id="atr-rr" class="cy" style="font-weight:600">--</span></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1550,10 +1608,13 @@ const D = {
   funding:null, oi:null, oiPrev:null, ls:null,
   mcap:0, dom:0, fng:50, fngLabel:'중립',
   upbit:0, usdkrw:1350, kp:0, kpMax:-Infinity, kpMin:Infinity,
-  rsi:50, macd:0, signal:0, hist:0, vwap:0,
+  rsi:50, rsiPrev:50, macd:0, signal:0, hist:0, vwap:0,
   cvd:0, cvd1h:0, cvdArr:[],
   candles:[],
-  candles4h:[],  // 4H 전용 (스코어 계산용, 화면 TF와 무관)
+  candles4h:[],   // 4H 전용 (스코어 계산용, 화면 TF와 무관)
+  candles1d:[],   // 1D 멀티TF
+  candles15m:[],  // 15분 멀티TF
+  rsi1d:50, rsi15m:50,
   startTime: Date.now(),
   currentTf: '5m',
 };
@@ -2395,10 +2456,170 @@ function connect4hKlineWS() {
 function update4hIndicators() {
   if(D.candles4h.length < 20) return;
   const closes = D.candles4h.map(c => c.close);
+  D.rsiPrev = D.rsi;  // 이전 RSI 저장
   D.rsi  = calcRSI(closes);
   const macd = calcMACD(closes);
   if(macd) { D.macd = macd.lm; D.signal = macd.ls; D.hist = macd.lh; }
   D.vwap = calcVWAP(D.candles4h);
+  // RSI 방향 전환 감지
+  checkRSITurnaround();
+  // ATR 손절선 업데이트
+  updateATRGuide();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RSI 방향 전환 감지 — 바닥에서 올라서는 순간
+═══════════════════════════════════════════════════════════ */
+let _rsiTurnCd = 0;
+function checkRSITurnaround() {
+  const now = Date.now();
+  if(now - _rsiTurnCd < 60000) return; // 1분 쿨다운
+
+  const rsi = D.rsi, prev = D.rsiPrev;
+  if(!rsi || !prev) return;
+
+  // 과매도 구간(35 이하)에서 상승 전환
+  if(prev <= 35 && rsi > prev && rsi > 20) {
+    _rsiTurnCd = now;
+    const msg = `🔄 4H RSI 바닥 반등 감지 — ${prev.toFixed(1)} → ${rsi.toFixed(1)} | 매수 타이밍 주시`;
+    addNewsItem('RSI전환', 'nb-grn', msg);
+    // 시그널 배너
+    const banner = $('signal-banner');
+    if(banner) {
+      banner.className = '';
+      banner.textContent = `🔄 RSI 바닥 반등 · ${prev.toFixed(1)} → ${rsi.toFixed(1)} · 진입 신호 확인`;
+      void banner.offsetWidth;
+      banner.className = 'sig-buy banner-show';
+    }
+  }
+
+  // 과매수 구간(65 이상)에서 하락 전환
+  if(prev >= 65 && rsi < prev && rsi < 80) {
+    _rsiTurnCd = now;
+    const msg = `⚠️ 4H RSI 고점 하락 전환 — ${prev.toFixed(1)} → ${rsi.toFixed(1)} | 진입 자제`;
+    addNewsItem('RSI전환', 'nb-red', msg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ATR 손절선 가이드 업데이트
+═══════════════════════════════════════════════════════════ */
+function updateATRGuide() {
+  if(D.candles4h.length < 15 || !D.price) return;
+  const atr = calcATR(D.candles4h, 14);
+  if(!atr) return;
+
+  const p = D.price;
+  const stop    = p - atr * 1.5;   // 손절선 (ATR × 1.5)
+  const target1 = p + atr * 2.0;   // 1차 목표 (ATR × 2)
+  const target2 = p + atr * 3.0;   // 2차 목표 (ATR × 3)
+  const risk    = p - stop;
+  const reward1 = target1 - p;
+  const rr      = (reward1 / risk).toFixed(1);
+
+  st('atr-current', '$' + fp(p),       D.chg >= 0 ? 'up' : 'dn');
+  st('atr-stop',    '$' + fp(stop),    'dn');
+  st('atr-target1', '$' + fp(target1), 'up');
+  st('atr-target2', '$' + fp(target2), 'up');
+  st('atr-value',   '$' + Math.round(atr).toLocaleString(), 'yl');
+  st('atr-rr',      '1 : ' + rr,       +rr >= 2 ? 'up' : +rr >= 1.5 ? 'cy' : 'yl');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   멀티 타임프레임 — 1D / 4H / 15분 스코어
+═══════════════════════════════════════════════════════════ */
+async function fetchMTFCandles() {
+  // 1D 캔들
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=60');
+    if(r.ok) {
+      const data = await r.json();
+      D.candles1d = data.map(k => ({ ts:+k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5] }));
+    }
+  } catch(e) {}
+
+  // 15분 캔들
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=100');
+    if(r.ok) {
+      const data = await r.json();
+      D.candles15m = data.map(k => ({ ts:+k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5] }));
+    }
+  } catch(e) {}
+
+  updateMTFDisplay();
+}
+
+function updateMTFDisplay() {
+  // 4H (이미 계산됨)
+  const rsi4h = D.rsi || 50;
+  const score4h = D.compScore || 50; // updateIntelBars에서 설정
+
+  // 1D RSI
+  let rsi1d = 50, score1d = 50;
+  if(D.candles1d.length >= 15) {
+    const c1d = D.candles1d.map(c => c.close);
+    rsi1d = calcRSI(c1d);
+    D.rsi1d = rsi1d;
+    // 1D 스코어: RSI + MACD 기반 간단 계산
+    const macd1d = calcMACD(c1d);
+    const hist1d = macd1d ? macd1d.lh : 0;
+    score1d = Math.round(
+      (rsi1d / 100) * 50 +
+      (hist1d > 0 ? 25 : 0) +
+      (D.chg >= 0 ? 12 : 0) +
+      (rsi1d < 40 ? 13 : rsi1d > 60 ? 0 : 6)
+    );
+    score1d = Math.max(0, Math.min(100, score1d));
+  }
+
+  // 15분 RSI
+  let rsi15m = 50, score15m = 50;
+  if(D.candles15m.length >= 15) {
+    const c15m = D.candles15m.map(c => c.close);
+    rsi15m = calcRSI(c15m);
+    D.rsi15m = rsi15m;
+    const macd15m = calcMACD(c15m);
+    const hist15m = macd15m ? macd15m.lh : 0;
+    score15m = Math.round(
+      (rsi15m / 100) * 50 +
+      (hist15m > 0 ? 25 : 0) +
+      (D.chg >= 0 ? 12 : 0) +
+      (rsi15m < 40 ? 13 : rsi15m > 60 ? 0 : 6)
+    );
+    score15m = Math.max(0, Math.min(100, score15m));
+  }
+
+  // DOM 업데이트
+  const tfData = [
+    { id:'1d', score:score1d,  rsi:rsi1d  },
+    { id:'4h', score:score4h,  rsi:rsi4h  },
+    { id:'15m', score:score15m, rsi:rsi15m },
+  ];
+
+  tfData.forEach(tf => {
+    const cls = tf.score >= 58 ? 'up' : tf.score <= 42 ? 'dn' : 'yl';
+    const label = tf.score >= 65 ? '매수' : tf.score >= 52 ? '중립↑' : tf.score >= 48 ? '중립' : tf.score >= 35 ? '중립↓' : '매도';
+    st(`mtf-${tf.id}-score`, tf.score, cls);
+    st(`mtf-${tf.id}-label`, label, cls);
+    st(`mtf-${tf.id}-rsi`, tf.rsi.toFixed(1),
+       tf.rsi >= 65 ? 'dn' : tf.rsi <= 35 ? 'up' : 'tx1');
+  });
+
+  // 정렬 신호
+  const sigEl = $('mtf-signal');
+  if(sigEl) {
+    const allBuy  = score1d >= 52 && score4h >= 52 && score15m >= 52;
+    const allSell = score1d <= 48 && score4h <= 48 && score15m <= 48;
+    const buy2    = [score1d>=52, score4h>=52, score15m>=52].filter(Boolean).length >= 2;
+    const sell2   = [score1d<=48, score4h<=48, score15m<=48].filter(Boolean).length >= 2;
+
+    if(allBuy)  { sigEl.textContent='✅ 전 타임프레임 매수 정렬 — 강력 진입 신호'; sigEl.style.cssText='margin-top:5px;padding:5px 8px;border-radius:4px;font-size:12px;font-weight:700;text-align:center;background:var(--upd);color:var(--up);border:1px solid var(--up)'; }
+    else if(allSell) { sigEl.textContent='❌ 전 타임프레임 매도 정렬 — 진입 금지'; sigEl.style.cssText='margin-top:5px;padding:5px 8px;border-radius:4px;font-size:12px;font-weight:700;text-align:center;background:var(--dnd);color:var(--dn);border:1px solid var(--dn)'; }
+    else if(buy2)  { sigEl.textContent='🟡 2/3 매수 정렬 — 진입 고려 가능'; sigEl.style.cssText='margin-top:5px;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;text-align:center;background:rgba(240,180,41,.12);color:var(--yl);border:1px solid var(--yl)'; }
+    else if(sell2) { sigEl.textContent='🟠 2/3 매도 정렬 — 진입 자제'; sigEl.style.cssText='margin-top:5px;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;text-align:center;background:var(--dnd);color:var(--dn);border:1px solid rgba(255,73,74,.4)'; }
+    else           { sigEl.textContent='⚪ 타임프레임 불일치 — 관망'; sigEl.style.cssText='margin-top:5px;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;text-align:center;background:var(--bg3);color:var(--tx2)'; }
+  }
 }
 
 async function fetchFutures() {
@@ -2661,6 +2882,7 @@ function updateIntelBars() {
   const totalW = scores.reduce((s,x) => s + x.w, 0);
   const composite = scores.reduce((s,x) => s + x.val * x.w, 0) / totalW;
   const compInt = Math.round(composite);
+  D.compScore = compInt;  // 멀티TF에서 사용
   const compLabel = compInt >= 70 ? '강한 매수' : compInt >= 55 ? '매수 우세' : compInt <= 30 ? '강한 매도' : compInt <= 45 ? '매도 우세' : '중립';
   const compCls = compInt >= 55 ? 'up' : compInt <= 45 ? 'dn' : 'yl';
   st('composite-score', `${compInt}`, compCls);
@@ -3355,6 +3577,12 @@ window.addEventListener('load', async()=>{
   // 알트코인 티커 초기 로드 + 3분마다 갱신
   fetchTickerCoins();
   setInterval(fetchTickerCoins, 180000);
+
+  // 멀티 타임프레임 (1D + 15분) 초기 로드 + 10분마다 갱신
+  fetchMTFCandles();
+  setInterval(fetchMTFCandles, 600000);
+  // MTF 디스플레이는 5초마다 갱신
+  setInterval(updateMTFDisplay, 5000);
 
   // 트레이딩 인텔
   fetchFundingHist();
