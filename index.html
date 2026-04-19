@@ -117,7 +117,7 @@ html, body {
 ═══════════════════════════════════════════════════════ */
 #root {
   display: grid;
-  grid-template-rows: 64px 48px 1fr 44px;
+  grid-template-rows: 48px 64px 1fr 44px;
   height: 100vh;
   gap: 3px;
   padding: 4px;
@@ -1172,13 +1172,6 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
 
 <!-- ═══ 상태바 ════════════════════════════════════════════ -->
 <!-- ═══ 알트코인 슬라이딩 티커 ════════════════════════════ -->
-<div id="ticker-bar">
-  <div id="ticker-track">
-    <span class="tick-item" style="color:var(--tx3);font-size:16px;padding:0 16px;border-right:1px solid var(--bd1)">⬛ MARKET</span>
-    <!-- JS로 동적 생성 -->
-  </div>
-</div>
-
 <div id="statusbar">
   <div class="sb"><span class="sk">BTC/USDT</span>&nbsp;<span class="sv num-up" id="s-price" style="font-size:17px;font-weight:700">로딩...</span></div>
   <span class="ssep">│</span>
@@ -1202,6 +1195,13 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
   <span class="ssep">│</span>
   <div class="sb"><span class="sk">CVD</span>&nbsp;<span class="sv" id="s-cvd">--</span></div>
   <span class="ssep">│</span>
+</div>
+
+<div id="ticker-bar">
+  <div id="ticker-track">
+    <span class="tick-item" style="color:var(--tx3);font-size:16px;padding:0 16px;border-right:1px solid var(--bd1)">⬛ MARKET</span>
+    <!-- JS로 동적 생성 -->
+  </div>
 </div>
 
 <!-- ═══ 메인 그리드 ══════════════════════════════════════ -->
@@ -1302,10 +1302,10 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
       </div>
 
-      <!-- B. 대형 청산 감지 (전체 코인 $100K+) -->
+      <!-- B. 고래 움직임 포착 (전체 코인 $100K+) -->
       <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-          <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 대형 청산 감지</span>
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 움직임 포착</span>
           <span style="font-size:11px;color:var(--tx3)">전체코인 $100K+</span>
         </div>
         <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:140px;overflow-y:auto">
