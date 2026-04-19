@@ -1362,9 +1362,20 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
 
       <!-- B. 고래 움직임 포착 (전체 코인 $100K+) -->
       <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 움직임 포착</span>
           <span style="font-size:11px;color:var(--tx3)">전체코인 $100K+</span>
+        </div>
+        <!-- 매수/매도 누적 금액 -->
+        <div style="display:flex;gap:4px;margin-bottom:4px">
+          <div style="flex:1;background:var(--upd);border:1px solid rgba(0,192,118,.3);border-radius:4px;padding:3px 6px;text-align:center">
+            <div style="font-size:10px;color:var(--up)">🟢 매수 청산</div>
+            <div id="whale-buy-total" style="font-size:14px;font-weight:700;color:var(--up)">$0</div>
+          </div>
+          <div style="flex:1;background:var(--dnd);border:1px solid rgba(255,73,74,.3);border-radius:4px;padding:3px 6px;text-align:center">
+            <div style="font-size:10px;color:var(--dn)">🔴 매도 청산</div>
+            <div id="whale-sell-total" style="font-size:14px;font-weight:700;color:var(--dn)">$0</div>
+          </div>
         </div>
         <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:140px;overflow-y:auto">
           <div style="font-size:12px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
@@ -2171,24 +2182,36 @@ function updateCvdChart() {
 ═══════════════════════════════════════════════════════════ */
 const OF = {
   buyVol: 0, sellVol: 0,
-  whales: [],          // 최근 고래 체결 (100K+)
+  whales: [],           // 최근 고래 체결 (100K+)
+  whaleBuyTotal: 0,     // 고래 매수 누적
+  whaleSellTotal: 0,    // 고래 매도 누적
   resetAt: Date.now() + 60000,  // 1분마다 리셋
 };
 
 function resetOF() {
   OF.buyVol = 0; OF.sellVol = 0;
+  OF.whaleBuyTotal = 0; OF.whaleSellTotal = 0;
   OF.resetAt = Date.now() + 60000;
 }
 
 function addWhale(price, usd, isBuy, ts, coin='BTC') {
   OF.whales.unshift({ price, usd, isBuy, ts, coin });
-  if(OF.whales.length > 6) OF.whales.pop();
+  if(OF.whales.length > 8) OF.whales.pop();
+  // 누적 금액 업데이트
+  if(isBuy) OF.whaleBuyTotal += usd;
+  else       OF.whaleSellTotal += usd;
   renderWhales();
 }
 
 function renderWhales() {
   const el = $('of-whale-list');
   if(!el) return;
+
+  // 누적 금액 업데이트
+  const fmt = v => v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v/1e3).toFixed(0)}K` : '$0';
+  st('whale-buy-total',  fmt(OF.whaleBuyTotal),  'up');
+  st('whale-sell-total', fmt(OF.whaleSellTotal), 'dn');
+
   if(!OF.whales.length) {
     el.innerHTML = '<div style="font-size:12px;color:var(--tx3);text-align:center;padding:6px">대기중...</div>';
     return;
