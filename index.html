@@ -117,7 +117,7 @@ html, body {
 ═══════════════════════════════════════════════════════ */
 #root {
   display: grid;
-  grid-template-rows: 32px 48px 1fr 44px;
+  grid-template-rows: 64px 48px 1fr 44px;
   height: 100vh;
   gap: 3px;
   padding: 4px;
@@ -155,20 +155,20 @@ html, body {
 .tick-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 18px;
-  font-size: 14px;
+  gap: 8px;
+  padding: 0 24px;
+  font-size: 18px;
   font-weight: 600;
   border-right: 1px solid var(--bd0);
-  height: 32px;
+  height: 64px;
   white-space: nowrap;
 }
 .tick-sym { color: var(--tx0); font-weight: 700; letter-spacing: .5px; }
 .tick-price { color: var(--tx1); }
 .tick-chg-up { color: var(--up); }
 .tick-chg-dn { color: var(--dn); }
-.tick-arrow-up { color: var(--up); font-size: 10px; }
-.tick-arrow-dn { color: var(--dn); font-size: 10px; }
+.tick-arrow-up { color: var(--up); font-size: 13px; }
+.tick-arrow-dn { color: var(--dn); font-size: 13px; }
 #title-main {
   font-family: var(--fv);
   font-size: 42px;
@@ -241,7 +241,7 @@ html, body {
 /* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
 #col-l {
   display: grid;
-  grid-template-rows: 2fr 4fr 4fr;
+  grid-template-rows: 1fr 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -355,10 +355,10 @@ html, body {
 }
 .tr {
   display: grid;
-  grid-template-columns: auto 50px 1fr auto;
-  gap: 5px;
-  padding: 3px 6px;
-  font-size: 14px;
+  grid-template-columns: auto 1fr auto;
+  gap: 3px;
+  padding: 3px 5px;
+  font-size: 12px;
   border-left: 2px solid transparent;
   border-radius: 0 2px 2px 0;
   animation: trin .2s ease;
@@ -367,7 +367,7 @@ html, body {
 .tr.buy  { border-left-color: var(--up); background: var(--upd); }
 .tr.sell { border-left-color: var(--dn); background: var(--dnd); }
 .tr.big  { font-weight: 600; }
-.ttime   { color: var(--tx3); font-size: 12px; }
+.ttime   { color: var(--tx3); font-size: 11px; }
 .tbuy    { color: var(--up); }
 .tsell   { color: var(--dn); }
 
@@ -933,7 +933,7 @@ html, body {
   /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
   #col-l.mob-active {
     display: grid !important;
-    grid-template-rows: 2fr 4fr 4fr;
+    grid-template-rows: 1fr 1fr;
     gap: 2px;
     overflow: hidden;
   }
@@ -1174,7 +1174,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
 <!-- ═══ 알트코인 슬라이딩 티커 ════════════════════════════ -->
 <div id="ticker-bar">
   <div id="ticker-track">
-    <span class="tick-item" style="color:var(--tx3);font-size:12px;padding:0 12px;border-right:1px solid var(--bd1)">⬛ MARKET</span>
+    <span class="tick-item" style="color:var(--tx3);font-size:16px;padding:0 16px;border-right:1px solid var(--bd1)">⬛ MARKET</span>
     <!-- JS로 동적 생성 -->
   </div>
 </div>
@@ -1210,16 +1210,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
   <!-- ─ 좌측 컬럼 ──────────────────────────────────── -->
   <div id="col-l">
 
-    <!-- 실시간 체결 (비율 2) -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd">
-        <div class="hd-title"><div class="hd-dot" style="background:var(--cy);box-shadow:0 0 5px var(--cy)"></div>실시간 체결</div>
-        <span id="trade-counter" style="font-size:11px;color:var(--tx2)"><span class="up">구매 0</span> / <span class="dn">판매 0</span> &nbsp;<span class="tx2" id="trade-timer">5:00</span></span>
-      </div>
-      <div id="tr-list"></div>
-    </div>
-
-    <!-- 실시간 속보 (비율 3) -->
+    <!-- 실시간 속보 -->
     <div class="panel" id="news-panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>실시간 속보</div>
@@ -1247,7 +1238,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
   <!-- ─ 중앙 컬럼 ──────────────────────────────────── -->
   <div id="col-c">
 
-    <!-- 캔들차트 -->
+    <!-- 캔들차트 + 실시간 체결 (가로 배치) -->
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd" style="padding:3px 8px">
         <div class="hd-title" style="gap:8px">
@@ -1263,18 +1254,25 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
         <span id="ov-price-top" style="font-family:var(--fm);font-size:28px;font-weight:700;color:var(--up)">--</span>
       </div>
-      <div id="cw">
-        <canvas id="cChart"></canvas>
-        <div class="cov-l">
-          <div class="ovpill"><span class="opk">24H변동</span><span id="ov-chg">--</span></div>
-          <div class="ovpill"><span class="opk">고가</span><span class="up" id="ov-high">--</span></div>
-          <div class="ovpill"><span class="opk">저가</span><span class="dn" id="ov-low">--</span></div>
-          <div class="ovpill"><span class="opk">거래량</span><span id="ov-vol">--</span></div>
-          <div class="ovpill"><span class="opk">시총</span><span id="ov-mcap">--</span></div>
+      <!-- 캔들 + 체결 가로 분할 -->
+      <div style="display:flex;flex:1;min-height:0;gap:0">
+        <!-- 캔들 영역 -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative">
+          <div id="cw" style="flex:1;position:relative;min-height:0">
+            <canvas id="cChart"></canvas>
+            <div class="cov-l">
+              <div class="ovpill"><span class="opk">24H변동</span><span id="ov-chg">--</span></div>
+              <div class="ovpill"><span class="opk">고가</span><span class="up" id="ov-high">--</span></div>
+              <div class="ovpill"><span class="opk">저가</span><span class="dn" id="ov-low">--</span></div>
+              <div class="ovpill"><span class="opk">거래량</span><span id="ov-vol">--</span></div>
+              <div class="ovpill"><span class="opk">시총</span><span id="ov-mcap">--</span></div>
+            </div>
+          </div>
+          <div id="btc-vol-bar" class="vol-bar-wrap"></div>
         </div>
+        <!-- tr-list 숨김 유지 (JS 오류 방지) -->
+        <div id="tr-list" style="display:none"></div>
       </div>
-      <!-- 거래량 바 (캔들과 분리) -->
-      <div id="btc-vol-bar" class="vol-bar-wrap"></div>
     </div>
 
     <!-- 오더플로우 패널 — 실전 매수/매도 판단 -->
@@ -2237,7 +2235,7 @@ function addTrade(price, qty, isBuy, ts) {
   const side=isBuy?'구매':'판매';
   const d=document.createElement('div');
   d.className=`tr ${cls}${big?' big':''}`;
-  d.innerHTML=`<span class="ttime">${ts}</span><span class="${sc}">${side}${big?'◆':''}</span><span style="color:${isBuy?'var(--up)':'var(--dn)'};font-weight:500">$${fp(price)}</span><span style="color:var(--tx2)">${(+qty).toFixed(4)}</span>`;
+  d.innerHTML=`<span class="ttime">${ts}</span><span class="${sc}">${side}${big?'◆':''}</span><span style="color:${isBuy?'var(--up)':'var(--dn)'};font-weight:600">$${fp(price)}</span>`;
   
   // 대형 거래 펄스 효과
   if(big) {
