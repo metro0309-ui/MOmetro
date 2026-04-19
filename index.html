@@ -1369,11 +1369,11 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         <!-- 매수/매도 누적 금액 -->
         <div style="display:flex;gap:4px;margin-bottom:4px">
           <div style="flex:1;background:var(--upd);border:1px solid rgba(0,192,118,.3);border-radius:4px;padding:3px 6px;text-align:center">
-            <div style="font-size:10px;color:var(--up)">🟢 매수 청산</div>
+            <div style="font-size:10px;color:var(--up)">🟢 매수청산 24H</div>
             <div id="whale-buy-total" style="font-size:14px;font-weight:700;color:var(--up)">$0</div>
           </div>
           <div style="flex:1;background:var(--dnd);border:1px solid rgba(255,73,74,.3);border-radius:4px;padding:3px 6px;text-align:center">
-            <div style="font-size:10px;color:var(--dn)">🔴 매도 청산</div>
+            <div style="font-size:10px;color:var(--dn)">🔴 매도청산 24H</div>
             <div id="whale-sell-total" style="font-size:14px;font-weight:700;color:var(--dn)">$0</div>
           </div>
         </div>
@@ -2183,14 +2183,26 @@ function updateCvdChart() {
 const OF = {
   buyVol: 0, sellVol: 0,
   whales: [],           // 최근 고래 체결 (100K+)
-  whaleBuyTotal: 0,     // 고래 매수 누적
-  whaleSellTotal: 0,    // 고래 매도 누적
-  resetAt: Date.now() + 60000,  // 1분마다 리셋
+  whaleBuyTotal: 0,     // 고래 매수 청산 누적 (24H)
+  whaleSellTotal: 0,    // 고래 매도 청산 누적 (24H)
+  whaleResetAt: _nextMidnight(), // 다음 자정
+  resetAt: Date.now() + 60000,
 };
+
+function _nextMidnight() {
+  const d = new Date(); d.setHours(24,0,0,0); return d.getTime();
+}
+
+function resetWhaleTotal() {
+  OF.whaleBuyTotal = 0;
+  OF.whaleSellTotal = 0;
+  OF.whaleResetAt = _nextMidnight();
+  addEv('ee', '🐋 고래 누적 24H 리셋');
+}
 
 function resetOF() {
   OF.buyVol = 0; OF.sellVol = 0;
-  OF.whaleBuyTotal = 0; OF.whaleSellTotal = 0;
+  // whaleBuyTotal / whaleSellTotal 은 24H 기준 — 여기서 리셋 안 함
   OF.resetAt = Date.now() + 60000;
 }
 
@@ -2243,8 +2255,10 @@ function renderWhales() {
 }
 
 function updateOrderflow() {
-  // 1분 리셋
+  // 1분 리셋 (매수/매도 압력)
   if(Date.now() > OF.resetAt) resetOF();
+  // 24H 리셋 (고래 누적)
+  if(Date.now() > OF.whaleResetAt) resetWhaleTotal();
 
   const total = OF.buyVol + OF.sellVol || 1;
   const buyPct = Math.round(OF.buyVol / total * 100);
