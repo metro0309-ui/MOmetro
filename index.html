@@ -117,7 +117,7 @@ html, body {
 ═══════════════════════════════════════════════════════ */
 #root {
   display: grid;
-  grid-template-rows: 48px 1fr 44px;
+  grid-template-rows: 32px 48px 1fr 44px;
   height: 100vh;
   gap: 3px;
   padding: 4px;
@@ -128,6 +128,47 @@ html, body {
 #topbar {
   display: none !important;
 }
+
+/* ═══ 알트코인 티커 바 ════════════════════════════════════ */
+#ticker-bar {
+  background: var(--bg1);
+  border: 1px solid var(--bd0);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+#ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+  animation: tickerScroll 60s linear infinite;
+  will-change: transform;
+}
+#ticker-track:hover { animation-play-state: paused; }
+@keyframes tickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.tick-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-right: 1px solid var(--bd0);
+  height: 32px;
+  white-space: nowrap;
+}
+.tick-sym { color: var(--tx0); font-weight: 700; letter-spacing: .5px; }
+.tick-price { color: var(--tx1); }
+.tick-chg-up { color: var(--up); }
+.tick-chg-dn { color: var(--dn); }
+.tick-arrow-up { color: var(--up); font-size: 10px; }
+.tick-arrow-dn { color: var(--dn); font-size: 10px; }
 #title-main {
   font-family: var(--fv);
   font-size: 42px;
@@ -684,36 +725,39 @@ html, body {
   pointer-events: none;
   text-align: center;
   font-family: var(--fv);
-  font-size: 32px;
+  font-size: 42px;
   font-weight: 700;
-  letter-spacing: 4px;
-  padding: 10px 0;
+  letter-spacing: 6px;
+  padding: 14px 0 18px;
   opacity: 0;
   transform: translateY(-100%);
 }
 #signal-banner.banner-show {
-  animation: bannerSlide 4s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation: bannerSlide 6s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 #signal-banner.sig-buy {
-  background: linear-gradient(180deg, rgba(0,192,118,.92) 0%, rgba(0,192,118,0) 100%);
+  background: linear-gradient(180deg, rgba(0,192,118,.97) 0%, rgba(0,192,118,.4) 60%, rgba(0,192,118,0) 100%);
   color: #fff;
-  text-shadow: 0 0 20px rgba(0,192,118,.8);
+  text-shadow: 0 0 30px rgba(0,255,150,.9), 0 2px 8px rgba(0,0,0,.8);
+  border-bottom: 2px solid rgba(0,192,118,.6);
 }
 #signal-banner.sig-sell {
-  background: linear-gradient(180deg, rgba(255,73,74,.92) 0%, rgba(255,73,74,0) 100%);
+  background: linear-gradient(180deg, rgba(255,73,74,.97) 0%, rgba(255,73,74,.4) 60%, rgba(255,73,74,0) 100%);
   color: #fff;
-  text-shadow: 0 0 20px rgba(255,73,74,.8);
+  text-shadow: 0 0 30px rgba(255,80,80,.9), 0 2px 8px rgba(0,0,0,.8);
+  border-bottom: 2px solid rgba(255,73,74,.6);
 }
 #signal-banner.sig-neutral {
-  background: linear-gradient(180deg, rgba(240,180,41,.85) 0%, rgba(240,180,41,0) 100%);
+  background: linear-gradient(180deg, rgba(240,180,41,.92) 0%, rgba(240,180,41,.3) 60%, rgba(240,180,41,0) 100%);
   color: #fff;
-  text-shadow: 0 0 20px rgba(240,180,41,.8);
+  text-shadow: 0 0 30px rgba(255,200,50,.9), 0 2px 8px rgba(0,0,0,.8);
+  border-bottom: 2px solid rgba(240,180,41,.6);
 }
 @keyframes bannerSlide {
   0%   { opacity:0; transform:translateY(-100%); }
-  8%   { opacity:1; transform:translateY(0); }
-  75%  { opacity:1; transform:translateY(0); }
-  100% { opacity:0; transform:translateY(-100%); }
+  6%   { opacity:1; transform:translateY(0); }
+  80%  { opacity:1; transform:translateY(0); }
+  100% { opacity:0; transform:translateY(-20%); }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -801,7 +845,7 @@ html, body {
   html, body { overflow: auto; font-size: 13px; }
 
   /* 데스크톱 전용 요소 숨김 */
-  #topbar, #statusbar, #botbar { display: none !important; }
+  #topbar, #statusbar, #botbar, #ticker-bar { display: none !important; }
 
   /* root 그리드 → 모바일 세로 레이아웃 */
   #root {
@@ -1071,6 +1115,16 @@ html, body {
 .vol-glow {
   animation: volGlow 0.8s ease-in-out;
 }
+/* ═══ 방송모드 ═══════════════════════════════════════════ */
+body.broadcast-mode #col-l { display: none !important; }
+body.broadcast-mode #main {
+  grid-template-columns: 0 1fr 2.8fr !important;
+}
+body.broadcast-mode #composite-score { font-size: 48px !important; }
+body.broadcast-mode #secret-score    { font-size: 48px !important; }
+body.broadcast-mode .ir-hd           { font-size: 16px !important; }
+body.broadcast-mode .ir-bg           { height: 10px !important; }
+body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color: var(--up) !important; border-color: var(--up) !important; }
 </style>
 </head>
 <body>
@@ -1117,8 +1171,16 @@ html, body {
 </div>
 
 <!-- ═══ 상태바 ════════════════════════════════════════════ -->
+<!-- ═══ 알트코인 슬라이딩 티커 ════════════════════════════ -->
+<div id="ticker-bar">
+  <div id="ticker-track">
+    <span class="tick-item" style="color:var(--tx3);font-size:12px;padding:0 12px;border-right:1px solid var(--bd1)">⬛ MARKET</span>
+    <!-- JS로 동적 생성 -->
+  </div>
+</div>
+
 <div id="statusbar">
-  <div class="sb"><span class="sk">BTC/USDT</span>&nbsp;<span class="sv num-up" id="s-price" style="font-size:15px;font-weight:700">로딩...</span></div>
+  <div class="sb"><span class="sk">BTC/USDT</span>&nbsp;<span class="sv num-up" id="s-price" style="font-size:17px;font-weight:700">로딩...</span></div>
   <span class="ssep">│</span>
   <div class="sb"><span class="sk">24H</span>&nbsp;<span class="sv" id="s-chg">--</span></div>
   <span class="ssep">│</span>
@@ -1133,7 +1195,6 @@ html, body {
   <div class="sb"><span class="sk">OI</span>&nbsp;<span class="sv bl" id="s-oi">--</span></div>
   <span class="ssep">│</span>
   <div class="sb"><span class="sk">롱/숏</span>&nbsp;<span class="sv" id="s-ls">--</span></div>
-  <span class="ssep">│</span>
   <span class="ssep">│</span>
   <div class="sb"><span class="sk">ETH</span>&nbsp;<span class="sv" id="s-eth" style="color:var(--cy)">--</span></div>
   <span class="ssep">│</span>
@@ -1200,7 +1261,7 @@ html, body {
           </div>
           <span id="ohlc-lbl" style="font-size:12px;color:var(--tx2)"></span>
         </div>
-        <span id="ov-price-top" style="font-family:var(--fm);font-size:24px;font-weight:700;color:var(--up)">--</span>
+        <span id="ov-price-top" style="font-family:var(--fm);font-size:28px;font-weight:700;color:var(--up)">--</span>
       </div>
       <div id="cw">
         <canvas id="cChart"></canvas>
@@ -1243,11 +1304,11 @@ html, body {
         </div>
       </div>
 
-      <!-- B. 고래 감지 (최근 대형 체결) -->
+      <!-- B. 대형 청산 감지 (전체 코인 $100K+) -->
       <div style="padding:5px 10px;border-bottom:1px solid var(--bd0)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-          <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 감지</span>
-          <span style="font-size:11px;color:var(--tx3)">$100K+</span>
+          <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 대형 청산 감지</span>
+          <span style="font-size:11px;color:var(--tx3)">전체코인 $100K+</span>
         </div>
         <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:140px;overflow-y:auto">
           <div style="font-size:12px;color:var(--tx3);text-align:center;padding:4px">대기중...</div>
@@ -1406,7 +1467,7 @@ html, body {
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
             <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
             <span style="display:flex;align-items:baseline;gap:6px">
-              <span id="composite-score" style="font-family:var(--fv);font-size:28px;font-weight:700" class="yl">--</span>
+              <span id="composite-score" style="font-family:var(--fv);font-size:32px;font-weight:700" class="yl">--</span>
               <span id="composite-label" style="font-size:11px;font-weight:600" class="yl">분석중</span>
             </span>
           </div>
@@ -1425,7 +1486,7 @@ html, body {
               <span style="font-size:11px;color:var(--tx3);font-weight:500">진입 적합도</span>
             </span>
             <span style="display:flex;align-items:baseline;gap:6px">
-              <span id="secret-score" style="font-family:var(--fv);font-size:28px;font-weight:700" class="cy">--</span>
+              <span id="secret-score" style="font-family:var(--fv);font-size:32px;font-weight:700" class="cy">--</span>
               <span id="secret-label" style="font-size:12px;font-weight:600" class="cy">분석중</span>
             </span>
           </div>
@@ -1448,6 +1509,8 @@ html, body {
 <!-- ═══ 하단바 ═════════════════════════════════════════════ -->
 <div id="botbar">
   <span class="bbadge">▶ METRO 전략 가동</span>
+  <span class="ssep">│</span>
+  <button id="broadcast-btn" onclick="toggleBroadcastMode()" style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--bd2);background:var(--bg3);color:var(--tx1);cursor:pointer;letter-spacing:1px">📺 방송모드</button>
   <span class="ssep">│</span>
   <span><span class="sk">1분변동</span>&nbsp;<span id="b-delta" style="font-weight:700;font-size:14px" class="yl">$0</span></span>
   <span class="ssep">│</span>
@@ -2073,14 +2136,25 @@ function renderWhales() {
   }
   el.innerHTML = OF.whales.map(w => {
     const cls = w.isBuy ? 'up' : 'dn';
-    const side = w.isBuy ? '🟢 매수' : '🔴 매도';
+    const coinCls = w.coin === 'BTC' ? 'yl' : w.coin === 'ETH' ? 'cy' : 'tx1';
     const amt = w.usd >= 1000000 ? `$${(w.usd/1000000).toFixed(1)}M` : `$${(w.usd/1000).toFixed(0)}K`;
-    const coinCls = w.coin === 'BTC' ? 'yl' : 'cy';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:2px 0;border-bottom:1px solid var(--bd0)">
-      <span style="font-weight:700;font-size:11px" class="${coinCls}">${w.coin}</span>
-      <span class="${cls}" style="font-weight:600">${side}</span>
+
+    // 청산이면 "청산" 표기, 일반 거래면 "매수/매도"
+    let typeLabel, typeStyle;
+    if(w.isLiq) {
+      typeLabel = w.isBuy ? '🔴 숏청산' : '🟢 롱청산';
+      typeStyle = w.isHuge ? 'font-weight:700;font-size:13px' : 'font-weight:600';
+    } else {
+      typeLabel = w.isBuy ? '🟢 매수' : '🔴 매도';
+      typeStyle = 'font-weight:600';
+    }
+    const hugeMark = w.isHuge ? ' 🔥' : '';
+
+    return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--bd0)">
+      <span style="font-weight:700;font-size:11px;min-width:36px" class="${coinCls}">${w.coin}</span>
+      <span style="${typeStyle}">${typeLabel}</span>
       <span style="color:var(--tx1)">$${fp(w.price)}</span>
-      <span style="font-weight:700" class="${cls}">${amt}</span>
+      <span style="font-weight:700${w.isHuge?';font-size:13px':''}" class="${cls}">${amt}${hugeMark}</span>
       <span style="font-size:11px;color:var(--tx3)">${w.ts}</span>
     </div>`;
   }).join('');
@@ -2452,6 +2526,64 @@ async function fetchCG() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   알트코인 슬라이딩 티커 — CoinGecko Top 30 (스테이블 제외)
+═══════════════════════════════════════════════════════════ */
+const STABLE_LIST = ['usdt','usdc','busd','dai','tusd','usdp','usdd','gusd','frax','lusd','susd','usdn','fdusd','pyusd','stasis-eurs','steth','wbtc','weth'];
+
+async function fetchTickerCoins() {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=40&page=1&sparkline=false&price_change_percentage=24h', {
+      signal: AbortSignal.timeout(10000)
+    });
+    if(!r.ok) return;
+    const coins = await r.json();
+    // 스테이블코인 + 래핑코인 제외
+    const filtered = coins.filter(c =>
+      !STABLE_LIST.includes(c.id) &&
+      !c.id.includes('usd') &&
+      !c.id.includes('staked') &&
+      c.symbol.toLowerCase() !== 'usdt' &&
+      c.symbol.toLowerCase() !== 'usdc' &&
+      c.symbol.toLowerCase() !== 'busd' &&
+      c.symbol.toLowerCase() !== 'dai' &&
+      c.current_price > 0
+    ).slice(0, 30);
+    renderTickerBar(filtered);
+  } catch(e) {}
+}
+
+function renderTickerBar(coins) {
+  const track = $('ticker-track');
+  if(!track || !coins.length) return;
+
+  const makeItems = () => coins.map(c => {
+    const chg = c.price_change_percentage_24h || 0;
+    const isUp = chg >= 0;
+    const arrow = isUp ? '▲' : '▼';
+    const chgCls = isUp ? 'tick-chg-up' : 'tick-chg-dn';
+    const arrowCls = isUp ? 'tick-arrow-up' : 'tick-arrow-dn';
+    // 가격 포맷
+    const price = c.current_price >= 1000 ? `$${c.current_price.toLocaleString('en',{maximumFractionDigits:0})}`
+                : c.current_price >= 1    ? `$${c.current_price.toFixed(2)}`
+                : c.current_price >= 0.01 ? `$${c.current_price.toFixed(4)}`
+                                           : `$${c.current_price.toFixed(6)}`;
+    return `<span class="tick-item">
+      <span class="tick-sym">${c.symbol.toUpperCase()}</span>
+      <span class="tick-price">${price}</span>
+      <span class="${arrowCls}">${arrow}</span>
+      <span class="${chgCls}">${Math.abs(chg).toFixed(2)}%</span>
+    </span>`;
+  }).join('');
+
+  // 무한 루프: 동일 내용 2번 반복
+  track.innerHTML = makeItems() + makeItems();
+
+  // 속도 조정: 코인 수에 따라 동적 계산 (코인당 약 2초)
+  const duration = Math.max(40, coins.length * 2.5);
+  track.style.animationDuration = duration + 's';
+}
+
+/* ═══════════════════════════════════════════════════════════
    DOM 업데이트
 ═══════════════════════════════════════════════════════════ */
 function updateTickerDOM() {
@@ -2658,6 +2790,13 @@ function updateSecretScore(compScore) {
 
   const cls = score >= 63 ? 'up' : score >= 48 ? 'cy' : score >= 30 ? 'yl' : 'dn';
 
+  // 방송용 해석 텍스트
+  const advice = score >= 78 ? '✅ 지금 진입 적극 고려' :
+                 score >= 63 ? '🟡 진입 가능 · 손절선 확인' :
+                 score >= 48 ? '⚠️ 관망 권장 · 추가 확인 필요' :
+                 score >= 30 ? '🚫 과열 구간 · 진입 자제' :
+                               '❌ 진입 금지 · 하락 리스크 높음';
+
   st('secret-score', score, cls);
   st('secret-label', label, cls);
   const bar = $('secret-bar');
@@ -2666,7 +2805,9 @@ function updateSecretScore(compScore) {
     const color = score >= 63 ? 'var(--up)' : score >= 48 ? 'var(--cy)' : score >= 30 ? 'var(--yl)' : 'var(--dn)';
     bar.style.boxShadow = `0 0 10px ${color}`;
   }
-  st('secret-breakdown', parts.join(' · '));
+  // breakdown: 해석 텍스트 + 세부 점수
+  const bd = $('secret-breakdown');
+  if(bd) bd.innerHTML = `<span style="font-size:13px;font-weight:600;color:var(--tx0)">${advice}</span><br><span style="font-size:11px;color:var(--tx3)">${parts.join(' · ')}</span>`;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2689,10 +2830,10 @@ function checkSignalBanner(score, label) {
   if(!banner) return;
   banner.className = '';
   const msgs = {
-    'strong-buy':  { cls:'sig-buy',     txt:'🟢 강한 매수 시그널 — SCORE '+score },
-    'buy':         { cls:'sig-buy',     txt:'🟢 매수 우세 전환 — SCORE '+score },
-    'strong-sell': { cls:'sig-sell',    txt:'🔴 강한 매도 시그널 — SCORE '+score },
-    'sell':        { cls:'sig-sell',    txt:'🔴 매도 우세 전환 — SCORE '+score },
+    'strong-buy':  { cls:'sig-buy',  txt:`🟢 강한 매수 시그널  ·  SCORE ${score}  ·  추격매수 적합` },
+    'buy':         { cls:'sig-buy',  txt:`🟢 매수 우세 전환  ·  SCORE ${score}` },
+    'strong-sell': { cls:'sig-sell', txt:`🔴 강한 매도 시그널  ·  SCORE ${score}  ·  진입 위험` },
+    'sell':        { cls:'sig-sell', txt:`🔴 매도 우세 전환  ·  SCORE ${score}` },
   };
   const m = msgs[state];
   banner.textContent = m.txt;
@@ -2878,6 +3019,24 @@ function addLiqEvent(side, price, qty, symbol) {
   const msg = `${prefix} ${label} ${arrow}  ${sym}  ${(+qty).toFixed(4)} @ $${fp(price)}  [${usdStr}]`;
 
   addEv(cls, msg);
+
+  // ── 대형 청산 → 고래 감지 섹션에도 표시 ──
+  if(big) {
+    const t = nowHHMM();
+    // 롱청산 = 매도 포지션이 강제 종료 → 매수세 압력 의미
+    // 숏청산 = 매수 포지션이 강제 종료 → 매도세 압력 의미
+    OF.whales.unshift({
+      price,
+      usd,
+      isBuy: !isLong,  // 롱청산=숏방향, 숏청산=롱방향
+      ts: t,
+      coin: sym,
+      isLiq: true,     // 청산 표시
+      isHuge: huge
+    });
+    if(OF.whales.length > 8) OF.whales.pop();
+    renderWhales();
+  }
 
   // ── 임팩트 이펙트 ──
   if(huge)     { triggerLiqImpact(isLong, usdStr, sym, 'mega'); addLiqNews(isLong, usdStr, sym); }
@@ -3194,6 +3353,10 @@ window.addEventListener('load', async()=>{
   setInterval(tick,1000);
   // 4H 캔들 10분마다 보정 (WS 누락 대비)
   setInterval(fetch4hCandles, 600000);
+
+  // 알트코인 티커 초기 로드 + 3분마다 갱신
+  fetchTickerCoins();
+  setInterval(fetchTickerCoins, 180000);
 
   // 트레이딩 인텔
   fetchFundingHist();
@@ -3734,8 +3897,21 @@ async function translateToKo(text) {
     const translated = d?.[0]?.map(seg => seg?.[0] || '').join('') || '';
     return translated.length > 2 ? translated : text;
   } catch(e) {
-    return text; // 번역 실패 시 원문 반환
+    return text;
   }
+}
+
+/* ═══ 방송모드 토글 ═══════════════════════════════════════ */
+let _broadcastMode = false;
+function toggleBroadcastMode() {
+  _broadcastMode = !_broadcastMode;
+  document.body.classList.toggle('broadcast-mode', _broadcastMode);
+  const btn = $('broadcast-btn');
+  if(btn) btn.textContent = _broadcastMode ? '📺 ON' : '📺 방송모드';
+  setTimeout(() => {
+    if(typeof cChart !== 'undefined' && cChart) cChart.resize();
+    if(typeof cvChart !== 'undefined' && cvChart) cvChart.resize();
+  }, 150);
 }
 </script>
 </body>
