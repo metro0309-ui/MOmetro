@@ -989,6 +989,27 @@ html, body {
     overflow: hidden;
   }
   #cw, #ew { min-height: 0; }
+  
+  /* 모바일 캔들 헤더 — 줄바꿈 허용 + OHLC 숨김 */
+  #col-c .panel-hd { flex-wrap: wrap; padding: 4px 8px !important; }
+  #col-c .panel-hd .hd-title { flex-wrap: wrap; gap: 4px !important; }
+  #ohlc-lbl { display: none !important; }
+  #ov-price-top { font-size: 22px !important; width: 100%; text-align: right; }
+  
+  /* 모바일 상단 일자 바 → 세로 스택으로 */
+  .cov-l {
+    position: relative !important;
+    top: auto !important; left: auto !important; right: auto !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    background: var(--bg2) !important;
+    border-bottom: 1px solid var(--bd0) !important;
+    border-radius: 0 !important;
+  }
+  .ovpill {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+  }
 
   /* 모바일 하단 네비게이션 */
   #mobile-nav {
