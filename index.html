@@ -1261,31 +1261,35 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
         <div id="mtf-signal" style="margin-top:6px;padding:5px 8px;border-radius:4px;font-size:13px;font-weight:600;text-align:center;background:var(--bg3);color:var(--tx2)">분석중...</div>
       </div>
-      <!-- ATR 손절선 -->
-      <div style="padding:6px 10px;flex:1">
-        <div style="font-size:13px;font-weight:600;color:var(--tx0);margin-bottom:5px">🛡️ ATR 손절선 가이드</div>
-        <div style="display:flex;flex-direction:column;gap:5px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;color:var(--tx2)">현재가</span>
-            <span id="atr-current" style="font-size:15px;font-weight:700;color:var(--tx0)">--</span>
+      <!-- 백테스트 뷰어 -->
+      <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
+          <button id="bt-run-btn" onclick="runBacktest()" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--cy);background:rgba(51,214,245,.1);color:var(--cy);cursor:pointer">▶ 실행</button>
+        </div>
+        <!-- 결과 요약 3칸 -->
+        <div style="display:flex;gap:3px;margin-bottom:6px">
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 5px;border:1px solid var(--bd1);text-align:center">
+            <div style="font-size:10px;color:var(--tx3)">스코어60+</div>
+            <div id="bt-score-win" style="font-size:16px;font-weight:700" class="up">--%</div>
+            <div style="font-size:10px;color:var(--tx3)">1H 상승률</div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;color:var(--dn)">✂️ 손절선 (ATR×1.5)</span>
-            <span id="atr-stop" style="font-size:15px;font-weight:700;color:var(--dn)">--</span>
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 5px;border:1px solid var(--cy);text-align:center">
+            <div style="font-size:10px;color:var(--cy)">RSI전환</div>
+            <div id="bt-rsi-win" style="font-size:16px;font-weight:700" class="cy">--%</div>
+            <div style="font-size:10px;color:var(--tx3)">4H 적중률</div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;color:var(--up)">🎯 1차 목표 (ATR×2)</span>
-            <span id="atr-target1" style="font-size:15px;font-weight:700;color:var(--up)">--</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;color:var(--up)">🎯 2차 목표 (ATR×3)</span>
-            <span id="atr-target2" style="font-size:15px;font-weight:700;color:var(--up)">--</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding-top:4px;border-top:1px solid var(--bd0);font-size:12px;color:var(--tx3)">
-            <span>ATR(14): <span id="atr-value" class="yl" style="font-weight:600">--</span></span>
-            <span>R/R: <span id="atr-rr" class="cy" style="font-weight:600">--</span></span>
+          <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 5px;border:1px solid var(--bd1);text-align:center">
+            <div style="font-size:10px;color:var(--tx3)">추격매수70+</div>
+            <div id="bt-secret-win" style="font-size:16px;font-weight:700" class="yl">--%</div>
+            <div style="font-size:10px;color:var(--tx3)">24H 수익률</div>
           </div>
         </div>
+        <!-- 백테스트 상세 로그 -->
+        <div id="bt-log" style="flex:1;overflow-y:auto;font-size:11px;color:var(--tx2);background:var(--bg0);border-radius:4px;padding:4px 6px;border:1px solid var(--bd0)">
+          <div style="color:var(--tx3);text-align:center;padding:8px">▶ 실행 버튼을 눌러 분석 시작</div>
+        </div>
+        <div id="bt-status" style="font-size:10px;color:var(--tx3);margin-top:3px;text-align:right">대기중</div>
       </div>
     </div>
 
@@ -1893,8 +1897,14 @@ function initCandleChart() {
   });
 }
 
+let _chartRafPending = false;
 function updateCandleChart() {
   if(!cChart || !D.candles.length) return;
+  if(_chartRafPending) return; // 이미 예약됨 — 중복 렌더 방지
+  _chartRafPending = true;
+  requestAnimationFrame(() => {
+    _chartRafPending = false;
+    if(!cChart || !D.candles.length) return;
   const N  = 60;
   const sl = D.candles.slice(-N);
   const allC = D.candles.map(cd => cd.close);
@@ -1918,12 +1928,10 @@ function updateCandleChart() {
   cChart.data.datasets[0]._ohlc = sl.map(cd => ({o:cd.open,h:cd.high,l:cd.low,c:cd.close}));
   cChart.data.datasets[1].data  = sl.map((cd,i) => upper[base+i] ?? null);
   cChart.data.datasets[2].data  = sl.map((cd,i) => lower[base+i] ?? null);
-  cChart.data.datasets[3].data  = [];  // 차트 내 거래량 비활성화
-  cChart.update('none');  // 애니메이션 없이 즉시 렌더링
-
-  // 거래량 별도 바 렌더링
+  cChart.data.datasets[3].data  = [];
+  cChart.update('none');
   renderVolBars('btc-vol-bar', sl, 'btc');
-  // RSI/MACD/VWAP는 4H 전용 캔들(D.candles4h)에서 계산 — update4hIndicators()
+  }); // requestAnimationFrame 종료
 }
 
 /* ── ETH 캔들차트 ── */
@@ -2121,7 +2129,9 @@ function connectEthKlineWS(tf='1m') {
     wsEK = new WebSocket(`wss://stream.binance.com:9443/ws/ethusdt@kline_${tf}`);
     wsEK.onmessage = e => {
       try {
+        if(_ethTfSwitching) return;
         const k = JSON.parse(e.data).k;
+        if(k.i !== tf) return; // TF 불일치 차단
         const d = new Date(k.t);
         const label = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const candle = { ts:+k.t, label, open:+k.o, high:+k.h, low:+k.l, close:+k.c, vol:+k.v };
@@ -2417,8 +2427,8 @@ function connectTrades() {
         if(tradePrice > 0 && Math.abs(tradePrice - D.price) / (D.price||1) < 0.005) {
           D.price = tradePrice;
           updateTickerDOM();
-          // 체결마다 현재 캔들 즉시 갱신 — 살아있는 캔들
-          if(D.candles.length) {
+          // 전환 중이 아닐 때만 캔들 갱신
+          if(!_btcTfSwitching && D.candles.length) {
             const last = D.candles[D.candles.length-1];
             last.close = tradePrice;
             if(tradePrice > last.high) last.high = tradePrice;
@@ -2459,7 +2469,10 @@ function connectKlineWS(tf='1m') {
     wsK=new WebSocket(`wss://stream.binance.com:9443/ws/btcusdt@kline_${tf}`);
     wsK.onmessage=e=>{
       try {
+        // 전환 중이거나 현재 TF와 다른 데이터는 무시
+        if(_btcTfSwitching) return;
         const k=JSON.parse(e.data).k;
+        if(k.i !== tf) return;  // TF 불일치 데이터 차단
         const d=new Date(k.t);
         const label=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         const candle={ts:+k.t, label, open:+k.o,high:+k.h,low:+k.l,close:+k.c,vol:+k.v};
@@ -2521,8 +2534,7 @@ function update4hIndicators() {
   D.vwap = calcVWAP(D.candles4h);
   // RSI 방향 전환 감지
   checkRSITurnaround();
-  // ATR 손절선 업데이트
-  updateATRGuide();
+  // ATR 손절선은 제거됨 — 백테스트로 교체
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2562,25 +2574,143 @@ function checkRSITurnaround() {
 /* ═══════════════════════════════════════════════════════════
    ATR 손절선 가이드 업데이트
 ═══════════════════════════════════════════════════════════ */
-function updateATRGuide() {
-  if(D.candles4h.length < 15 || !D.price) return;
-  const atr = calcATR(D.candles4h, 14);
-  if(!atr) return;
+/* ═══════════════════════════════════════════════════════════
+   🔬 백테스트 엔진
+   바이낸스 과거 4H 캔들 500개 기준으로 3가지 조건 검증:
+   1. 종합 스코어 60+ 시점 → 1H 후 가격 상승 여부
+   2. RSI 35↓ → 상승 전환 시점 → 4H 후 가격 상승 여부
+   3. 추격매수표 개념(RSI<40 + 펀딩<0) → 24H 후 수익률
+═══════════════════════════════════════════════════════════ */
+let _btRunning = false;
 
-  const p = D.price;
-  const stop    = p - atr * 1.5;   // 손절선 (ATR × 1.5)
-  const target1 = p + atr * 2.0;   // 1차 목표 (ATR × 2)
-  const target2 = p + atr * 3.0;   // 2차 목표 (ATR × 3)
-  const risk    = p - stop;
-  const reward1 = target1 - p;
-  const rr      = (reward1 / risk).toFixed(1);
+async function runBacktest() {
+  if(_btRunning) return;
+  _btRunning = true;
 
-  st('atr-current', '$' + fp(p),       D.chg >= 0 ? 'up' : 'dn');
-  st('atr-stop',    '$' + fp(stop),    'dn');
-  st('atr-target1', '$' + fp(target1), 'up');
-  st('atr-target2', '$' + fp(target2), 'up');
-  st('atr-value',   '$' + Math.round(atr).toLocaleString(), 'yl');
-  st('atr-rr',      '1 : ' + rr,       +rr >= 2 ? 'up' : +rr >= 1.5 ? 'cy' : 'yl');
+  const btn = $('bt-run-btn');
+  const log = $('bt-log');
+  const status = $('bt-status');
+  if(btn) btn.textContent = '⏳ 분석중...';
+  if(log) log.innerHTML = '<div style="color:var(--cy);padding:4px">데이터 로딩중...</div>';
+
+  try {
+    // 바이낸스 4H 캔들 500개 (약 83일치)
+    status && (status.textContent = '4H 캔들 500개 로딩...');
+    const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=500', {
+      signal: AbortSignal.timeout(15000)
+    });
+    if(!r.ok) throw new Error('캔들 로드 실패');
+    const raw = await r.json();
+    const candles = raw.map(k => ({
+      ts: +k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5]
+    }));
+
+    status && (status.textContent = '지표 계산중...');
+
+    // 캔들별 RSI 계산
+    const closes = candles.map(c => c.close);
+    const rsiArr = [];
+    for(let i = 14; i < candles.length; i++) {
+      rsiArr.push({ idx: i, rsi: calcRSI(closes.slice(0, i+1)) });
+    }
+
+    // ── 테스트 1: RSI 바닥 반등 (35이하 → 상승 전환) → 4H 후 적중률
+    let rsiTotal = 0, rsiWin = 0;
+    const rsiLogs = [];
+    for(let i = 1; i < rsiArr.length - 1; i++) {
+      const prev = rsiArr[i-1].rsi;
+      const curr = rsiArr[i].rsi;
+      const idx  = rsiArr[i].idx;
+      if(prev <= 35 && curr > prev && idx + 1 < candles.length) {
+        rsiTotal++;
+        const entryPrice  = candles[idx].close;
+        const futureIdx   = Math.min(idx + 1, candles.length - 1); // 4H 후
+        const futurePrice = candles[futureIdx].close;
+        const pct = ((futurePrice - entryPrice) / entryPrice * 100);
+        const win = pct > 0;
+        if(win) rsiWin++;
+        const d = new Date(candles[idx].ts);
+        const label = `${d.getMonth()+1}/${d.getDate()} RSI${prev.toFixed(0)}→${curr.toFixed(0)}`;
+        rsiLogs.push({ label, pct, win });
+      }
+    }
+
+    // ── 테스트 2: 스코어 개념 (RSI<50 + 가격<VWAP + 캔들반등) → 1H 후
+    let scoreTotal = 0, scoreWin = 0;
+    const scoreLogs = [];
+    for(let i = 20; i < candles.length - 1; i++) {
+      const slice = candles.slice(Math.max(0, i-19), i+1);
+      const rsi = calcRSI(slice.map(c => c.close));
+      const vwap = calcVWAP(slice);
+      const price = candles[i].close;
+      // 스코어60+ 개념: RSI<55 + 가격이 VWAP 근처 + 음봉 후 양봉
+      const prevCandle = candles[i-1];
+      const currCandle = candles[i];
+      const rebound = prevCandle.close < prevCandle.open && currCandle.close > currCandle.open;
+      if(rsi < 55 && rsi > 25 && Math.abs(price - vwap) / vwap < 0.02 && rebound) {
+        scoreTotal++;
+        const nextPrice = candles[i+1].close;
+        const pct = ((nextPrice - price) / price * 100);
+        const win = pct > 0;
+        if(win) scoreWin++;
+        const d = new Date(candles[i].ts);
+        scoreLogs.push({ label: `${d.getMonth()+1}/${d.getDate()} RSI${rsi.toFixed(0)}`, pct, win });
+      }
+    }
+
+    // ── 테스트 3: 추격매수 개념 (RSI<40) → 24H(6봉) 후 수익률
+    let secretTotal = 0, secretWin = 0, secretAvgPct = 0;
+    for(let i = 14; i < candles.length - 6; i++) {
+      const rsi = calcRSI(closes.slice(0, i+1));
+      if(rsi < 40 && rsi > 20) {
+        secretTotal++;
+        const entry  = candles[i].close;
+        const future = candles[i+6].close;  // 24H(4H×6) 후
+        const pct = ((future - entry) / entry * 100);
+        if(pct > 0) secretWin++;
+        secretAvgPct += pct;
+      }
+    }
+    const secretAvg = secretTotal > 0 ? (secretAvgPct / secretTotal) : 0;
+
+    // ── 결과 업데이트
+    const rsiRate    = rsiTotal   > 0 ? Math.round(rsiWin   / rsiTotal   * 100) : 0;
+    const scoreRate  = scoreTotal > 0 ? Math.round(scoreWin / scoreTotal * 100) : 0;
+    const secretRate = secretTotal> 0 ? Math.round(secretWin/ secretTotal* 100) : 0;
+
+    st('bt-score-win',  scoreRate  + '%', scoreRate  >= 55 ? 'up' : scoreRate  >= 45 ? 'yl' : 'dn');
+    st('bt-rsi-win',    rsiRate    + '%', rsiRate    >= 55 ? 'cy' : rsiRate    >= 45 ? 'yl' : 'dn');
+    st('bt-secret-win', secretRate + '%', secretRate >= 55 ? 'yl' : secretRate >= 45 ? 'cy' : 'dn');
+
+    // ── 로그 렌더링
+    const logLines = [];
+    logLines.push(`<div style="color:var(--cy);font-weight:700;margin-bottom:3px">📊 분석 기간: 최근 ${candles.length}개 4H봉 (약 ${Math.round(candles.length/6)}일)</div>`);
+
+    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🔄 RSI 바닥 반등 신호 (n=${rsiTotal})</div>`);
+    logLines.push(`<div style="color:var(--tx2)">→ 4H 후 상승 적중률: <span style="color:${rsiRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${rsiRate}%</span> (${rsiWin}/${rsiTotal})</div>`);
+    rsiLogs.slice(-5).forEach(l => {
+      logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}">  ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(2)}%</div>`);
+    });
+
+    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">📈 과매도 반등 조건 (n=${scoreTotal})</div>`);
+    logLines.push(`<div style="color:var(--tx2)">→ 다음 4H 상승 적중률: <span style="color:${scoreRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${scoreRate}%</span> (${scoreWin}/${scoreTotal})</div>`);
+    scoreLogs.slice(-5).forEach(l => {
+      logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}">  ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(2)}%</div>`);
+    });
+
+    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🎯 RSI&lt;40 저점 진입 (n=${secretTotal})</div>`);
+    logLines.push(`<div style="color:var(--tx2)">→ 24H 후 상승 적중률: <span style="color:${secretRate>=55?'var(--yl)':'var(--tx2)'};font-weight:700">${secretRate}%</span> | 평균수익: <span style="color:${secretAvg>0?'var(--up)':'var(--dn)'}">${secretAvg>0?'+':''}${secretAvg.toFixed(2)}%</span></div>`);
+
+    if(log) log.innerHTML = logLines.join('');
+    status && (status.textContent = `완료 · ${new Date().toLocaleTimeString()}`);
+
+  } catch(e) {
+    if(log) log.innerHTML = `<div style="color:var(--dn)">오류: ${e.message}</div>`;
+    status && (status.textContent = '오류 발생');
+  }
+
+  _btRunning = false;
+  if(btn) btn.textContent = '▶ 재실행';
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2867,12 +2997,16 @@ function updateTickerDOM() {
   const p=D.price, cc=D.chg>=0;
   const pcls=cc?'sv num-up':'sv num-dn';
   
-  // 가격 플래시 효과
-  const priceEl = $('s-price');
-  if(priceEl) {
-    priceEl.classList.remove('price-flash');
-    void priceEl.offsetWidth; // reflow
-    priceEl.classList.add('price-flash');
+  // 가격 플래시 효과 (500ms throttle — bookTicker 과다 호출 방지)
+  const now_pf = Date.now();
+  if(!updateTickerDOM._lastFlash || now_pf - updateTickerDOM._lastFlash > 500) {
+    updateTickerDOM._lastFlash = now_pf;
+    const priceEl = $('s-price');
+    if(priceEl) {
+      priceEl.classList.remove('price-flash');
+      void priceEl.offsetWidth;
+      priceEl.classList.add('price-flash');
+    }
   }
   
   st('s-price','$'+fp(p), pcls);
@@ -3427,30 +3561,61 @@ function schedQuiet() {
 }
 
 /* ── BTC 타임프레임 전환 ── */
+let _btcTfSwitching = false;
 document.querySelectorAll('.tf-btn').forEach(btn=>{
   btn.addEventListener('click', async()=>{
+    if(_btcTfSwitching) return; // 전환 중 중복 클릭 방지
+    _btcTfSwitching = true;
+
     document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
-    const tf=btn.dataset.tf; D.currentTf=tf;
-    closeBtcKlineWS();          // 안전하게 닫기 (재연결 방지)
-    D.candles=[];
-    await fetchKlines(tf,120);
+    const tf = btn.dataset.tf;
+    D.currentTf = tf;
+
+    // 1. WS 완전 종료
+    closeBtcKlineWS();
+    wsK = null;
+
+    // 2. 캔들 완전 초기화 (이전 TF 데이터 제거)
+    D.candles = [];
+    if(cChart) {
+      cChart.data.labels = [];
+      cChart.data.datasets.forEach(ds => { ds.data = []; ds._ohlc = []; });
+      cChart.update('none');
+    }
+
+    // 3. 새 TF 캔들 로드 (완료 후 WS 연결)
+    await fetchKlines(tf, 120);
+
+    // 4. WS 재연결
     connectKlineWS(tf);
-    addEv('eo', 'BTC TF 변경: '+tf);
+    addEv('eo', 'BTC TF 변경: ' + tf);
+    _btcTfSwitching = false;
   });
 });
 
 /* ── ETH 타임프레임 전환 ── */
+/* ── ETH 타임프레임 전환 ── */
+let _ethTfSwitching = false;
 document.querySelectorAll('.tf-btn-e').forEach(btn=>{
   btn.addEventListener('click', async()=>{
+    if(_ethTfSwitching) return;
+    _ethTfSwitching = true;
     document.querySelectorAll('.tf-btn-e').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
     const tf=btn.dataset.tf; DE.currentTf=tf;
-    closeEthKlineWS();          // 안전하게 닫기 (재연결 방지)
+    closeEthKlineWS();
+    wsEK = null;
     DE.candles=[];
+    if(eChart) {
+      eChart.data.labels = [];
+      eChart.data.datasets.forEach(ds => { ds.data = []; ds._ohlc = []; });
+      eChart.update('none');
+    }
     await fetchEthKlines(tf,120);
     connectEthKlineWS(tf);
     addEv('eo', 'ETH TF 변경: '+tf);
+    _ethTfSwitching = false;
   });
 });
 
@@ -3999,6 +4164,13 @@ function newsCheckLoop() {
    외부 뉴스 소스 — Binance 공지 (CORS 허용, 키 불필요)
 ═══════════════════════════════════════════════════════════ */
 let _lastNewsIds = new Set();
+function addNewsId(id) {
+  _lastNewsIds.add(id);
+  if(_lastNewsIds.size > 200) {
+    const first = _lastNewsIds.values().next().value;
+    _lastNewsIds.delete(first);
+  }
+}
 /* ═══════════════════════════════════════════════════════════
    거래량 바 렌더링 (캔들과 완전 분리)
 ═══════════════════════════════════════════════════════════ */
@@ -4033,8 +4205,10 @@ function renderVolBars(containerId, candles, type) {
   });
 }
 
+let _extNewsRunning = false;
 async function fetchExternalNews() {
-  // 소스 1: CoinGecko 트렌딩 (확실히 CORS 허용)
+  if(_extNewsRunning) return;
+  _extNewsRunning = true;
   try {
     const r = await fetch('https://api.coingecko.com/api/v3/search/trending', {
       signal: AbortSignal.timeout(8000)
@@ -4112,7 +4286,7 @@ async function fetchExternalNews() {
       for(const item of rssItems) {
         const id = item.guid || item.link || item.title;
         if(_lastNewsIds.has(id)) return;
-        _lastNewsIds.add(id);
+        addNewsId(id);
         if(_lastNewsIds.size <= 8) continue; // 최초 로드 스킵
         const title = item.title || '';
         if(title.length > 3 && canPostNews('rss-'+id, 10000)) {
@@ -4135,7 +4309,7 @@ async function fetchExternalNews() {
         const title = item.title || '';
         const id = item.guid || item.link || title;
         if(!title || _lastNewsIds.has(id)) continue;
-        _lastNewsIds.add(id);
+        addNewsId(id);
         if(canPostNews('dc-' + id, 10000)) {
           const koTitle = await translateToKo(title);
           addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
@@ -4155,7 +4329,7 @@ async function fetchExternalNews() {
           const title = item.title || '';
           const id = item.guid || title;
           if(!title || _lastNewsIds.has(id)) continue;
-          _lastNewsIds.add(id);
+          addNewsId(id);
           if(canPostNews('tb-' + id, 10000)) {
             const koTitle = await translateToKo(title);
             addNewsItem('속보', 'nb-cyn', koTitle.length > 50 ? koTitle.slice(0, 50) + '...' : koTitle);
@@ -4163,6 +4337,10 @@ async function fetchExternalNews() {
         }
       }
     } catch(e2) {}
+  }
+  } catch(e) {
+  } finally {
+    _extNewsRunning = false;
   }
 }
 
