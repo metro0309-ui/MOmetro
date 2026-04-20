@@ -241,7 +241,7 @@ html, body {
 /* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
 #col-l {
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -933,7 +933,7 @@ html, body {
   /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
   #col-l.mob-active {
     display: grid !important;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     gap: 2px;
     overflow: hidden;
   }
@@ -1293,16 +1293,10 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
       </div>
     </div>
 
-    <!-- 2. 실시간 속보 -->
-    <div class="panel" id="news-panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd">
-        <div class="hd-title"><div class="hd-dot" style="background:var(--yl);box-shadow:0 0 5px var(--yl)"></div>실시간 속보</div>
-        <span style="font-size:11px;color:var(--tx2)">자동 생성</span>
-      </div>
-      <div id="news-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:2px 0"></div>
-    </div>
+    <!-- news-list 숨김 유지 (JS 오류 방지) -->
+    <div id="news-panel" style="display:none"><div id="news-list"></div></div>
 
-    <!-- 3. 청산 피드 -->
+    <!-- 2. 청산 피드 -->
     <div class="panel" style="display:flex;flex-direction:column;min-height:0">
       <div class="panel-hd">
         <div class="hd-title">
