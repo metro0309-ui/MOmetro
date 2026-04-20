@@ -2681,6 +2681,90 @@ async function runBacktest() {
     logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🎯 RSI&lt;40 저점 진입 (n=${secretTotal})</div>`);
     logLines.push(`<div style="color:var(--tx2)">→ 24H 후 상승 적중률: <span style="color:${secretRate>=55?'var(--yl)':'var(--tx2)'};font-weight:700">${secretRate}%</span> | 평균수익: <span style="color:${secretAvg>0?'var(--up)':'var(--dn)'}">${secretAvg>0?'+':''}${secretAvg.toFixed(2)}%</span></div>`);
 
+    // ── 일반인용 요약 코멘트 5개
+    const summaryLines = [];
+
+    // 1. RSI 반등 신뢰도
+    let c1Color, c1Text;
+    if(rsiRate >= 65) {
+      c1Color = 'var(--up)';
+      c1Text = `과거 RSI가 바닥을 찍고 올라올 때 ${rsiRate}% 확률로 4시간 내 가격이 올랐어요. 신뢰도가 높습니다.`;
+    } else if(rsiRate >= 50) {
+      c1Color = 'var(--yl)';
+      c1Text = `RSI 반등 신호는 ${rsiRate}% 정도 맞았어요. 반반 수준이라 단독으론 약합니다.`;
+    } else {
+      c1Color = 'var(--dn)';
+      c1Text = `RSI 반등 신호가 ${rsiRate}%로 절반도 못 맞췄어요. 이 신호만 믿기엔 위험합니다.`;
+    }
+    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">①</span><span style="color:${c1Color}">${c1Text}</span></div>`);
+
+    // 2. 과매도 반등 조건 신뢰도
+    let c2Color, c2Text;
+    if(scoreRate >= 65) {
+      c2Color = 'var(--up)';
+      c2Text = `RSI가 낮고 음봉 뒤 양봉이 나올 때 ${scoreRate}% 확률로 다음 4시간봉이 올랐어요. 좋은 진입 타이밍 힌트입니다.`;
+    } else if(scoreRate >= 50) {
+      c2Color = 'var(--yl)';
+      c2Text = `반등 조건이 ${scoreRate}% 적중했어요. 참고는 되지만 맹신은 금물입니다.`;
+    } else {
+      c2Color = 'var(--dn)';
+      c2Text = `반등 조건 적중률이 ${scoreRate}%로 낮아요. 최근 시장이 조건에 잘 안 맞는 상태입니다.`;
+    }
+    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">②</span><span style="color:${c2Color}">${c2Text}</span></div>`);
+
+    // 3. 저점 매수 기대수익
+    let c3Color, c3Text;
+    if(secretAvg >= 2) {
+      c3Color = 'var(--up)';
+      c3Text = `RSI 40 이하 구간에서 샀을 때 하루 뒤 평균 +${secretAvg.toFixed(1)}% 수익이 났어요. 저점 매수가 꽤 효과적입니다.`;
+    } else if(secretAvg >= 0) {
+      c3Color = 'var(--yl)';
+      c3Text = `저점 진입 시 하루 후 평균 수익이 +${secretAvg.toFixed(1)}%로 소폭 플러스예요. 손해는 아니지만 크게 기대하기 어렵습니다.`;
+    } else {
+      c3Color = 'var(--dn)';
+      c3Text = `저점 진입 후 하루 뒤 평균 ${secretAvg.toFixed(1)}% 손실이에요. 더 내릴 때 들어가는 건 조심이 필요합니다.`;
+    }
+    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">③</span><span style="color:${c3Color}">${c3Text}</span></div>`);
+
+    // 4. 데이터 신뢰성 (샘플 수)
+    const minN = Math.min(rsiTotal, scoreTotal);
+    let c4Color, c4Text;
+    if(minN >= 30) {
+      c4Color = 'var(--tx1)';
+      c4Text = `약 ${Math.round(candles.length/6)}일치 데이터 기준이라 통계 신뢰도가 충분합니다.`;
+    } else if(minN >= 10) {
+      c4Color = 'var(--yl)';
+      c4Text = `샘플 수가 ${minN}회 정도라 결과를 참고 수준으로만 보세요.`;
+    } else {
+      c4Color = 'var(--dn)';
+      c4Text = `신호 발생 횟수(${minN}회)가 너무 적어요. 통계가 불안정할 수 있습니다.`;
+    }
+    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">④</span><span style="color:${c4Color}">${c4Text}</span></div>`);
+
+    // 5. 종합 한 줄 결론
+    const avgRate = (rsiRate + scoreRate + secretRate) / 3;
+    let c5Color, c5Text;
+    if(avgRate >= 60 && secretAvg >= 1) {
+      c5Color = 'var(--up)';
+      c5Text = `📌 종합: 현재 시장 데이터 기준으로 매수 신호의 신뢰도가 전반적으로 높습니다. RSI 낮을 때 분할 매수를 고려해볼 수 있어요.`;
+    } else if(avgRate >= 50) {
+      c5Color = 'var(--yl)';
+      c5Text = `📌 종합: 신호 신뢰도가 보통 수준입니다. 여러 신호가 동시에 나올 때만 진입을 고려하세요.`;
+    } else {
+      c5Color = 'var(--dn)';
+      c5Text = `📌 종합: 신호 적중률이 전반적으로 낮습니다. 지금은 관망하거나 소액 진입이 안전합니다.`;
+    }
+    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">⑤</span><span style="color:${c5Color};font-weight:600">${c5Text}</span></div>`);
+
+    logLines.push(`
+      <div style="margin-top:8px;border-top:1px solid var(--bd1);padding-top:6px">
+        <div style="font-size:11px;font-weight:700;color:var(--tx1);margin-bottom:5px;letter-spacing:.5px">💬 쉽게 읽는 요약</div>
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;line-height:1.5">
+          ${summaryLines.join('')}
+        </div>
+      </div>
+    `);
+
     if(log) log.innerHTML = logLines.join('');
     status && (status.textContent = `완료 · ${new Date().toLocaleTimeString()}`);
 
