@@ -238,10 +238,10 @@ html, body {
   min-height: 0;
 }
 
-/* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
+/* 좌측: 멀티타임프레임 + 백테스트 (전체 높이) */
 #col-l {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -930,10 +930,10 @@ html, body {
     flex-direction: column;
     gap: 3px;
   }
-  /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
+  /* 좌측 컬럼: 단일 패널 전체 높이 */
   #col-l.mob-active {
-    display: grid !important;
-    grid-template-rows: 1fr 1fr;
+    display: flex !important;
+    flex-direction: column;
     gap: 2px;
     overflow: hidden;
   }
@@ -1232,7 +1232,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
   <div id="col-l">
 
     <!-- 1. 멀티 타임프레임 + ATR 손절선 -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow-y:auto">
+    <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow:hidden">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--bl);box-shadow:0 0 5px var(--bl)"></div>📊 멀티 타임프레임</div>
         <span style="font-size:11px;color:var(--tx2)">1D · 4H · 15분</span>
@@ -1296,19 +1296,10 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
     <!-- news-list 숨김 유지 (JS 오류 방지) -->
     <div id="news-panel" style="display:none"><div id="news-list"></div></div>
 
-    <!-- 2. 청산 피드 -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd">
-        <div class="hd-title">
-          <div class="hd-dot" style="background:var(--dn);box-shadow:0 0 5px var(--dn)"></div>
-          청산 피드 <span class="cursor"></span>
-        </div>
-        <span id="liq-summary" style="font-size:11px;color:var(--tx2)">
-          <span class="dn">롱 청산 0</span> / <span class="up">숏 청산 0</span> &nbsp;<span class="tx2" id="liq-timer">5:00</span>
-        </span>
-      </div>
-      <div id="ev-list"></div>
-    </div>
+    <!-- ev-list 숨김 유지 (JS 오류 방지) -->
+    <div id="liq-summary" style="display:none"></div>
+    <div id="ev-list" style="display:none"></div>
+    <span id="liq-timer" style="display:none"></span>
 
   </div>
 
