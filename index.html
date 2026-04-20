@@ -1265,7 +1265,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
       <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
-          <button id="bt-run-btn" onclick="runBacktest()" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--cy);background:rgba(51,214,245,.1);color:var(--cy);cursor:pointer">▶ 실행</button>
+          <span id="bt-run-btn" style="font-size:10px;color:var(--tx3)">자동 갱신</span>
         </div>
         <!-- 결과 요약 3칸 -->
         <div style="display:flex;gap:3px;margin-bottom:6px">
@@ -1287,7 +1287,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
         <!-- 백테스트 상세 로그 -->
         <div id="bt-log" style="flex:1;overflow-y:auto;font-size:11px;color:var(--tx2);background:var(--bg0);border-radius:4px;padding:4px 6px;border:1px solid var(--bd0)">
-          <div style="color:var(--tx3);text-align:center;padding:8px">▶ 실행 버튼을 눌러 분석 시작</div>
+          <div style="color:var(--tx3);text-align:center;padding:8px">⏳ 초기화 중...</div>
         </div>
         <div id="bt-status" style="font-size:10px;color:var(--tx3);margin-top:3px;text-align:right">대기중</div>
       </div>
@@ -2570,7 +2570,7 @@ async function runBacktest() {
   const btn = $('bt-run-btn');
   const log = $('bt-log');
   const status = $('bt-status');
-  if(btn) btn.textContent = '⏳ 분석중...';
+  if(btn) btn.textContent = '⏳ 갱신중...';
   if(log) log.innerHTML = '<div style="color:var(--cy);padding:4px">데이터 로딩중...</div>';
 
   try {
@@ -2774,7 +2774,7 @@ async function runBacktest() {
   }
 
   _btRunning = false;
-  if(btn) btn.textContent = '▶ 재실행';
+  if(btn) btn.textContent = '자동 갱신';
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3877,6 +3877,10 @@ window.addEventListener('load', async()=>{
   setInterval(fetchFundingHist, 480000);  // 펀딩 히스토리 8분마다
   setInterval(fetchTopTraders, 30000);    // 탑트레이더 30초마다
   setInterval(updateTradingIntel, 5000);  // DOM 업데이트 5초마다
+
+  // 백테스트 초기 실행 + 10분마다 자동 갱신
+  setTimeout(runBacktest, 3000);  // 초기 데이터 로드 후 3초 뒤 실행
+  setInterval(runBacktest, 300000);
 
   connectLiqWS();
   schedQuiet();
