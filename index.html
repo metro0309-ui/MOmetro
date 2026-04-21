@@ -241,7 +241,7 @@ html, body {
 /* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
 #col-l {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -932,8 +932,8 @@ html, body {
   }
   /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
   #col-l.mob-active {
-    display: grid !important;
-    grid-template-rows: 1fr 1fr;
+    display: flex !important;
+    flex-direction: column;
     gap: 2px;
     overflow: hidden;
   }
@@ -1262,10 +1262,10 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         <div id="mtf-signal" style="margin-top:6px;padding:5px 8px;border-radius:4px;font-size:13px;font-weight:600;text-align:center;background:var(--bg3);color:var(--tx2)">분석중...</div>
       </div>
       <!-- 백테스트 뷰어 -->
-      <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
+      <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
-          <button id="bt-run-btn" onclick="runBacktest()" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--cy);background:rgba(51,214,245,.1);color:var(--cy);cursor:pointer">▶ 실행</button>
+          <span id="bt-run-btn" style="font-size:10px;color:var(--tx3)">자동 갱신</span>
         </div>
         <!-- 결과 요약 3칸 -->
         <div style="display:flex;gap:3px;margin-bottom:6px">
@@ -1280,32 +1280,32 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
             <div style="font-size:10px;color:var(--tx3)">4H 적중률</div>
           </div>
           <div style="flex:1;background:var(--bg2);border-radius:4px;padding:4px 5px;border:1px solid var(--bd1);text-align:center">
-            <div style="font-size:10px;color:var(--tx3)">추격매수70+</div>
+            <div style="font-size:10px;color:var(--tx3)">RSI&lt;40</div>
             <div id="bt-secret-win" style="font-size:16px;font-weight:700" class="yl">--%</div>
             <div style="font-size:10px;color:var(--tx3)">24H 수익률</div>
           </div>
         </div>
         <!-- 백테스트 상세 로그 -->
-        <div id="bt-log" style="flex:1;overflow-y:auto;font-size:11px;color:var(--tx2);background:var(--bg0);border-radius:4px;padding:4px 6px;border:1px solid var(--bd0)">
-          <div style="color:var(--tx3);text-align:center;padding:8px">▶ 실행 버튼을 눌러 분석 시작</div>
+        <div id="bt-log" style="font-size:11px;color:var(--tx2);background:var(--bg0);border-radius:4px;padding:4px 6px;border:1px solid var(--bd0);margin-bottom:6px;min-height:60px">
+          <div style="color:var(--tx3);text-align:center;padding:8px">⏳ 초기화 중...</div>
         </div>
-        <div id="bt-status" style="font-size:10px;color:var(--tx3);margin-top:3px;text-align:right">대기중</div>
+        <!-- 상황 세션 1~10 -->
+        <div style="border-top:1px solid var(--bd1);padding-top:6px">
+          <div style="font-size:12px;font-weight:700;color:var(--tx0);margin-bottom:5px;letter-spacing:.5px">📋 현재 상황 판단 <span style="font-size:10px;color:var(--tx3);font-weight:400">1~10점</span></div>
+          <div id="bt-situation" style="display:flex;flex-direction:column;gap:4px">
+            <div style="color:var(--tx3);font-size:11px;text-align:center;padding:6px">⏳ 분석 대기중...</div>
+          </div>
+        </div>
+        <div id="bt-status" style="font-size:10px;color:var(--tx3);margin-top:4px;text-align:right">대기중</div>
       </div>
     </div>
 
-    <!-- news-list 숨김 유지 (JS 오류 방지) -->
+    <!-- news-list / ev-list 숨김 유지 (JS 오류 방지) -->
     <div id="news-panel" style="display:none"><div id="news-list"></div></div>
-
-    <!-- 2. 청산 피드 -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0">
-      <div class="panel-hd">
-        <div class="hd-title">
-          <div class="hd-dot" style="background:var(--dn);box-shadow:0 0 5px var(--dn)"></div>
-          청산 피드 <span class="cursor"></span>
-        </div>
-        <span id="liq-summary" style="font-size:11px;color:var(--tx2)"></span>
-      </div>
+    <div style="display:none">
       <div id="ev-list"></div>
+      <span id="liq-summary"></span>
+      <span id="liq-timer"></span>
     </div>
 
   </div>
@@ -2574,130 +2574,223 @@ async function runBacktest() {
   if(_btRunning) return;
   _btRunning = true;
 
-  const btn = $('bt-run-btn');
-  const log = $('bt-log');
+  const log    = $('bt-log');
   const status = $('bt-status');
-  if(btn) btn.textContent = '⏳ 분석중...';
-  if(log) log.innerHTML = '<div style="color:var(--cy);padding:4px">데이터 로딩중...</div>';
+  const sitEl  = $('bt-situation');
+  if(log) log.innerHTML = '<div style="color:var(--cy);padding:4px">⏳ 데이터 로딩중...</div>';
 
   try {
-    // 바이낸스 4H 캔들 500개 (약 83일치)
-    status && (status.textContent = '4H 캔들 500개 로딩...');
+    status && (status.textContent = '4H 캔들 로딩...');
     const r = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=500', {
       signal: AbortSignal.timeout(15000)
     });
     if(!r.ok) throw new Error('캔들 로드 실패');
     const raw = await r.json();
     const candles = raw.map(k => ({
-      ts: +k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5]
+      ts:+k[0], open:+k[1], high:+k[2], low:+k[3], close:+k[4], vol:+k[5]
     }));
 
     status && (status.textContent = '지표 계산중...');
-
-    // 캔들별 RSI 계산
     const closes = candles.map(c => c.close);
+
+    // 캔들별 RSI 배열
     const rsiArr = [];
     for(let i = 14; i < candles.length; i++) {
-      rsiArr.push({ idx: i, rsi: calcRSI(closes.slice(0, i+1)) });
+      rsiArr.push({ idx:i, rsi:calcRSI(closes.slice(0, i+1)) });
     }
 
-    // ── 테스트 1: RSI 바닥 반등 (35이하 → 상승 전환) → 4H 후 적중률
-    let rsiTotal = 0, rsiWin = 0;
-    const rsiLogs = [];
-    for(let i = 1; i < rsiArr.length - 1; i++) {
-      const prev = rsiArr[i-1].rsi;
-      const curr = rsiArr[i].rsi;
-      const idx  = rsiArr[i].idx;
-      if(prev <= 35 && curr > prev && idx + 1 < candles.length) {
+    // ── 테스트 1: RSI 바닥 반등 → 4H 후
+    let rsiTotal=0, rsiWin=0; const rsiLogs=[];
+    for(let i=1; i<rsiArr.length-1; i++) {
+      const prev=rsiArr[i-1].rsi, curr=rsiArr[i].rsi, idx=rsiArr[i].idx;
+      if(prev<=35 && curr>prev && idx+1<candles.length) {
         rsiTotal++;
-        const entryPrice  = candles[idx].close;
-        const futureIdx   = Math.min(idx + 1, candles.length - 1); // 4H 후
-        const futurePrice = candles[futureIdx].close;
-        const pct = ((futurePrice - entryPrice) / entryPrice * 100);
-        const win = pct > 0;
-        if(win) rsiWin++;
-        const d = new Date(candles[idx].ts);
-        const label = `${d.getMonth()+1}/${d.getDate()} RSI${prev.toFixed(0)}→${curr.toFixed(0)}`;
-        rsiLogs.push({ label, pct, win });
+        const ep=candles[idx].close, fp=candles[Math.min(idx+1,candles.length-1)].close;
+        const pct=(fp-ep)/ep*100; if(pct>0) rsiWin++;
+        const d=new Date(candles[idx].ts);
+        rsiLogs.push({label:`${d.getMonth()+1}/${d.getDate()} RSI${prev.toFixed(0)}→${curr.toFixed(0)}`,pct,win:pct>0});
       }
     }
 
-    // ── 테스트 2: 스코어 개념 (RSI<50 + 가격<VWAP + 캔들반등) → 1H 후
-    let scoreTotal = 0, scoreWin = 0;
-    const scoreLogs = [];
-    for(let i = 20; i < candles.length - 1; i++) {
-      const slice = candles.slice(Math.max(0, i-19), i+1);
-      const rsi = calcRSI(slice.map(c => c.close));
-      const vwap = calcVWAP(slice);
-      const price = candles[i].close;
-      // 스코어60+ 개념: RSI<55 + 가격이 VWAP 근처 + 음봉 후 양봉
-      const prevCandle = candles[i-1];
-      const currCandle = candles[i];
-      const rebound = prevCandle.close < prevCandle.open && currCandle.close > currCandle.open;
-      if(rsi < 55 && rsi > 25 && Math.abs(price - vwap) / vwap < 0.02 && rebound) {
+    // ── 테스트 2: 과매도+반등 → 다음 4H
+    let scoreTotal=0, scoreWin=0; const scoreLogs=[];
+    for(let i=20; i<candles.length-1; i++) {
+      const sl=candles.slice(Math.max(0,i-19),i+1);
+      const rsi=calcRSI(sl.map(c=>c.close)), vwap=calcVWAP(sl), price=candles[i].close;
+      const rebound=candles[i-1].close<candles[i-1].open && candles[i].close>candles[i].open;
+      if(rsi<55&&rsi>25&&Math.abs(price-vwap)/vwap<0.02&&rebound) {
         scoreTotal++;
-        const nextPrice = candles[i+1].close;
-        const pct = ((nextPrice - price) / price * 100);
-        const win = pct > 0;
-        if(win) scoreWin++;
-        const d = new Date(candles[i].ts);
-        scoreLogs.push({ label: `${d.getMonth()+1}/${d.getDate()} RSI${rsi.toFixed(0)}`, pct, win });
+        const pct=(candles[i+1].close-price)/price*100; if(pct>0) scoreWin++;
+        const d=new Date(candles[i].ts);
+        scoreLogs.push({label:`${d.getMonth()+1}/${d.getDate()} RSI${rsi.toFixed(0)}`,pct,win:pct>0});
       }
     }
 
-    // ── 테스트 3: 추격매수 개념 (RSI<40) → 24H(6봉) 후 수익률
-    let secretTotal = 0, secretWin = 0, secretAvgPct = 0;
-    for(let i = 14; i < candles.length - 6; i++) {
-      const rsi = calcRSI(closes.slice(0, i+1));
-      if(rsi < 40 && rsi > 20) {
+    // ── 테스트 3: RSI<40 저점 → 24H(6봉)
+    let secretTotal=0, secretWin=0, secretAvgPct=0;
+    for(let i=14; i<candles.length-6; i++) {
+      const rsi=calcRSI(closes.slice(0,i+1));
+      if(rsi<40&&rsi>20) {
         secretTotal++;
-        const entry  = candles[i].close;
-        const future = candles[i+6].close;  // 24H(4H×6) 후
-        const pct = ((future - entry) / entry * 100);
-        if(pct > 0) secretWin++;
-        secretAvgPct += pct;
+        const pct=(candles[i+6].close-candles[i].close)/candles[i].close*100;
+        if(pct>0) secretWin++; secretAvgPct+=pct;
       }
     }
-    const secretAvg = secretTotal > 0 ? (secretAvgPct / secretTotal) : 0;
+    const secretAvg=secretTotal>0?(secretAvgPct/secretTotal):0;
 
-    // ── 결과 업데이트
-    const rsiRate    = rsiTotal   > 0 ? Math.round(rsiWin   / rsiTotal   * 100) : 0;
-    const scoreRate  = scoreTotal > 0 ? Math.round(scoreWin / scoreTotal * 100) : 0;
-    const secretRate = secretTotal> 0 ? Math.round(secretWin/ secretTotal* 100) : 0;
+    const rsiRate   =rsiTotal   >0?Math.round(rsiWin   /rsiTotal   *100):0;
+    const scoreRate =scoreTotal >0?Math.round(scoreWin /scoreTotal *100):0;
+    const secretRate=secretTotal>0?Math.round(secretWin/secretTotal*100):0;
 
-    st('bt-score-win',  scoreRate  + '%', scoreRate  >= 55 ? 'up' : scoreRate  >= 45 ? 'yl' : 'dn');
-    st('bt-rsi-win',    rsiRate    + '%', rsiRate    >= 55 ? 'cy' : rsiRate    >= 45 ? 'yl' : 'dn');
-    st('bt-secret-win', secretRate + '%', secretRate >= 55 ? 'yl' : secretRate >= 45 ? 'cy' : 'dn');
+    st('bt-score-win',  scoreRate +'%', scoreRate >=55?'up':scoreRate >=45?'yl':'dn');
+    st('bt-rsi-win',    rsiRate   +'%', rsiRate   >=55?'cy':rsiRate   >=45?'yl':'dn');
+    st('bt-secret-win', secretRate+'%', secretRate>=55?'yl':secretRate>=45?'cy':'dn');
 
-    // ── 로그 렌더링
-    const logLines = [];
-    logLines.push(`<div style="color:var(--cy);font-weight:700;margin-bottom:3px">📊 분석 기간: 최근 ${candles.length}개 4H봉 (약 ${Math.round(candles.length/6)}일)</div>`);
-
-    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🔄 RSI 바닥 반등 신호 (n=${rsiTotal})</div>`);
-    logLines.push(`<div style="color:var(--tx2)">→ 4H 후 상승 적중률: <span style="color:${rsiRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${rsiRate}%</span> (${rsiWin}/${rsiTotal})</div>`);
-    rsiLogs.slice(-5).forEach(l => {
-      logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}">  ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(2)}%</div>`);
-    });
-
-    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">📈 과매도 반등 조건 (n=${scoreTotal})</div>`);
-    logLines.push(`<div style="color:var(--tx2)">→ 다음 4H 상승 적중률: <span style="color:${scoreRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${scoreRate}%</span> (${scoreWin}/${scoreTotal})</div>`);
-    scoreLogs.slice(-5).forEach(l => {
-      logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}">  ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(2)}%</div>`);
-    });
-
-    logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🎯 RSI&lt;40 저점 진입 (n=${secretTotal})</div>`);
-    logLines.push(`<div style="color:var(--tx2)">→ 24H 후 상승 적중률: <span style="color:${secretRate>=55?'var(--yl)':'var(--tx2)'};font-weight:700">${secretRate}%</span> | 평균수익: <span style="color:${secretAvg>0?'var(--up)':'var(--dn)'}">${secretAvg>0?'+':''}${secretAvg.toFixed(2)}%</span></div>`);
-
+    // ── 로그
+    const logLines=[];
+    logLines.push(`<div style="color:var(--cy);font-weight:700;margin-bottom:3px">📊 ${Math.round(candles.length/6)}일치 4H봉 분석</div>`);
+    logLines.push(`<div style="color:var(--tx1);margin:3px 0 1px">🔄 RSI 바닥 반등 (n=${rsiTotal}) → 4H 후 <span style="color:${rsiRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${rsiRate}%</span></div>`);
+    rsiLogs.slice(-3).forEach(l=>logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}"> ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(1)}%</div>`));
+    logLines.push(`<div style="color:var(--tx1);margin:3px 0 1px">📈 과매도 반등 (n=${scoreTotal}) → <span style="color:${scoreRate>=55?'var(--up)':'var(--yl)'};font-weight:700">${scoreRate}%</span></div>`);
+    scoreLogs.slice(-3).forEach(l=>logLines.push(`<div style="color:${l.win?'var(--up)':'var(--dn)'}"> ${l.win?'✅':'❌'} ${l.label} → ${l.pct>0?'+':''}${l.pct.toFixed(1)}%</div>`));
+    logLines.push(`<div style="color:var(--tx1);margin:3px 0 1px">🎯 RSI&lt;40 진입 (n=${secretTotal}) → <span style="color:${secretRate>=55?'var(--yl)':'var(--tx2)'};font-weight:700">${secretRate}%</span> | 평균 <span style="color:${secretAvg>0?'var(--up)':'var(--dn)'}">${secretAvg>0?'+':''}${secretAvg.toFixed(1)}%</span></div>`);
     if(log) log.innerHTML = logLines.join('');
-    status && (status.textContent = `완료 · ${new Date().toLocaleTimeString()}`);
 
+    // ── 상황 세션 1~10 계산
+    updateSituationScore(rsiRate, scoreRate, secretRate, secretAvg, candles, closes);
+
+    status && (status.textContent = `갱신 ${new Date().toLocaleTimeString()}`);
   } catch(e) {
     if(log) log.innerHTML = `<div style="color:var(--dn)">오류: ${e.message}</div>`;
-    status && (status.textContent = '오류 발생');
+    status && (status.textContent = '오류');
   }
-
   _btRunning = false;
-  if(btn) btn.textContent = '▶ 재실행';
+}
+
+/* ── 상황 세션 1~10 점수 계산 ── */
+function updateSituationScore(rsiRate, scoreRate, secretRate, secretAvg, candles, closes) {
+  const el = $('bt-situation');
+  if(!el) return;
+
+  const p   = D.price || 0;
+  const rsi = D.rsi   || 50;
+  const fund= D.funding ? D.funding * 100 : 0;
+  const cvd = D.cvd   || 0;
+  const ls  = D.ls    || 0.5;
+  const vwap= D.vwap  || p;
+  const oi  = D.oi    || 0;
+  const oiPrev = D.oiPrev || oi;
+  const oiChg  = oiPrev>0 ? (oi-oiPrev)/oiPrev*100 : 0;
+  const fng = D.fng   || 50;
+
+  // 최근 캔들 기반 추가 지표
+  const last5 = candles.slice(-5);
+  const recentRsiArr = closes.slice(-15);
+  const recentRsi = calcRSI(recentRsiArr);
+
+  // 10가지 상황 항목 정의
+  const items = [
+    {
+      num:1, name:'RSI 과매도 반등',
+      score: rsi<=25?10 : rsi<=30?9 : rsi<=35?8 : rsi<=40?6 : rsi<=45?4 : rsi<=55?3 : rsi<=65?2 : 1,
+      desc: rsi<=35 ? `RSI ${rsi.toFixed(1)} — 과매도 구간, 반등 기대` : rsi<=50 ? `RSI ${rsi.toFixed(1)} — 중립 하단` : `RSI ${rsi.toFixed(1)} — 고평가 구간`,
+      good: rsi<=40
+    },
+    {
+      num:2, name:'펀딩 역전 신호',
+      score: fund<=-0.03?10 : fund<=-0.02?9 : fund<=-0.01?7 : fund<=-0.005?5 : fund<=0?3 : fund<=0.01?2 : 1,
+      desc: fund<0 ? `펀딩 ${fund.toFixed(4)}% — 숏 과열, 롱 유리` : `펀딩 ${fund.toFixed(4)}% — 롱 과열`,
+      good: fund<-0.005
+    },
+    {
+      num:3, name:'CVD 매수 압력',
+      score: cvd>50000?10 : cvd>20000?8 : cvd>5000?6 : cvd>0?4 : cvd>-5000?3 : cvd>-20000?2 : 1,
+      desc: cvd>0 ? `CVD +${(cvd/1000).toFixed(0)}K — 매수 우세` : `CVD ${(cvd/1000).toFixed(0)}K — 매도 우세`,
+      good: cvd>0
+    },
+    {
+      num:4, name:'롱/숏 비율',
+      score: ls<0.42?10 : ls<0.45?8 : ls<0.48?6 : ls<0.52?4 : ls<0.55?3 : ls<0.58?2 : 1,
+      desc: ls<0.5 ? `롱 ${(ls*100).toFixed(1)}% — 숏 우세 (역발상 매수)` : `롱 ${(ls*100).toFixed(1)}% — 롱 과열`,
+      good: ls<0.47
+    },
+    {
+      num:5, name:'공포/탐욕 지수',
+      score: fng<=15?10 : fng<=20?9 : fng<=25?8 : fng<=30?7 : fng<=35?5 : fng<=40?4 : fng<=50?3 : fng<=60?2 : 1,
+      desc: fng<=30 ? `공포 ${fng} — 극단 공포, 바닥 가능성` : fng<=50 ? `중립 ${fng}` : `탐욕 ${fng} — 진입 신중`,
+      good: fng<=35
+    },
+    {
+      num:6, name:'VWAP 이격도',
+      score: (() => {
+        if(!p||!vwap) return 3;
+        const d=(p-vwap)/vwap*100;
+        return d<-3?10 : d<-2?8 : d<-1?6 : d<0?4 : d<1?3 : d<2?2 : 1;
+      })(),
+      desc: (() => {
+        if(!p||!vwap) return 'VWAP 계산중';
+        const d=(p-vwap)/vwap*100;
+        return d<0?`VWAP 하단 ${d.toFixed(2)}% — 저평가`:`VWAP 상단 +${d.toFixed(2)}% — 고평가`;
+      })(),
+      good: p<vwap
+    },
+    {
+      num:7, name:'OI 변화율',
+      score: Math.abs(oiChg)<0.3?8 : Math.abs(oiChg)<1?6 : Math.abs(oiChg)<3?4 : 2,
+      desc: Math.abs(oiChg)<0.5?`OI 안정 (${oiChg.toFixed(2)}%)`:Math.abs(oiChg)<2?`OI 변동 (${oiChg.toFixed(2)}%)` : `OI 급변 (${oiChg.toFixed(2)}%) — 포지션 과열`,
+      good: Math.abs(oiChg)<1
+    },
+    {
+      num:8, name:'백테스트 RSI 신뢰도',
+      score: rsiRate>=70?10 : rsiRate>=65?8 : rsiRate>=60?6 : rsiRate>=55?5 : rsiRate>=50?3 : 2,
+      desc: `RSI 반등 신호 과거 적중률 ${rsiRate}% — ${rsiRate>=60?'신뢰 가능':'참고 수준'}`,
+      good: rsiRate>=60
+    },
+    {
+      num:9, name:'백테스트 저점 수익',
+      score: secretAvg>=3?10 : secretAvg>=2?8 : secretAvg>=1?6 : secretAvg>=0?4 : secretAvg>=-1?3 : 1,
+      desc: `RSI<40 진입 시 24H 평균 ${secretAvg>=0?'+':''}${secretAvg.toFixed(1)}% — ${secretAvg>=1?'저점매수 유효':'기대수익 낮음'}`,
+      good: secretAvg>=1
+    },
+    {
+      num:10, name:'종합 시장 국면',
+      score: (() => {
+        // 최근 5봉 방향성
+        const up = last5.filter(c=>c.close>c.open).length;
+        const trend = up>=4?2 : up>=3?1 : up>=2?0 : -1;
+        const base = rsi<=40?7 : rsi<=50?5 : 3;
+        return Math.max(1, Math.min(10, base+trend));
+      })(),
+      desc: (() => {
+        const up=last5.filter(c=>c.close>c.open).length;
+        return `최근 5봉 중 양봉 ${up}개 — ${up>=4?'상승세':up>=3?'중립':up>=2?'혼조':'하락세'}`;
+      })(),
+      good: last5.filter(c=>c.close>c.open).length>=3
+    }
+  ];
+
+  // DOM 렌더링
+  const avgScore = items.reduce((s,i)=>s+i.score,0)/items.length;
+  const totalColor = avgScore>=7?'var(--up)':avgScore>=5?'var(--cy)':avgScore>=3?'var(--yl)':'var(--dn)';
+
+  el.innerHTML = items.map(item=>{
+    const barW = item.score*10;
+    const barColor = item.score>=7?'var(--up)':item.score>=5?'var(--cy)':item.score>=3?'var(--yl)':'var(--dn)';
+    return `<div style="padding:3px 0;border-bottom:1px solid var(--bd0)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <span style="font-size:11px;color:var(--tx1);font-weight:600">${item.num}. ${item.name}</span>
+        <span style="font-size:13px;font-weight:700;color:${barColor}">${item.score}<span style="font-size:10px;color:var(--tx3)">/10</span></span>
+      </div>
+      <div style="height:3px;background:var(--bg3);border-radius:2px;margin-bottom:2px">
+        <div style="width:${barW}%;height:100%;background:${barColor};border-radius:2px;transition:width .5s"></div>
+      </div>
+      <div style="font-size:10px;color:var(--tx3)">${item.desc}</div>
+    </div>`;
+  }).join('') +
+  `<div style="margin-top:5px;padding:5px 8px;border-radius:4px;background:var(--bg2);display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:var(--tx0)">종합 평균</span>
+    <span style="font-size:18px;font-weight:700;color:${totalColor}">${avgScore.toFixed(1)}<span style="font-size:11px;color:var(--tx3)">/10</span></span>
+  </div>`;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3710,8 +3803,11 @@ window.addEventListener('load', async()=>{
   // 멀티 타임프레임 (1D + 15분) 초기 로드 + 10분마다 갱신
   fetchMTFCandles();
   setInterval(fetchMTFCandles, 600000);
-  // MTF 디스플레이는 5초마다 갱신
   setInterval(updateMTFDisplay, 5000);
+
+  // 백테스트 초기 실행 + 5분마다 자동 갱신
+  setTimeout(runBacktest, 3000);
+  setInterval(runBacktest, 300000);
 
   // 트레이딩 인텔
   fetchFundingHist();
