@@ -6,8 +6,6 @@
 <title>METRO PRO v4.1 — BTC 실시간 대시보드</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=VT323&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════
    OKX 스타일 CSS 변수
@@ -65,8 +63,10 @@ html, body {
 .cy  { color: var(--cy); text-shadow: 0 0 6px rgba(51,214,245,.4); }
 .pu  { color: var(--pu) }
 .bl  { color: var(--bl) }
+.tx0 { color: var(--tx0) }
 .tx1 { color: var(--tx1) }
 .tx2 { color: var(--tx2) }
+.tx3 { color: var(--tx3) }
 
 /* ── 패널 공통 ── */
 .panel {
@@ -1265,7 +1265,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
       <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
-          <span id="bt-run-btn" style="font-size:10px;color:var(--tx3)">자동 갱신</span>
+          <span style="font-size:10px;color:var(--tx3)">자동 갱신 <span id="bt-countdown" style="color:var(--cy);font-weight:600">5:00</span></span>
         </div>
         <!-- 결과 요약 3칸 -->
         <div style="display:flex;gap:3px;margin-bottom:6px">
@@ -1383,15 +1383,17 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
           <span style="font-size:13px;color:var(--tx1);font-weight:500">🐋 고래 움직임 포착</span>
           <span style="font-size:11px;color:var(--tx3)">전체코인 $100K+</span>
         </div>
-        <!-- 매수/매도 누적 금액 -->
+        <!-- 롱청산 / 숏청산 누적 금액 (24H) -->
         <div style="display:flex;gap:4px;margin-bottom:4px">
-          <div style="flex:1;background:var(--upd);border:1px solid rgba(0,192,118,.3);border-radius:4px;padding:3px 6px;text-align:center">
-            <div style="font-size:10px;color:var(--up)">🟢 매수청산 24H</div>
-            <div id="whale-buy-total" style="font-size:14px;font-weight:700;color:var(--up)">$0</div>
-          </div>
           <div style="flex:1;background:var(--dnd);border:1px solid rgba(255,73,74,.3);border-radius:4px;padding:3px 6px;text-align:center">
-            <div style="font-size:10px;color:var(--dn)">🔴 매도청산 24H</div>
-            <div id="whale-sell-total" style="font-size:14px;font-weight:700;color:var(--dn)">$0</div>
+            <div style="font-size:10px;color:var(--dn)">🔴 롱청산 24H</div>
+            <div id="whale-buy-total" style="font-size:14px;font-weight:700;color:var(--dn)">$0</div>
+            <div style="font-size:9px;color:var(--tx3)">매도 압력</div>
+          </div>
+          <div style="flex:1;background:var(--upd);border:1px solid rgba(0,192,118,.3);border-radius:4px;padding:3px 6px;text-align:center">
+            <div style="font-size:10px;color:var(--up)">🟢 숏청산 24H</div>
+            <div id="whale-sell-total" style="font-size:14px;font-weight:700;color:var(--up)">$0</div>
+            <div style="font-size:9px;color:var(--tx3)">매수 압력</div>
           </div>
         </div>
         <div id="of-whale-list" style="display:flex;flex-direction:column;gap:2px;max-height:140px;overflow-y:auto">
@@ -1651,10 +1653,7 @@ const D = {
 const TC = { buy:0, sell:0, resetAt: Date.now() + 300000 };   // 체결 카운터
 const LC = { long:0, short:0, resetAt: Date.now() + 300000 }; // 청산 카운터
 
-function updateTradeCounter() {
-  const el = $('trade-counter');
-  if(el) el.innerHTML = `<span class="up">구매 ${TC.buy.toLocaleString()}</span> / <span class="dn">판매 ${TC.sell.toLocaleString()}</span> &nbsp;<span class="tx2" id="trade-timer">${counterRemain(TC)}</span>`;
-}
+function updateTradeCounter() { /* trade-counter HTML 없음 — 비활성 */ }
 function updateLiqCounter() {
   const el = $('liq-summary');
   if(el) el.innerHTML = `<span class="dn">롱 청산 ${LC.long}</span> / <span class="up">숏 청산 ${LC.short}</span> &nbsp;<span class="tx2">${counterRemain(LC)}</span>`;
@@ -2193,10 +2192,10 @@ function updateCvdChart() {
 ═══════════════════════════════════════════════════════════ */
 const OF = {
   buyVol: 0, sellVol: 0,
-  whales: [],           // 최근 고래 체결 (100K+)
-  whaleBuyTotal: 0,     // 고래 매수 청산 누적 (24H)
-  whaleSellTotal: 0,    // 고래 매도 청산 누적 (24H)
-  whaleResetAt: _nextMidnight(), // 다음 자정
+  whales: [],
+  whaleLongLiq:  0,  // 롱청산 누적 24H (매도 압력)
+  whaleShortLiq: 0,  // 숏청산 누적 24H (매수 압력)
+  whaleResetAt: _nextMidnight(),
   resetAt: Date.now() + 60000,
 };
 
@@ -2205,24 +2204,21 @@ function _nextMidnight() {
 }
 
 function resetWhaleTotal() {
-  OF.whaleBuyTotal = 0;
-  OF.whaleSellTotal = 0;
-  OF.whaleResetAt = _nextMidnight();
+  OF.whaleLongLiq  = 0;
+  OF.whaleShortLiq = 0;
+  OF.whaleResetAt  = _nextMidnight();
   addEv('ee', '🐋 고래 누적 24H 리셋');
 }
 
 function resetOF() {
   OF.buyVol = 0; OF.sellVol = 0;
-  // whaleBuyTotal / whaleSellTotal 은 24H 기준 — 여기서 리셋 안 함
   OF.resetAt = Date.now() + 60000;
 }
 
 function addWhale(price, usd, isBuy, ts, coin='BTC') {
   OF.whales.unshift({ price, usd, isBuy, ts, coin });
   if(OF.whales.length > 8) OF.whales.pop();
-  // 누적 금액 업데이트
-  if(isBuy) OF.whaleBuyTotal += usd;
-  else       OF.whaleSellTotal += usd;
+  // aggTrade 기반 대형 체결은 누적에 포함 안 함 (청산만 누적)
   renderWhales();
 }
 
@@ -2230,36 +2226,43 @@ function renderWhales() {
   const el = $('of-whale-list');
   if(!el) return;
 
-  // 누적 금액 업데이트
+  // 롱청산(매도압력) / 숏청산(매수압력) 누적 업데이트
   const fmt = v => v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v/1e3).toFixed(0)}K` : '$0';
-  st('whale-buy-total',  fmt(OF.whaleBuyTotal),  'up');
-  st('whale-sell-total', fmt(OF.whaleSellTotal), 'dn');
+  st('whale-buy-total',  fmt(OF.whaleLongLiq),  'dn');
+  st('whale-sell-total', fmt(OF.whaleShortLiq), 'up');
 
   if(!OF.whales.length) {
     el.innerHTML = '<div style="font-size:12px;color:var(--tx3);text-align:center;padding:6px">대기중...</div>';
     return;
   }
   el.innerHTML = OF.whales.map(w => {
-    const cls = w.isBuy ? 'up' : 'dn';
     const coinCls = w.coin === 'BTC' ? 'yl' : w.coin === 'ETH' ? 'cy' : 'tx1';
     const amt = w.usd >= 1000000 ? `$${(w.usd/1000000).toFixed(1)}M` : `$${(w.usd/1000).toFixed(0)}K`;
+    const hugeMark = w.isHuge ? ' 🔥' : '';
 
-    // 청산이면 "청산" 표기, 일반 거래면 "매수/매도"
-    let typeLabel, typeStyle;
+    let typeLabel, typeCls, typeStyle;
     if(w.isLiq) {
-      typeLabel = w.isBuy ? '🔴 숏청산' : '🟢 롱청산';
+      // 청산 이벤트
+      if(w.isLong) {
+        typeLabel = '🔴 롱청산';  // 롱포지션 강제청산 = 매도압력
+        typeCls   = 'dn';
+      } else {
+        typeLabel = '🟢 숏청산';  // 숏포지션 강제청산 = 매수압력
+        typeCls   = 'up';
+      }
       typeStyle = w.isHuge ? 'font-weight:700;font-size:13px' : 'font-weight:600';
     } else {
-      typeLabel = w.isBuy ? '🟢 매수' : '🔴 매도';
+      // aggTrade 대형 체결
+      typeLabel = w.isBuy ? '🟢 대형매수' : '🔴 대형매도';
+      typeCls   = w.isBuy ? 'up' : 'dn';
       typeStyle = 'font-weight:600';
     }
-    const hugeMark = w.isHuge ? ' 🔥' : '';
 
     return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--bd0)">
       <span style="font-weight:700;font-size:11px;min-width:36px" class="${coinCls}">${w.coin}</span>
-      <span style="${typeStyle}">${typeLabel}</span>
+      <span style="${typeStyle}" class="${typeCls}">${typeLabel}</span>
       <span style="color:var(--tx1)">$${fp(w.price)}</span>
-      <span style="font-weight:700${w.isHuge?';font-size:13px':''}" class="${cls}">${amt}${hugeMark}</span>
+      <span style="font-weight:700${w.isHuge?';font-size:13px':''}" class="${typeCls}">${amt}${hugeMark}</span>
       <span style="font-size:11px;color:var(--tx3)">${w.ts}</span>
     </div>`;
   }).join('');
@@ -2562,10 +2565,12 @@ function checkRSITurnaround() {
    3. 추격매수표 개념(RSI<40 + 펀딩<0) → 24H 후 수익률
 ═══════════════════════════════════════════════════════════ */
 let _btRunning = false;
+let _btNextRun = Date.now() + 3000; // 초기 3초 후 첫 실행
 
 async function runBacktest() {
   if(_btRunning) return;
   _btRunning = true;
+  _btNextRun = Date.now() + 300000; // 5분 카운트다운 리셋
 
   const log    = $('bt-log');
   const status = $('bt-status');
@@ -3481,21 +3486,19 @@ function addLiqEvent(side, price, qty, symbol) {
 
   addEv(cls, msg);
 
-  // ── 대형 청산 → 고래 감지 섹션에도 표시 ──
+  // ── 대형 청산 → 고래 감지 섹션 표시 + 24H 누적 ──
   if(big) {
     const t = nowHHMM();
-    // 롱청산 = 매도 포지션이 강제 종료 → 매수세 압력 의미
-    // 숏청산 = 매수 포지션이 강제 종료 → 매도세 압력 의미
     OF.whales.unshift({
-      price,
-      usd,
-      isBuy: !isLong,  // 롱청산=숏방향, 숏청산=롱방향
-      ts: t,
-      coin: sym,
-      isLiq: true,     // 청산 표시
-      isHuge: huge
+      price, usd,
+      isLong,          // 롱청산 여부 (true=롱청산=매도압력, false=숏청산=매수압력)
+      ts: t, coin: sym,
+      isLiq: true, isHuge: huge
     });
     if(OF.whales.length > 8) OF.whales.pop();
+    // 누적: 롱청산=매도압력, 숏청산=매수압력
+    if(isLong) OF.whaleLongLiq  += usd;
+    else       OF.whaleShortLiq += usd;
     renderWhales();
   }
 
@@ -3675,70 +3678,15 @@ function tick(){
   st('uptime',`${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`);
   st('b-time',now(),'tx2');
   checkCounterReset();
-}
 
-/* ═══════════════════════════════════════════════════════════
-   골드(XAU/USD) + 나스닥100 미니 캔들차트
-   데이터: Twelve Data API (무료, CORS 허용, 800req/day)
-   심볼: XAU/USD (골드 현물), QQQ (나스닥100 ETF — Twelve Data 무료)
-═══════════════════════════════════════════════════════════ */
-const TWELVE_KEY = '696c55a3ef96458fa40140d63ea2becb';
-
-/* ── Twelve Data에서 5분봉 로드 ── */
-const miniCandles = { xau: [], ndx: [] };
-
-async function fetchTwelveData(symbol, storeKey, priceId, chgId) {
-  const url = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=5min&outputsize=60&apikey=${TWELVE_KEY}`;
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-
-    // 에러 응답 처리
-    if(d.status === 'error') {
-      console.warn(`Twelve Data [${symbol}]:`, d.message || d.code);
-      st(priceId, 'API 오류');
-      return;
-    }
-    if(!d.values || !d.values.length) {
-      st(priceId, '데이터 없음');
-      return;
-    }
-
-    // 최신 순 → 오래된 순으로 뒤집기
-    const vals = [...d.values].reverse();
-    miniCandles[storeKey] = vals.map(v => {
-      const dt = new Date(v.datetime);
-      return {
-        ts:    dt.getTime(),
-        label: `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`,
-        open:  +v.open, high: +v.high, low: +v.low, close: +v.close,
-        vol:   +(v.volume || 0),
-      };
-    });
-
-    updateMiniPriceDOM(storeKey, priceId, chgId);
-
-  } catch(e) {
-    // 네트워크 오류 — 조용히 실패, 다음 인터벌에 재시도
-    console.warn(`fetchTwelveData [${symbol}] 실패:`, e.message);
+  // 백테스트 카운트다운
+  const cdEl = $('bt-countdown');
+  if(cdEl) {
+    const rem = Math.max(0, Math.ceil((_btNextRun - Date.now()) / 1000));
+    const m = Math.floor(rem / 60), sec = rem % 60;
+    cdEl.textContent = `${m}:${pad(sec)}`;
+    cdEl.style.color = rem <= 30 ? 'var(--yl)' : 'var(--cy)';
   }
-}
-
-function updateMiniPriceDOM(storeKey, priceId, chgId) {
-  const candles = miniCandles[storeKey];
-  if(!candles.length) return;
-  const last  = candles[candles.length-1];
-  const first = candles[0];
-  const chgPct = first.close > 0 ? ((last.close - first.close) / first.close * 100) : 0;
-  const isUp   = chgPct >= 0;
-  const color  = storeKey === 'xau' ? '#f0b429' : '#9f7aea';
-  const el = $(priceId);
-  if(el) {
-    el.textContent = Number(last.close).toLocaleString('en-US', {maximumFractionDigits: storeKey==='xau'?2:0});
-    el.style.color = color;
-  }
-  st(chgId, `${isUp?'+':''}${chgPct.toFixed(2)}%`, isUp?'up':'dn');
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3751,7 +3699,7 @@ window.addEventListener('load', async()=>{
   connectTicker(); connectTrades(); connectKlineWS('5m');
   connectBtcMiniTicker(); // BTC 24H 통계 (고/저/변동률)
   connectEthTicker(); connectEthMiniTicker(); connectEthKlineWS('5m');
-  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchCG()]);
+  await Promise.allSettled([fetchKlines('5m',120), fetchEthKlines('5m',120), fetchFutures(), fetchCG(), fetchKimchi()]);
 
   // 4H 전용 캔들 (스코어 계산용, 화면 TF와 독립)
   await fetch4hCandles();
@@ -3759,6 +3707,7 @@ window.addEventListener('load', async()=>{
 
   setInterval(fetchFutures,  20000);
   setInterval(fetchCG,      120000);
+  setInterval(fetchKimchi,   30000);
   setInterval(updateIntelBars,5000);
   setInterval(updateOrderflow, 2000);  // 오더플로우 2초마다
   setInterval(tick,1000);
