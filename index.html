@@ -2035,9 +2035,7 @@ function connectEthTicker() {
             DE.bid = +d.b;
             DE.ask = +d.a;
             const cc = DE.chg >= 0 ? 'cy' : 'dn';
-            st('eth-price-top', '$'+fp(DE.price), cc);
             if(D.price > 0 && DE.price > 0) {
-              st('eth-btc-ratio', (DE.price/D.price).toFixed(5)+' BTC');
             }
             st('s-eth', '$'+fp(DE.price), 'sv cy');
             st('b-eth', '$'+fp(DE.price), DE.chg>=0?'cy':'dn');
@@ -2077,10 +2075,6 @@ function connectEthMiniTicker() {
         DE.open   = +d.o; DE.high = +d.h;
         DE.low    = +d.l; DE.vol  = +d.v; DE.volUsd = +d.q;
         DE.chg    = ((+d.c - +d.o) / +d.o * 100);
-        st('eth-chg',  fpct(DE.chg), DE.chg>=0?'cy':'dn');
-        st('eth-high', '$'+fp(DE.high), 'cy');
-        st('eth-low',  '$'+fp(DE.low),  'dn');
-        st('eth-vol',  '$'+fb(DE.volUsd));
         st('s-eth-chg', fpct(DE.chg), DE.chg>=0?'sv cy':'sv dn');
         st('b-eth-chg', fpct(DE.chg), DE.chg>=0?'cy':'dn');
       } catch(e) {}
@@ -2125,7 +2119,6 @@ function connectEthKlineWS(tf='1m') {
         if(DE.candles.length && DE.candles[DE.candles.length-1].ts===+k.t)
           DE.candles[DE.candles.length-1] = candle;
         else { DE.candles.push(candle); if(DE.candles.length>200) DE.candles.shift(); }
-        st('eth-ohlc-lbl', `O:${fp(k.o)} H:${fp(k.h)} L:${fp(k.l)} C:${fp(k.c)}`);
         updateEthChart();
       } catch(e) {}
     };
@@ -2939,8 +2932,6 @@ async function fetchKimchi() {
     apiOk('api-up', false);
     if(D.price > 0 && D.usdkrw > 0) {
       const est = (D.price * D.usdkrw).toLocaleString('ko-KR');
-      st('kp-upbit',  '추정 '+est+'원', 'kp-val tx1');
-      st('kp-status', '⚠ 빗썸 연결 실패 (바이낸스×환율 추정)');
     }
     return;
   }
@@ -2962,16 +2953,6 @@ async function fetchKimchi() {
   D.kpMin    = Math.min(D.kpMin, D.kp);
   const sign = D.kp >= 0 ? '+' : '';
   const kc   = D.kp > 2 ? 'pu' : D.kp < -1 ? 'dn' : 'up';
-  st('kp-pct',    `${sign}${D.kp.toFixed(2)}%`, `kp-big ${kc}`);
-  st('kp-upbit',  D.upbit.toLocaleString('ko-KR')+'원', 'kp-val up');
-  st('kp-rate',   D.usdkrw.toFixed(0)+'원', 'kp-val tx1');
-  st('kp-exp',    (D.price*D.usdkrw).toLocaleString('ko-KR')+'원', 'kd-v tx1');
-  st('kp-bin',    '$'+fp(D.price), 'kd-v up');
-  st('kp-max',    isFinite(D.kpMax) ? `+${D.kpMax.toFixed(2)}%` : '--', 'kd-v pu');
-  st('kp-min',    isFinite(D.kpMin) ? `${D.kpMin.toFixed(2)}%` : '--', 'kd-v tx1');
-  st('kp-status', D.kp > 2 ? '⬆ 한국 프리미엄 과열' : D.kp < -1 ? '⬇ 역프리미엄 (역김치)' : '→ 정상 범위');
-  st('s-kp',      `${sign}${D.kp.toFixed(2)}%`, 'sv pu');
-  st('b-kp',      `${sign}${D.kp.toFixed(2)}%`, 'pu');
   addEv('ee', `김치P ${sign}${D.kp.toFixed(2)}% | 빗썸 ${D.upbit.toLocaleString()}원 | 환율 ${D.usdkrw.toFixed(0)}원`);
   updateIntelBars();
 }
@@ -3084,7 +3065,6 @@ function updateTickerDOM() {
   st('s-high','$'+fp(D.high),'sv up');
   st('s-low', '$'+fp(D.low),'sv dn');
   st('s-vol', '$'+fb(D.volUsd),'sv tx1');
-  st('s-lat', D.lat+'ms','sv tx2');
   st('ov-price-top','$'+fp(p), cc?'up':'dn');
   st('ov-chg', fpct(D.chg), cc?'up':'dn');
   st('ov-high','$'+fp(D.high),'up');
@@ -3092,7 +3072,6 @@ function updateTickerDOM() {
   st('ov-vol', '$'+fb(D.volUsd));
   st('b-bid', fp(D.bid),'up');
   st('b-ask', fp(D.ask),'dn');
-  st('b-spr', fp(Math.round(D.ask-D.bid)),'tx1');
   // 추세 레짐: RSI + MACD + 가격변동 복합 판단
   const _rsi = D.rsi || 50, _hist = D.hist || 0, _chg = D.chg || 0;
   let regimeScore = 0;
