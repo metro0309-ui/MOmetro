@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>METRO PRO v4.1 — BTC 실시간 대시보드</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230e1420'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%2300c076'>₿</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=VT323&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
@@ -239,10 +238,10 @@ html, body {
   min-height: 0;
 }
 
-/* 좌측: 멀티타임프레임 + 백테스트 (전체 높이) */
+/* 좌측: 오더북 + 체결 (전보다 넓고 높게) */
 #col-l {
   display: grid;
-  grid-template-rows: 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 3px;
   min-height: 0;
 }
@@ -931,10 +930,10 @@ html, body {
     flex-direction: column;
     gap: 3px;
   }
-  /* 좌측 컬럼: 단일 패널 전체 높이 */
+  /* 좌측 컬럼: 체결 + 청산 5:5 고정 */
   #col-l.mob-active {
-    display: flex !important;
-    flex-direction: column;
+    display: grid !important;
+    grid-template-rows: 1fr 1fr;
     gap: 2px;
     overflow: hidden;
   }
@@ -1233,7 +1232,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
   <div id="col-l">
 
     <!-- 1. 멀티 타임프레임 + ATR 손절선 -->
-    <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow:hidden">
+    <div class="panel" style="display:flex;flex-direction:column;min-height:0;overflow-y:auto">
       <div class="panel-hd">
         <div class="hd-title"><div class="hd-dot" style="background:var(--bl);box-shadow:0 0 5px var(--bl)"></div>📊 멀티 타임프레임</div>
         <span style="font-size:11px;color:var(--tx2)">1D · 4H · 15분</span>
@@ -1266,7 +1265,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
       <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
-          <span id="bt-run-btn" style="font-size:10px;color:var(--tx3)">자동 갱신</span>
+          <button id="bt-run-btn" onclick="runBacktest()" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--cy);background:rgba(51,214,245,.1);color:var(--cy);cursor:pointer">▶ 실행</button>
         </div>
         <!-- 결과 요약 3칸 -->
         <div style="display:flex;gap:3px;margin-bottom:6px">
@@ -1288,7 +1287,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
         <!-- 백테스트 상세 로그 -->
         <div id="bt-log" style="flex:1;overflow-y:auto;font-size:11px;color:var(--tx2);background:var(--bg0);border-radius:4px;padding:4px 6px;border:1px solid var(--bd0)">
-          <div style="color:var(--tx3);text-align:center;padding:8px">⏳ 초기화 중...</div>
+          <div style="color:var(--tx3);text-align:center;padding:8px">▶ 실행 버튼을 눌러 분석 시작</div>
         </div>
         <div id="bt-status" style="font-size:10px;color:var(--tx3);margin-top:3px;text-align:right">대기중</div>
       </div>
@@ -1297,10 +1296,17 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
     <!-- news-list 숨김 유지 (JS 오류 방지) -->
     <div id="news-panel" style="display:none"><div id="news-list"></div></div>
 
-    <!-- ev-list 숨김 유지 (JS 오류 방지) -->
-    <div id="liq-summary" style="display:none"></div>
-    <div id="ev-list" style="display:none"></div>
-    <span id="liq-timer" style="display:none"></span>
+    <!-- 2. 청산 피드 -->
+    <div class="panel" style="display:flex;flex-direction:column;min-height:0">
+      <div class="panel-hd">
+        <div class="hd-title">
+          <div class="hd-dot" style="background:var(--dn);box-shadow:0 0 5px var(--dn)"></div>
+          청산 피드 <span class="cursor"></span>
+        </div>
+        <span id="liq-summary" style="font-size:11px;color:var(--tx2)"></span>
+      </div>
+      <div id="ev-list"></div>
+    </div>
 
   </div>
 
@@ -1651,7 +1657,7 @@ function updateTradeCounter() {
 }
 function updateLiqCounter() {
   const el = $('liq-summary');
-  if(el) el.innerHTML = `<span class="dn">롱 청산 ${LC.long}</span> / <span class="up">숏 청산 ${LC.short}</span> &nbsp;<span class="tx2" id="liq-timer">${counterRemain(LC)}</span>`;
+  if(el) el.innerHTML = `<span class="dn">롱 청산 ${LC.long}</span> / <span class="up">숏 청산 ${LC.short}</span> &nbsp;<span class="tx2">${counterRemain(LC)}</span>`;
 }
 function counterRemain(ctr) {
   const rem = Math.max(0, Math.floor((ctr.resetAt - Date.now()) / 1000));
@@ -2571,7 +2577,7 @@ async function runBacktest() {
   const btn = $('bt-run-btn');
   const log = $('bt-log');
   const status = $('bt-status');
-  if(btn) btn.textContent = '⏳ 갱신중...';
+  if(btn) btn.textContent = '⏳ 분석중...';
   if(log) log.innerHTML = '<div style="color:var(--cy);padding:4px">데이터 로딩중...</div>';
 
   try {
@@ -2682,90 +2688,6 @@ async function runBacktest() {
     logLines.push(`<div style="color:var(--tx1);margin:4px 0 2px;border-top:1px solid var(--bd0);padding-top:3px">🎯 RSI&lt;40 저점 진입 (n=${secretTotal})</div>`);
     logLines.push(`<div style="color:var(--tx2)">→ 24H 후 상승 적중률: <span style="color:${secretRate>=55?'var(--yl)':'var(--tx2)'};font-weight:700">${secretRate}%</span> | 평균수익: <span style="color:${secretAvg>0?'var(--up)':'var(--dn)'}">${secretAvg>0?'+':''}${secretAvg.toFixed(2)}%</span></div>`);
 
-    // ── 일반인용 요약 코멘트 5개
-    const summaryLines = [];
-
-    // 1. RSI 반등 신뢰도
-    let c1Color, c1Text;
-    if(rsiRate >= 65) {
-      c1Color = 'var(--up)';
-      c1Text = `과거 RSI가 바닥을 찍고 올라올 때 ${rsiRate}% 확률로 4시간 내 가격이 올랐어요. 신뢰도가 높습니다.`;
-    } else if(rsiRate >= 50) {
-      c1Color = 'var(--yl)';
-      c1Text = `RSI 반등 신호는 ${rsiRate}% 정도 맞았어요. 반반 수준이라 단독으론 약합니다.`;
-    } else {
-      c1Color = 'var(--dn)';
-      c1Text = `RSI 반등 신호가 ${rsiRate}%로 절반도 못 맞췄어요. 이 신호만 믿기엔 위험합니다.`;
-    }
-    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">①</span><span style="color:${c1Color}">${c1Text}</span></div>`);
-
-    // 2. 과매도 반등 조건 신뢰도
-    let c2Color, c2Text;
-    if(scoreRate >= 65) {
-      c2Color = 'var(--up)';
-      c2Text = `RSI가 낮고 음봉 뒤 양봉이 나올 때 ${scoreRate}% 확률로 다음 4시간봉이 올랐어요. 좋은 진입 타이밍 힌트입니다.`;
-    } else if(scoreRate >= 50) {
-      c2Color = 'var(--yl)';
-      c2Text = `반등 조건이 ${scoreRate}% 적중했어요. 참고는 되지만 맹신은 금물입니다.`;
-    } else {
-      c2Color = 'var(--dn)';
-      c2Text = `반등 조건 적중률이 ${scoreRate}%로 낮아요. 최근 시장이 조건에 잘 안 맞는 상태입니다.`;
-    }
-    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">②</span><span style="color:${c2Color}">${c2Text}</span></div>`);
-
-    // 3. 저점 매수 기대수익
-    let c3Color, c3Text;
-    if(secretAvg >= 2) {
-      c3Color = 'var(--up)';
-      c3Text = `RSI 40 이하 구간에서 샀을 때 하루 뒤 평균 +${secretAvg.toFixed(1)}% 수익이 났어요. 저점 매수가 꽤 효과적입니다.`;
-    } else if(secretAvg >= 0) {
-      c3Color = 'var(--yl)';
-      c3Text = `저점 진입 시 하루 후 평균 수익이 +${secretAvg.toFixed(1)}%로 소폭 플러스예요. 손해는 아니지만 크게 기대하기 어렵습니다.`;
-    } else {
-      c3Color = 'var(--dn)';
-      c3Text = `저점 진입 후 하루 뒤 평균 ${secretAvg.toFixed(1)}% 손실이에요. 더 내릴 때 들어가는 건 조심이 필요합니다.`;
-    }
-    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">③</span><span style="color:${c3Color}">${c3Text}</span></div>`);
-
-    // 4. 데이터 신뢰성 (샘플 수)
-    const minN = Math.min(rsiTotal, scoreTotal);
-    let c4Color, c4Text;
-    if(minN >= 30) {
-      c4Color = 'var(--tx1)';
-      c4Text = `약 ${Math.round(candles.length/6)}일치 데이터 기준이라 통계 신뢰도가 충분합니다.`;
-    } else if(minN >= 10) {
-      c4Color = 'var(--yl)';
-      c4Text = `샘플 수가 ${minN}회 정도라 결과를 참고 수준으로만 보세요.`;
-    } else {
-      c4Color = 'var(--dn)';
-      c4Text = `신호 발생 횟수(${minN}회)가 너무 적어요. 통계가 불안정할 수 있습니다.`;
-    }
-    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">④</span><span style="color:${c4Color}">${c4Text}</span></div>`);
-
-    // 5. 종합 한 줄 결론
-    const avgRate = (rsiRate + scoreRate + secretRate) / 3;
-    let c5Color, c5Text;
-    if(avgRate >= 60 && secretAvg >= 1) {
-      c5Color = 'var(--up)';
-      c5Text = `📌 종합: 현재 시장 데이터 기준으로 매수 신호의 신뢰도가 전반적으로 높습니다. RSI 낮을 때 분할 매수를 고려해볼 수 있어요.`;
-    } else if(avgRate >= 50) {
-      c5Color = 'var(--yl)';
-      c5Text = `📌 종합: 신호 신뢰도가 보통 수준입니다. 여러 신호가 동시에 나올 때만 진입을 고려하세요.`;
-    } else {
-      c5Color = 'var(--dn)';
-      c5Text = `📌 종합: 신호 적중률이 전반적으로 낮습니다. 지금은 관망하거나 소액 진입이 안전합니다.`;
-    }
-    summaryLines.push(`<div style="display:flex;gap:6px;align-items:flex-start"><span style="color:var(--cy);flex-shrink:0">⑤</span><span style="color:${c5Color};font-weight:600">${c5Text}</span></div>`);
-
-    logLines.push(`
-      <div style="margin-top:8px;border-top:1px solid var(--bd1);padding-top:6px">
-        <div style="font-size:11px;font-weight:700;color:var(--tx1);margin-bottom:5px;letter-spacing:.5px">💬 쉽게 읽는 요약</div>
-        <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;line-height:1.5">
-          ${summaryLines.join('')}
-        </div>
-      </div>
-    `);
-
     if(log) log.innerHTML = logLines.join('');
     status && (status.textContent = `완료 · ${new Date().toLocaleTimeString()}`);
 
@@ -2775,7 +2697,7 @@ async function runBacktest() {
   }
 
   _btRunning = false;
-  if(btn) btn.textContent = '자동 갱신';
+  if(btn) btn.textContent = '▶ 재실행';
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -3700,85 +3622,6 @@ function tick(){
 ═══════════════════════════════════════════════════════════ */
 const TWELVE_KEY = '696c55a3ef96458fa40140d63ea2becb';
 
-let xauChart, ndxChart;
-
-/* ── 미니 캔들차트 공통 초기화 ── */
-/* 미니 차트 인스턴스 참조 맵 — backgroundColor 콜백에서 초기화 전 접근 방지 */
-const _miniChartRef = { xauChart: null, ndxChart: null };
-
-function initMiniCandleChart(canvasId, color) {
-  const ctx = $(canvasId).getContext('2d');
-  const refKey = canvasId; // 'xauChart' or 'ndxChart'
-
-  const chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: [],
-      datasets: [
-        {
-          label: 'OHLC',
-          data: [], backgroundColor: 'transparent', borderWidth: 0,
-          yAxisID: 'y', _ohlc: [],
-        },
-        {
-          label: '거래량', type: 'bar',
-          data: [],
-          backgroundColor: (ctx3) => {
-            // _miniChartRef 통해 접근 — 초기화 완료 후에만 유효
-            const ch  = _miniChartRef[refKey];
-            const raw = ch?.data?.datasets?.[0]?._ohlc?.[ctx3.dataIndex];
-            return raw && raw.c >= raw.o ? 'rgba(0,192,118,.18)' : 'rgba(255,73,74,.18)';
-          },
-          borderWidth: 0, yAxisID: 'y2', order: 10,
-        },
-      ]
-    },
-    options: {
-      ...baseOpts(),
-      animation: { duration: 300 },
-      scales: {
-        x: {
-          grid: { color:'rgba(30,40,64,.5)' },
-          ticks: { color:'#3a4a6a', font:{size:7}, maxTicksLimit:6 },
-        },
-        y: {
-          position: 'right', grid: { color:'rgba(26,33,51,.7)' },
-          ticks: { color:'#5a6a8a', font:{size:7},
-                   callback: v => Number(v).toLocaleString() },
-          border: { color:'#1e2840' },
-        },
-        y2: {
-          position: 'left', display: false,
-          grid: { display:false }, border: { color:'#1e2840' },
-        },
-      }
-    }
-  });
-
-  chart._miniColor = color;
-  _miniChartRef[refKey] = chart;  // 초기화 완료 후 등록
-  return chart;
-}
-
-/* ── 미니 캔들 플러그인 (CandlePlugin 재활용, 색상만 다름) ── */
-// CandlePlugin은 이미 등록됨 — datasets[0]._ohlc 방식 공용 사용
-
-function updateMiniChart(chart, candles) {
-  if(!chart || !candles.length) return;
-  const N  = 50;
-  const sl = candles.slice(-N);
-  const allPx = sl.flatMap(cd => [cd.high, cd.low]).filter(v=>v>0);
-  if(!allPx.length) return;
-
-  chart.options.scales.y.min = Math.min(...allPx) * 0.9998;
-  chart.options.scales.y.max = Math.max(...allPx) * 1.0002;
-  chart.data.labels = sl.map(cd => cd.label);
-  chart.data.datasets[0].data  = sl.map(cd => cd.close);
-  chart.data.datasets[0]._ohlc = sl.map(cd => ({o:cd.open,h:cd.high,l:cd.low,c:cd.close}));
-  chart.data.datasets[1].data  = sl.map(cd => cd.vol || 0);
-  chart.update('active');
-}
-
 /* ── Twelve Data에서 5분봉 로드 ── */
 const miniCandles = { xau: [], ndx: [] };
 
@@ -3813,8 +3656,6 @@ async function fetchTwelveData(symbol, storeKey, priceId, chgId) {
     });
 
     updateMiniPriceDOM(storeKey, priceId, chgId);
-    const chart = storeKey === 'xau' ? xauChart : ndxChart;
-    updateMiniChart(chart, miniCandles[storeKey]);
 
   } catch(e) {
     // 네트워크 오류 — 조용히 실패, 다음 인터벌에 재시도
@@ -3878,10 +3719,6 @@ window.addEventListener('load', async()=>{
   setInterval(fetchFundingHist, 480000);  // 펀딩 히스토리 8분마다
   setInterval(fetchTopTraders, 30000);    // 탑트레이더 30초마다
   setInterval(updateTradingIntel, 5000);  // DOM 업데이트 5초마다
-
-  // 백테스트 초기 실행 + 10분마다 자동 갱신
-  setTimeout(runBacktest, 3000);  // 초기 데이터 로드 후 3초 뒤 실행
-  setInterval(runBacktest, 300000);
 
   connectLiqWS();
   schedQuiet();
