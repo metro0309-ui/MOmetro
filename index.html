@@ -110,7 +110,7 @@ html, body {
 #col-l .panel-hd { padding: 10px 12px; font-size: 16px; }
 #col-l .panel-hd .hd-title { font-size: 20px; gap: 8px; }
 #col-l .panel-hd .hd-dot { width: 9px; height: 9px; }
-#col-l #trade-counter, #col-l #liq-summary { font-size: 17px !important; }
+#col-l #liq-summary { font-size: 17px !important; }
 
 /* ═══════════════════════════════════════════════════════
    전체 레이아웃
@@ -460,7 +460,6 @@ html, body {
 .tf-btn-e.on    { background: rgba(51,214,245,.12); color: var(--cy);  border-color: var(--cy);  box-shadow: 0 0 8px rgba(51,214,245,.35); }
 
 /* ── ETH 차트 래퍼 ── */
-#ew canvas { position:absolute; inset:0; }
 
 
 /* ═══════════════════════════════════════════════════════
@@ -775,33 +774,6 @@ html, body {
 /* ═══════════════════════════════════════════════════════
    D. 종합 스코어 대형 게이지 (캔들 위 오버레이)
 ═══════════════════════════════════════════════════════ */
-#big-gauge {
-  position: absolute;
-  top: 8px; right: 8px;
-  width: 90px; height: 90px;
-  z-index: 100;
-  pointer-events: none;
-}
-#big-gauge canvas {
-  width: 90px; height: 90px;
-}
-#gauge-value {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--fv);
-  font-size: 28px;
-  font-weight: 700;
-  text-shadow: 0 0 10px currentColor;
-}
-#gauge-label {
-  position: absolute;
-  bottom: 2px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  font-weight: 600;
-  white-space: nowrap;
-}
 
 /* ═══════════════════════════════════════════════════════
    E. 자동 요약 팝업
@@ -988,7 +960,7 @@ html, body {
     grid-template-rows: 1fr 1fr;
     overflow: hidden;
   }
-  #cw, #ew { min-height: 0; }
+  #cw { min-height: 0; }
   
   /* 모바일 캔들 헤더 — 줄바꿈 허용 + OHLC 숨김 */
   #col-c .panel-hd { flex-wrap: wrap; padding: 4px 8px !important; }
@@ -1071,14 +1043,10 @@ html, body {
   /* 모바일에서 좌측 헤더 크기 원복 */
   #col-l .panel-hd { padding: 8px 10px; font-size: 13px; }
   #col-l .panel-hd .hd-title { font-size: 15px; }
-  #col-l #trade-counter, #col-l #liq-summary { font-size: 12px !important; }
+  #col-l #liq-summary { font-size: 12px !important; }
 
   /* 모바일 대형 게이지 위치 조정 */
-  #big-gauge { top: 4px; right: 4px; width: 70px; height: 70px; }
-  #big-gauge canvas { width: 70px; height: 70px; }
-  #gauge-value { font-size: 20px; }
-  #gauge-label { font-size: 8px; }
-
+        
   /* 모바일 시그널 배너 */
   #signal-banner { font-size: 20px; padding: 8px 0; }
 
@@ -1620,7 +1588,7 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
 <!-- 모바일 하단 네비게이션 -->
 <div id="mobile-nav">
   <button class="mnav-btn active" data-tab="col-c"><span class="mnav-icon">📊</span>차트</button>
-  <button class="mnav-btn" data-tab="col-l"><span class="mnav-icon">⚡</span>체결</button>
+  <button class="mnav-btn" data-tab="col-l"><span class="mnav-icon">🔬</span>분석</button>
   <button class="mnav-btn" data-tab="col-r"><span class="mnav-icon">📡</span>인텔</button>
 </div>
 
