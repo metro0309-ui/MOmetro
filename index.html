@@ -294,55 +294,6 @@ html, body {
 @keyframes bblink { 0%,100%{opacity:1} 50%{opacity:.55} }
 
 /* ═══════════════════════════════════════════════════════
-   오더북
-═══════════════════════════════════════════════════════ */
-#ob-body {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 3px 6px;
-}
-.ob-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 3px;
-  align-items: center;
-  position: relative;
-  padding: 3px 3px;
-  font-size: 13px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: background .1s;
-}
-.ob-row:hover { background: var(--bg3); }
-.ob-bg {
-  position: absolute;
-  top: 0; bottom: 0;
-  opacity: .08;
-  border-radius: 2px;
-  pointer-events: none;
-}
-.ob-abg { right:0; background: var(--dn); }
-.ob-bbg { left:0;  background: var(--up); }
-.ob-ap { color: var(--dn); text-align:left;  font-weight:500; font-size:13px; }
-.ob-bp { color: var(--up); text-align:right; font-weight:500; font-size:13px; }
-.ob-q  { color: var(--tx2); text-align:center; font-size:11px; }
-.ob-spread-row {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 3px 0;
-  font-size: 9px;
-  border-top: 1px solid var(--bd0);
-  border-bottom: 1px solid var(--bd0);
-  margin: 2px 0;
-  color: var(--tx2);
-  flex-shrink: 0;
-}
-
-/* ═══════════════════════════════════════════════════════
    실시간 체결
 ═══════════════════════════════════════════════════════ */
 #tr-list {
@@ -1232,8 +1183,17 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
       <!-- 백테스트 뷰어 -->
       <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔬 백테스트</span>
+          <span style="font-size:13px;font-weight:600;color:var(--tx0)">🔻 저점 매수 시그널</span>
           <span style="font-size:10px;color:var(--tx3)">자동 갱신 <span id="bt-countdown" style="color:var(--cy);font-weight:600">5:00</span></span>
+        </div>
+        <!-- 좌측 사용 가이드 -->
+        <div style="margin-bottom:6px;padding:6px 8px;border-radius:5px;background:linear-gradient(135deg,rgba(255,73,74,.06),rgba(240,180,41,.06));border:1px solid rgba(255,73,74,.2)">
+          <div style="font-size:11px;font-weight:700;color:var(--yl);margin-bottom:4px">🔻 이 패널 사용법 — 하락 구간 역발상 매수</div>
+          <div style="font-size:10px;color:var(--tx2);line-height:1.6">
+            <span style="color:var(--up);font-weight:600">✅ 매수 타이밍</span> 저점 판단 종합 <b style="color:var(--up)">7+</b> · 여러 항목 동시 점등<br>
+            <span style="color:var(--dn);font-weight:600">❌ 진입 금지</span> 종합 <b style="color:var(--dn)">4↓</b> — 아직 바닥 아님, 추가 하락 가능<br>
+            <span style="color:var(--yl);font-weight:600">⚠ 적합 국면</span> 가격이 <b>하락 중</b>일 때 · 역발상/분할매수 전략
+          </div>
         </div>
         <!-- 결과 요약 3칸 -->
         <div style="display:flex;gap:3px;margin-bottom:6px">
@@ -1259,7 +1219,10 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         </div>
         <!-- 상황 세션 1~10 -->
         <div style="border-top:1px solid var(--bd1);padding-top:6px">
-          <div style="font-size:12px;font-weight:700;color:var(--tx0);margin-bottom:5px;letter-spacing:.5px">📋 현재 상황 판단 <span style="font-size:10px;color:var(--tx3);font-weight:400">1~10점</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <div style="font-size:12px;font-weight:700;color:var(--tx0);letter-spacing:.5px">🔻 역발상 저점 판단 <span style="font-size:10px;color:var(--tx3);font-weight:400">1~10점</span></div>
+            <div style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(255,73,74,.15);color:var(--dn);border:1px solid rgba(255,73,74,.3);font-weight:600">하락장용</div>
+          </div>
           <div id="bt-situation" style="display:flex;flex-direction:column;gap:4px">
             <div style="color:var(--tx3);font-size:11px;text-align:center;padding:6px">⏳ 분석 대기중...</div>
           </div>
@@ -1516,10 +1479,22 @@ body.broadcast-mode #broadcast-btn   { background: var(--upd) !important; color:
         <div class="ir"><div class="ir-hd"><span class="ir-k">CVD 매수압력</span><span id="iv7" class="cy">--</span></div><div class="ir-bg"><div class="ir-bar bar-cy" id="ib7" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">VWAP 괴리</span><span id="iv8" class="bl">--</span></div><div class="ir-bg"><div class="ir-bar bar-bl" id="ib8" style="width:0%"></div></div></div>
         <div class="ir"><div class="ir-hd"><span class="ir-k">MACD 히스토그램</span><span id="iv9" class="yl">--</span></div><div class="ir-bg"><div class="ir-bar bar-yl" id="ib9" style="width:0%"></div></div></div>
+        <!-- 우측 사용 가이드 -->
+        <div style="margin:4px 10px 0;padding:6px 8px;border-radius:5px;background:linear-gradient(135deg,rgba(51,214,245,.06),rgba(0,192,118,.06));border:1px solid rgba(51,214,245,.2)">
+          <div style="font-size:11px;font-weight:700;color:var(--cy);margin-bottom:4px">📈 이 패널 사용법 — 상승 추세 추격매수</div>
+          <div style="font-size:10px;color:var(--tx2);line-height:1.6">
+            <span style="color:var(--up);font-weight:600">✅ 매수 타이밍</span> 종합 스코어 <b style="color:var(--up)">65+</b> AND 추격매수표 <b style="color:var(--up)">70+</b><br>
+            <span style="color:var(--dn);font-weight:600">❌ 진입 금지</span> 종합 스코어 <b style="color:var(--dn)">45↓</b> 또는 추격매수표 <b style="color:var(--dn)">50↓</b><br>
+            <span style="color:var(--yl);font-weight:600">⚠ 적합 국면</span> 가격이 <b>오르는 중</b>일 때 · 추세 추종 전략
+          </div>
+        </div>
         <!-- 종합 스코어 — 심플 바 -->
         <div style="margin-top:4px;padding:6px 10px;border-top:1px solid var(--bd1)">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
-            <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:13px;font-weight:600;color:var(--tx0)">◆ 종합 스코어</span>
+              <div style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,192,118,.15);color:var(--up);border:1px solid rgba(0,192,118,.3);font-weight:600">상승장용</div>
+            </div>
             <span style="display:flex;align-items:baseline;gap:6px">
               <span id="composite-score" style="font-family:var(--fv);font-size:32px;font-weight:700" class="yl">--</span>
               <span id="composite-label" style="font-size:11px;font-weight:600" class="yl">분석중</span>
@@ -1605,7 +1580,7 @@ const D = {
   price:0, open:0, high:0, low:0, vol:0, volUsd:0, chg:0, bid:0, ask:0, lat:0,
   funding:null, oi:null, oiPrev:null, ls:null,
   mcap:0, dom:0, fng:50, fngLabel:'중립',
-  upbit:0, usdkrw:1350, kp:0, kpMax:-Infinity, kpMin:Infinity,
+  upbit:0, usdkrw:1350, kp:0,
   rsi:50, rsiPrev:50, macd:0, signal:0, hist:0, vwap:0,
   cvd:0, cvd1h:0, cvdArr:[],
   candles:[],
@@ -1613,6 +1588,7 @@ const D = {
   candles1d:[],   // 1D 멀티TF
   candles15m:[],  // 15분 멀티TF
   rsi1d:50, rsi15m:50,
+  compScore: 50,  // updateIntelBars에서 갱신
   startTime: Date.now(),
   currentTf: '5m',
 };
@@ -2635,6 +2611,11 @@ async function runBacktest() {
 
 /* ── 상황 세션 1~10 점수 계산 ── */
 /* ── 상황 세션 1~10 — 백테스트 기반 매매 판단 (우측 인텔바와 완전 차별화) ── */
+/* ═══════════════════════════════════════════════════════════
+   🔻 역발상 저점 매수 시그널 — 하락 구간 매수 타이밍 판단
+   우측(추격매수/종합스코어)과 완전 대척점 설계:
+   우측 = 상승 추세 추종 / 좌측 = 하락 공포 구간 역발상
+═══════════════════════════════════════════════════════════ */
 function updateSituationScore(rsiRate, scoreRate, secretRate, secretAvg, candles, closes) {
   const el = $('bt-situation');
   if(!el) return;
@@ -2644,109 +2625,156 @@ function updateSituationScore(rsiRate, scoreRate, secretRate, secretAvg, candles
   const fund   = D.funding ? D.funding * 100 : 0;
   const cvd    = D.cvd     || 0;
   const ls     = D.ls      || 0.5;
-  const vwap   = D.vwap    || p;
   const fng    = D.fng     || 50;
   const oi     = D.oi      || 0;
   const oiPrev = D.oiPrev  || oi;
-  const atr    = candles.length >= 14 ? calcATR(candles.slice(-14), 14) : 0;
-  const atrPct = p > 0 && atr > 0 ? (atr / p * 100) : 0;
+
+  // 거래량 스파이크 — 최근 5봉 평균 대비 현재
+  const last10 = candles.slice(-10);
   const last5  = candles.slice(-5);
-  const upC    = last5.filter(c => c.close > c.open).length;
-  const s1d    = D.rsi1d  ? Math.round(50 + (50 - D.rsi1d) * 0.5) : 50;
-  const s15m   = D.rsi15m ? Math.round(50 + (50 - D.rsi15m) * 0.5) : 50;
-  const s4h    = D.compScore || 50;
-  const mtfAlign = [s1d >= 52, s4h >= 52, s15m >= 52].filter(Boolean).length;
+  const avgVol = last10.length > 0 ? last10.reduce((s,c)=>s+c.vol,0)/last10.length : 0;
+  const curVol = last5.length  > 0 ? last5.reduce((s,c)=>s+c.vol,0)/last5.length   : 0;
+  const volSpike = avgVol > 0 ? curVol / avgVol : 1;
 
-  // 복합 신호 (7개 조건)
-  const sigs = [rsi<=35, fund<-0.005, cvd>0, ls<0.47, fng<=35, p<vwap, upC>=3];
-  const sigN = sigs.filter(Boolean).length;
+  // 직전 고점 대비 낙폭
+  const high20 = candles.length >= 20 ? Math.max(...candles.slice(-20).map(c=>c.high)) : p;
+  const drawdown = high20 > 0 ? (p - high20) / high20 * 100 : 0; // 음수
 
-  // 시장 사이클
-  const cycleS = (rsi + (100 - fng)) / 2;
-  const cycle  = cycleS >= 72 ? '바닥/반등 초기' : cycleS >= 58 ? '회복 진행' : cycleS >= 44 ? '중립' : cycleS >= 30 ? '과열 경고' : '극단 과열';
+  // CVD 다이버전스 — 가격 하락 중 CVD 상승 여부
+  const priceDir = last5.length >= 2 ? last5[last5.length-1].close - last5[0].close : 0;
+  const cvdDiv   = priceDir < 0 && cvd > 0; // 가격 하락 + CVD 양수 = 다이버전스
+
+  // 숏청산 누적 (OF.whaleShortLiq) — 매수 압력
+  const shortLiqTotal = (typeof OF !== 'undefined') ? (OF.whaleShortLiq || 0) : 0;
+
+  // 백테스트 기반 저점 신뢰도
+  const btConfidence = (rsiRate + secretRate) / 2;
 
   const items = [
     {
-      n:1, name:'RSI 반등 신뢰도 (백테스트)',
-      s: rsiRate>=70?10:rsiRate>=65?8:rsiRate>=60?7:rsiRate>=55?5:rsiRate>=50?3:2,
-      d: `과거 RSI 바닥→반등 4H 적중 ${rsiRate}% · ${rsiRate>=60?'신뢰 가능':'참고 수준'}`
+      n: 1,
+      name: 'RSI 극단 과매도',
+      s: rsi <= 20 ? 10 : rsi <= 25 ? 9 : rsi <= 30 ? 8 : rsi <= 35 ? 7 : rsi <= 40 ? 5 : rsi <= 45 ? 3 : 1,
+      d: rsi <= 35
+        ? `RSI ${rsi.toFixed(1)} ← 역사적 바닥 구간. 단기 반등 확률 높음`
+        : rsi <= 45
+        ? `RSI ${rsi.toFixed(1)} — 과매도 접근 중. 아직 대기`
+        : `RSI ${rsi.toFixed(1)} — 아직 과매도 아님. 조건 미충족`
     },
     {
-      n:2, name:'저점 진입 기대수익 (백테스트)',
-      s: secretAvg>=3?10:secretAvg>=2?8:secretAvg>=1?6:secretAvg>=0?4:secretAvg>=-1?2:1,
-      d: `RSI<40 진입 24H 평균 ${secretAvg>=0?'+':''}${secretAvg.toFixed(1)}% · 승률 ${secretRate}%`
+      n: 2,
+      name: '펀딩레이트 역전',
+      s: fund <= -0.05 ? 10 : fund <= -0.03 ? 9 : fund <= -0.02 ? 8 : fund <= -0.01 ? 7 : fund <= -0.005 ? 5 : fund <= 0 ? 3 : 1,
+      d: fund < -0.01
+        ? `펀딩 ${fund.toFixed(4)}% ← 숏 과열. 숏스퀴즈 발생 시 급등 가능`
+        : fund < 0
+        ? `펀딩 ${fund.toFixed(4)}% — 음수지만 아직 약함`
+        : `펀딩 ${fund.toFixed(4)}% — 양수. 롱 과열 상태. 역발상 조건 아님`
     },
     {
-      n:3, name:'과매도 반등 패턴 신뢰도',
-      s: scoreRate>=65?10:scoreRate>=60?8:scoreRate>=55?6:scoreRate>=50?4:2,
-      d: `음봉→양봉 전환 후 다음 4H 상승 ${scoreRate}% · ${scoreRate>=60?'유효 패턴':'약한 신호'}`
+      n: 3,
+      name: '극단 공포 구간',
+      s: fng <= 15 ? 10 : fng <= 20 ? 9 : fng <= 25 ? 8 : fng <= 30 ? 7 : fng <= 35 ? 5 : fng <= 40 ? 3 : 1,
+      d: fng <= 25
+        ? `공포지수 ${fng} ← 극단 공포. 바닥 매수 구간`
+        : fng <= 40
+        ? `공포지수 ${fng} — 공포 구간. 부분 충족`
+        : `공포지수 ${fng} — 중립 이상. 역발상 조건 부족`
     },
     {
-      n:4, name:'복합 신호 동시 충족',
-      s: sigN>=6?10:sigN>=5?9:sigN>=4?7:sigN>=3?5:sigN>=2?3:1,
-      d: `7개 조건 중 ${sigN}개 충족 · ${sigN>=4?'강한 매수 근거':sigN>=2?'부분 충족':'조건 미달'}`
+      n: 4,
+      name: '롱/숏 역발상 (숏 과열)',
+      s: ls <= 0.38 ? 10 : ls <= 0.41 ? 9 : ls <= 0.43 ? 8 : ls <= 0.45 ? 6 : ls <= 0.47 ? 4 : ls <= 0.50 ? 2 : 1,
+      d: ls <= 0.43
+        ? `롱 ${(ls*100).toFixed(1)}% ← 숏 압도. 반등 시 숏스퀴즈 연쇄 예상`
+        : ls <= 0.50
+        ? `롱 ${(ls*100).toFixed(1)}% — 숏 우세. 부분 충족`
+        : `롱 ${(ls*100).toFixed(1)}% — 롱 과열. 역발상 매수 부적합`
     },
     {
-      n:5, name:'멀티 타임프레임 정렬',
-      s: mtfAlign>=3?10:mtfAlign===2?6:mtfAlign===1?3:1,
-      d: `1D·4H·15분 ${mtfAlign}/3 매수 방향 · ${mtfAlign>=3?'완전 정렬':mtfAlign===2?'부분 정렬':'미정렬(관망)'}`
+      n: 5,
+      name: 'CVD 다이버전스',
+      s: cvdDiv ? (cvd > 30000 ? 10 : cvd > 10000 ? 8 : 6)
+                : (cvd > 0 ? 4 : cvd > -10000 ? 2 : 1),
+      d: cvdDiv
+        ? `가격 하락 중 CVD +${(cvd/1000).toFixed(0)}K ← 실체 매수세 유입. 강한 신호`
+        : cvd > 0
+        ? `CVD +${(cvd/1000).toFixed(0)}K — 하락이 아니거나 다이버전스 미형성`
+        : `CVD ${(cvd/1000).toFixed(0)}K — 매도 우세. 아직 바닥 아님`
     },
     {
-      n:6, name:'캔들 반전 패턴',
-      s: upC>=4?9:upC>=3?7:upC===2?4:upC===1?2:1,
-      d: `최근 5봉 양봉 ${upC}개 · ${upC>=4?'강한 반등':upC>=3?'반등 시작':upC>=2?'혼조':'하락 지속'}`
+      n: 6,
+      name: '패닉셀 거래량 스파이크',
+      s: volSpike >= 3.0 ? 10 : volSpike >= 2.5 ? 9 : volSpike >= 2.0 ? 7 : volSpike >= 1.5 ? 5 : volSpike >= 1.2 ? 3 : 1,
+      d: volSpike >= 2.0
+        ? `거래량 평균 대비 ${volSpike.toFixed(1)}배 ← 패닉셀 가능성. 바닥 신호`
+        : volSpike >= 1.2
+        ? `거래량 ${volSpike.toFixed(1)}배 — 증가 중. 확인 필요`
+        : `거래량 평상 수준 (${volSpike.toFixed(1)}배) — 패닉셀 아님`
     },
     {
-      n:7, name:'변동성 국면 (ATR)',
-      s: atrPct<0.8?8:atrPct<1.5?7:atrPct<2.5?4:2,
-      d: `ATR ${atr>0?'$'+Math.round(atr).toLocaleString():'--'} (${atrPct.toFixed(1)}%) · ${atrPct<1.5?'진입 적합':'변동 주의'}`
+      n: 7,
+      name: '고점 대비 낙폭 (드로우다운)',
+      s: drawdown <= -20 ? 10 : drawdown <= -15 ? 9 : drawdown <= -10 ? 7 : drawdown <= -7 ? 5 : drawdown <= -4 ? 3 : 1,
+      d: drawdown <= -10
+        ? `20봉 고점 대비 ${drawdown.toFixed(1)}% ← 낙폭 과대. 반등 기대값 높음`
+        : drawdown <= -4
+        ? `낙폭 ${drawdown.toFixed(1)}% — 하락 중. 아직 과대 낙폭 아님`
+        : `낙폭 ${drawdown.toFixed(1)}% — 소폭 하락. 바닥 신호 약함`
     },
     {
-      n:8, name:'손익비 기대값 (통계)',
-      s: (() => {
-        const w=secretRate/100, rr=w>0&&secretAvg>0?(w*secretAvg)/((1-w)*Math.abs(secretAvg)+0.1):0;
-        return rr>=2?10:rr>=1.5?8:rr>=1?6:rr>=0.5?4:2;
-      })(),
-      d: (() => {
-        const w=secretRate/100, rr=w>0&&secretAvg>0?((w*secretAvg)/((1-w)*Math.abs(secretAvg)+0.1)).toFixed(1):'0';
-        return `통계 기대 R:R = 1:${rr} · ${+rr>=1.5?'양호':+rr>=1?'보통':'낮음'}`;
-      })()
+      n: 8,
+      name: '백테스트 저점 신뢰도',
+      s: btConfidence >= 70 ? 10 : btConfidence >= 65 ? 8 : btConfidence >= 60 ? 7 : btConfidence >= 55 ? 5 : btConfidence >= 50 ? 3 : 2,
+      d: `RSI 반등 ${rsiRate}% · 저점 승률 ${secretRate}% → 과거 적중 평균 ${btConfidence.toFixed(0)}% (${btConfidence>=60?'신뢰 가능':'참고 수준'})`
     },
     {
-      n:9, name:'시장 사이클 국면',
-      s: cycleS>=72?10:cycleS>=58?8:cycleS>=44?5:cycleS>=30?3:1,
-      d: `${cycle} · RSI ${rsi.toFixed(0)} + 공포지수 ${fng}`
+      n: 9,
+      name: '고래 숏청산 누적',
+      s: shortLiqTotal >= 5000000 ? 10 : shortLiqTotal >= 2000000 ? 8 : shortLiqTotal >= 1000000 ? 7 : shortLiqTotal >= 500000 ? 5 : shortLiqTotal >= 100000 ? 3 : 1,
+      d: shortLiqTotal >= 500000
+        ? `숏청산 누적 $${(shortLiqTotal/1e6).toFixed(1)}M ← 고래 숏청산. 매수 압력 증가`
+        : shortLiqTotal >= 100000
+        ? `숏청산 $${(shortLiqTotal/1000).toFixed(0)}K — 소규모. 지속 관찰`
+        : `숏청산 미미 — 아직 대형 숏 청산 없음`
     },
     {
-      n:10, name:'종합 매매 판단',
-      s:0, d:''
+      n: 10,
+      name: '종합 저점 매수 판단',
+      s: 0, d: ''
     }
   ];
 
-  const avg9 = items.slice(0,9).reduce((s,i)=>s+i.s,0)/9;
+  // 10번 = 1~9 가중 평균
+  const avg9 = items.slice(0,9).reduce((s,i) => s + i.s, 0) / 9;
   items[9].s = Math.round(avg9);
-  items[9].d = avg9>=7.5?'✅ 매수 적극 고려 — 여러 조건 동시 충족':
-               avg9>=6  ?'🟡 매수 가능 — 손절선 확인 후 소량 진입':
-               avg9>=4.5?'⚪ 관망 — 추가 확인 신호 대기':
-               avg9>=3  ?'🟠 주의 — 진입 자제, 리스크 높음':
-                         '❌ 진입 금지 — 하락 가능성 우세';
+  items[9].d = avg9 >= 8.0 ? '🔥 강한 저점 매수 신호 — 분할 매수 적극 고려' :
+               avg9 >= 6.5 ? '✅ 저점 매수 가능 — 소량 진입 + 손절선 필수' :
+               avg9 >= 5.0 ? '🟡 일부 조건 충족 — 추가 하락 대비 관망 권장' :
+               avg9 >= 3.5 ? '⚪ 아직 바닥 아님 — 더 내릴 수 있음' :
+                             '🔴 매수 금지 — 하락 추세 지속 가능성';
 
-  el.innerHTML = items.map((item,idx)=>{
-    const isLast = idx===9;
-    const bc = item.s>=8?'var(--up)':item.s>=6?'var(--cy)':item.s>=4?'var(--yl)':'var(--dn)';
-    const bg = isLast?`background:var(--bg2);border-radius:4px;padding:3px 6px;margin-top:3px;border:1px solid ${bc}`:'';
+  const totalColor = items[9].s >= 8 ? 'var(--up)' :
+                     items[9].s >= 6 ? 'var(--cy)' :
+                     items[9].s >= 4 ? 'var(--yl)' : 'var(--dn)';
+
+  el.innerHTML = items.map((item, idx) => {
+    const isLast = idx === 9;
+    const bc = item.s >= 8 ? 'var(--up)' : item.s >= 6 ? 'var(--cy)' : item.s >= 4 ? 'var(--yl)' : 'var(--dn)';
+    const bg = isLast ? `background:var(--bg2);border-radius:4px;padding:3px 6px;margin-top:3px;border:1px solid ${totalColor}` : '';
     return `<div style="padding:2px 0;border-bottom:1px solid var(--bd0);${bg}">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;color:${isLast?bc:'var(--tx1)'};font-weight:${isLast?700:600}">${item.n}. ${item.name}</span>
-        <span style="font-size:${isLast?14:12}px;font-weight:700;color:${bc}">${item.s}<span style="font-size:9px;color:var(--tx3)">/10</span></span>
+        <span style="font-size:11px;color:${isLast ? totalColor : 'var(--tx1)'};font-weight:${isLast ? 700 : 600}">${item.n}. ${item.name}</span>
+        <span style="font-size:${isLast ? 14 : 12}px;font-weight:700;color:${isLast ? totalColor : bc}">${item.s}<span style="font-size:9px;color:var(--tx3)">/10</span></span>
       </div>
       <div style="height:2px;background:var(--bg3);border-radius:1px;margin:1px 0">
-        <div style="width:${item.s*10}%;height:100%;background:${bc};border-radius:1px;transition:width .5s"></div>
+        <div style="width:${item.s * 10}%;height:100%;background:${isLast ? totalColor : bc};border-radius:1px;transition:width .5s"></div>
       </div>
-      <div style="font-size:10px;color:var(--tx3)">${item.d}</div>
+      <div style="font-size:10px;color:var(--tx3);line-height:1.4">${item.d}</div>
     </div>`;
   }).join('');
 }
+
 
 
 /* ═══════════════════════════════════════════════════════════
@@ -2922,8 +2950,6 @@ async function fetchKimchi() {
   // ── 김치프리미엄 계산 & DOM ──
   const exp  = D.price * D.usdkrw;
   D.kp       = exp > 0 ? (D.upbit - exp) / exp * 100 : 0;
-  D.kpMax    = Math.max(D.kpMax, D.kp);
-  D.kpMin    = Math.min(D.kpMin, D.kp);
   const sign = D.kp >= 0 ? '+' : '';
   const kc   = D.kp > 2 ? 'pu' : D.kp < -1 ? 'dn' : 'up';
   addEv('ee', `김치P ${sign}${D.kp.toFixed(2)}% | 빗썸 ${D.upbit.toLocaleString()}원 | 환율 ${D.usdkrw.toFixed(0)}원`);
@@ -3106,7 +3132,6 @@ function updateIntelBars() {
 
   // D. 대형 원형 게이지 업데이트
   trackSummaryScore(compInt);
-  drawBigGauge(compInt, compLabel, compCls);
 
   // A. 시그널 배너 트리거
   checkSignalBanner(compInt, compLabel);
@@ -3371,10 +3396,7 @@ function updateDeltaCounter() {
 /* ═══════════════════════════════════════════════════════════
    D. 대형 원형 게이지 (Canvas) — BTC 오버레이 삭제됨, 함수만 유지
 ═══════════════════════════════════════════════════════════ */
-function drawBigGauge(score, label, cls) {
-  // gaugeCanvas 삭제됨 — 함수 호출은 유지하되 조용히 종료
-  return;
-}
+/* drawBigGauge 제거됨 */
 
 /* ═══════════════════════════════════════════════════════════
    E. 자동 요약 (30분마다)
@@ -3559,7 +3581,7 @@ function connectLiqWS() {
     };
   } catch(e) {
     addEv('el', '⚠ 청산 WS 초기화 실패');
-    setTimeout(connectLiqWS, 5000);
+    // onclose가 트리거되므로 여기서 재연결 불필요
   }
 }
 
