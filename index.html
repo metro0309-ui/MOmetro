@@ -2,750 +2,862 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>차트 패턴 분석기</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>홍열이네 창고재고</title>
 <style>
-:root {
-  --bg0: #080c14;
-  --bg1: #0d1220;
-  --bg2: #121828;
-  --bg3: #1a2236;
-  --bd:  #1e2d44;
-  --bd2: #2a3d58;
-  --tx0: #e4ecf8;
-  --tx1: #8899bb;
-  --tx2: #445577;
-  --up:  #00d68a;
-  --dn:  #ff4466;
-  --yl:  #ffcc00;
-  --cy:  #22ddff;
-  --pu:  #aa88ff;
-  --fm:  'IBM Plex Mono', monospace;
-  --fk:  'Noto Sans KR', sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #171512;
+  -webkit-text-size-adjust: 100%;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-html,body { background:var(--bg0); color:var(--tx0); font-family:var(--fk); height:100%; overflow-x:hidden; }
+</style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-/* 헤더 */
-header {
-  padding: 18px 28px;
-  border-bottom: 1px solid var(--bd);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg1);
-}
-.logo {
-  font-family: var(--fm);
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--cy);
-}
-.logo span { color: var(--tx1); }
-.subtitle { font-size: 12px; color: var(--tx2); margin-top: 2px; }
-
-/* 메인 레이아웃 */
-#app {
-  display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 0;
-  height: calc(100vh - 61px);
+:root{
+  --bg:#171512;
+  --surface:#211E1A;
+  --surface-2:#2A2620;
+  --border:#3A352C;
+  --text:#F3EEE6;
+  --text-dim:#A79C8C;
+  --text-faint:#6E6659;
+  --ember:#FF7A3D;
+  --ember-bg:#3B2417;
+  --sage:#93B78C;
+  --sage-bg:#20281F;
+  --paper:#F1EBDD;
+  --paper-text:#211C13;
+  --radius-lg:18px;
+  --radius-md:12px;
+  --radius-sm:8px;
 }
 
-/* 좌측 업로드/이미지 영역 */
-#left {
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--bd);
-  min-height: 0;
+*{box-sizing:border-box;}
+
+.inv-root{
+  font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  padding:0;
 }
 
-/* 드롭존 */
-#dropzone {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .3s;
-  position: relative;
-  overflow: hidden;
-  background: var(--bg1);
-}
-#dropzone.drag-over {
-  background: rgba(34,221,255,.04);
-  border-color: var(--cy) !important;
-}
-#dropzone.has-image { cursor: default; }
-
-.drop-ui {
-  text-align: center;
-  pointer-events: none;
-  padding: 40px;
-}
-.drop-icon {
-  font-size: 56px;
-  margin-bottom: 16px;
-  opacity: .6;
-}
-.drop-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--tx0);
-  margin-bottom: 8px;
-}
-.drop-desc {
-  font-size: 13px;
-  color: var(--tx1);
-  line-height: 1.7;
-}
-.drop-btn {
-  margin-top: 20px;
-  padding: 10px 24px;
-  background: var(--bg3);
-  border: 1px solid var(--bd2);
-  border-radius: 6px;
-  color: var(--cy);
-  font-family: var(--fm);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all .2s;
-  pointer-events: all;
-}
-.drop-btn:hover { background: rgba(34,221,255,.1); border-color: var(--cy); }
-
-#preview-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 12px;
-  display: none;
+.inv-app{
+  max-width:480px;
+  margin:0 auto;
+  padding:20px 16px 48px;
 }
 
-/* 툴바 */
-#toolbar {
-  padding: 10px 16px;
-  background: var(--bg2);
-  border-top: 1px solid var(--bd);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-#analyze-btn {
-  padding: 8px 22px;
-  background: linear-gradient(135deg, var(--cy), #0099cc);
-  border: none;
-  border-radius: 5px;
-  color: #000;
-  font-family: var(--fm);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .2s;
-  letter-spacing: 1px;
-}
-#analyze-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-#analyze-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-#clear-btn {
-  padding: 8px 16px;
-  background: var(--bg3);
-  border: 1px solid var(--bd2);
-  border-radius: 5px;
-  color: var(--tx1);
-  font-family: var(--fm);
-  font-size: 12px;
-  cursor: pointer;
-}
-#clear-btn:hover { border-color: var(--dn); color: var(--dn); }
-#file-status { font-size: 12px; color: var(--tx2); margin-left: auto; }
-
-/* 우측 결과 패널 */
-#right {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg1);
-  overflow: hidden;
-}
-#result-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--bd);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg2);
-  flex-shrink: 0;
-}
-#result-title {
-  font-family: var(--fm);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--tx0);
-}
-#result-badge {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: var(--bg3);
-  color: var(--tx2);
-  border: 1px solid var(--bd);
+.inv-mono{
+  font-family:'JetBrains Mono',ui-monospace,'SFMono-Regular',monospace;
+  font-variant-numeric:tabular-nums;
 }
 
-#result-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* ---- topbar ---- */
+.inv-topbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+}
+.inv-brand h1{
+  font-size:19px;
+  font-weight:800;
+  margin:0 0 4px;
+  letter-spacing:-0.01em;
+}
+.inv-brand p{
+  font-size:12.5px;
+  color:var(--text-dim);
+  margin:0;
+}
+.inv-mode-toggle{
+  flex:none;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-dim);
+  font-size:13px;
+  font-weight:500;
+  padding:9px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s;
+  white-space:nowrap;
+}
+.inv-mode-toggle.on{
+  background:var(--ember);
+  border-color:var(--ember);
+  color:#1C1108;
+  font-weight:700;
 }
 
-/* 대기 상태 */
-#result-idle {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--tx2);
-  gap: 12px;
+/* ---- summary chips ---- */
+.inv-summary{
+  display:flex;
+  gap:8px;
+  margin-bottom:16px;
 }
-.idle-icon { font-size: 40px; opacity: .4; }
-.idle-text { font-size: 13px; line-height: 1.7; text-align: center; }
+.inv-chip{
+  flex:1;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:10px 12px;
+  text-align:center;
+}
+.inv-chip .n{
+  display:block;
+  font-size:20px;
+  font-weight:700;
+}
+.inv-chip .l{
+  display:block;
+  font-size:11px;
+  color:var(--text-dim);
+  margin-top:2px;
+}
+.inv-chip.warn .n{color:var(--ember);}
+.inv-chip.ok .n{color:var(--sage);}
 
-/* 로딩 */
-#result-loading {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  gap: 16px;
+/* ---- order slip (주문 전표) ---- */
+.inv-slip{
+  background:var(--paper);
+  color:var(--paper-text);
+  border-radius:var(--radius-lg);
+  padding:16px 18px 18px;
+  margin-bottom:20px;
+  position:relative;
+  box-shadow:0 8px 20px -10px rgba(0,0,0,.55);
 }
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--bd2);
-  border-top-color: var(--cy);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
+.inv-slip::before{
+  content:"";
+  position:absolute;
+  left:14px; right:14px; bottom:-7px;
+  height:14px;
+  background:
+    radial-gradient(circle at 8px 0, transparent 7px, var(--paper) 7.5px) 0 0/16px 14px repeat-x;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 13px; color: var(--tx1); font-family: var(--fm); }
-.loading-dots::after {
-  content: '';
-  animation: dots 1.5s infinite;
+.inv-slip-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  border-bottom:1.5px dashed rgba(33,28,19,.35);
+  padding-bottom:10px;
+  margin-bottom:10px;
 }
-@keyframes dots {
-  0%   { content: ''; }
-  33%  { content: '.'; }
-  66%  { content: '..'; }
-  100% { content: '...'; }
+.inv-slip-title{
+  font-weight:800;
+  font-size:14.5px;
+  letter-spacing:.02em;
 }
-
-/* 결과 카드들 */
-.result-cards { display: flex; flex-direction: column; gap: 10px; }
-
-/* 단계 뱃지 */
-#stage-card {
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  border: 2px solid;
+.inv-slip-date{
+  font-size:11.5px;
+  color:rgba(33,28,19,.6);
 }
-#stage-number {
-  font-family: var(--fm);
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1;
+.inv-slip-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:13.5px;
+  padding:4px 0;
 }
-#stage-name {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 6px 0 4px;
-}
-#stage-desc {
-  font-size: 12px;
-  opacity: .7;
-}
-
-/* 지표 카드 */
-.indicator-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.ind-card {
-  background: var(--bg2);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  padding: 10px 12px;
-}
-.ind-label {
-  font-size: 10px;
-  color: var(--tx2);
-  font-family: var(--fm);
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-.ind-value {
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--fm);
-}
-.ind-sub {
-  font-size: 10px;
-  color: var(--tx2);
-  margin-top: 2px;
+.inv-slip-row .nm{font-weight:500;}
+.inv-slip-row .qty{font-weight:700;}
+.inv-slip-empty{
+  font-size:13px;
+  color:rgba(33,28,19,.55);
+  padding:6px 0 2px;
 }
 
-/* 섹션 카드 */
-.sec-card {
-  background: var(--bg2);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  overflow: hidden;
+/* ---- category ---- */
+.inv-category{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  margin-bottom:12px;
+  overflow:hidden;
 }
-.sec-title {
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--tx2);
-  background: var(--bg3);
-  border-bottom: 1px solid var(--bd);
-  font-family: var(--fm);
+.inv-category > summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  font-weight:700;
+  font-size:15px;
 }
-.sec-body {
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--tx1);
-  line-height: 1.8;
+.inv-category > summary::-webkit-details-marker{display:none;}
+.inv-category > summary .chev{
+  color:var(--text-faint);
+  font-size:12px;
+  transition:transform .15s;
 }
-.sec-body b { color: var(--tx0); }
-
-/* 체크리스트 */
-.checklist { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; }
-.check-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
+.inv-category[open] > summary .chev{transform:rotate(90deg);}
+.inv-category-count{
+  color:var(--text-dim);
+  font-weight:500;
+  font-size:12.5px;
+  margin-left:8px;
 }
-.check-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.check-ok   .check-dot { background: var(--up); box-shadow: 0 0 6px var(--up); }
-.check-warn .check-dot { background: var(--yl); box-shadow: 0 0 6px var(--yl); }
-.check-no   .check-dot { background: var(--dn); box-shadow: 0 0 6px var(--dn); }
-.check-ok   { color: var(--tx0); }
-.check-warn { color: var(--yl); }
-.check-no   { color: var(--tx1); }
-
-/* 종합 판정 */
-#verdict-card {
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid;
-}
-#verdict-title {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-#verdict-body {
-  font-size: 12px;
-  line-height: 1.8;
-  color: var(--tx1);
-}
-#verdict-body b { color: var(--tx0); }
-
-/* 경고 */
-.warning-box {
-  background: rgba(255,68,102,.06);
-  border: 1px solid rgba(255,68,102,.3);
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 11px;
-  color: var(--tx1);
-  line-height: 1.7;
+.inv-cat-name-row{display:flex;align-items:center;gap:2px;}
+.inv-cat-edit-actions{
+  display:flex;
+  gap:6px;
 }
 
-/* 스크롤바 */
-#result-body::-webkit-scrollbar { width: 4px; }
-#result-body::-webkit-scrollbar-track { background: var(--bg0); }
-#result-body::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
-
-/* 반응형 */
-@media (max-width: 900px) {
-  #app { grid-template-columns: 1fr; grid-template-rows: 50vh 1fr; }
-  #left { border-right: none; border-bottom: 1px solid var(--bd); }
+.inv-subcategory{
+  padding:0 16px 12px;
 }
+.inv-sub-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 0 6px;
+  color:var(--text-dim);
+  font-size:12.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  border-top:1px solid var(--border);
+  margin-top:4px;
+}
+.inv-subcategory:first-of-type .inv-sub-head{border-top:none;margin-top:0;}
+
+/* ---- item row (체크 모드) ---- */
+.inv-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 0;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.inv-item:first-of-type{border-top:none;}
+.inv-item-info{flex:1;min-width:0;}
+.inv-item-name{
+  font-size:14.5px;
+  font-weight:500;
+}
+.inv-item-meta{
+  font-size:11.5px;
+  color:var(--text-faint);
+  margin-top:1px;
+}
+.inv-item-input{
+  width:64px;
+  flex:none;
+  text-align:center;
+  font-size:16.5px;
+  font-weight:600;
+  padding:9px 4px;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+}
+.inv-item-input:focus{
+  outline:none;
+  border-color:var(--ember);
+}
+.inv-badge{
+  flex:none;
+  font-size:10.5px;
+  font-weight:700;
+  padding:5px 8px;
+  border-radius:999px;
+  white-space:nowrap;
+  width:52px;
+  text-align:center;
+}
+.inv-badge.warn{background:var(--ember-bg);color:var(--ember);}
+.inv-badge.ok{background:var(--sage-bg);color:var(--sage);}
+.inv-badge.empty{background:transparent;color:var(--text-faint);font-weight:500;}
+
+/* ---- edit mode ---- */
+.inv-item-edit{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:10px;
+  border-top:1px solid rgba(255,255,255,.04);
+  background:var(--surface-2);
+  border-radius:var(--radius-sm);
+  margin:6px 0;
+}
+.inv-item-edit .row1{display:flex; gap:6px;}
+.inv-edit-field{
+  flex:1;
+  min-width:0;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-size:13px;
+  padding:8px 8px;
+  font-family:inherit;
+}
+.inv-edit-field.narrow{flex:0 0 62px;}
+.inv-edit-actions{display:flex; gap:6px; justify-content:flex-end;}
+.inv-icon-btn{
+  border:none;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.inv-icon-btn.danger{color:var(--ember);}
+
+.inv-add-btn{
+  width:100%;
+  margin-top:6px;
+  background:transparent;
+  border:1.5px dashed var(--border);
+  color:var(--text-dim);
+  font-size:12.5px;
+  font-weight:600;
+  padding:9px;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+}
+.inv-add-btn:active{background:var(--surface-2);}
+
+.inv-add-cat-wrap{margin-top:4px;}
+.inv-add-cat-wrap .inv-add-btn{
+  border-color:var(--ember);
+  color:var(--ember);
+  font-weight:700;
+  padding:12px;
+}
+
+.inv-toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:12.5px;
+  padding:9px 16px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s, transform .2s;
+  z-index:50;
+}
+.inv-toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+.inv-loading{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:13px;
+  padding:40px 0;
+}
+
+.inv-hidden{display:none !important;}
 </style>
 </head>
 <body>
-
-<header>
-  <div>
-    <div class="logo">CHART<span>.</span>AI</div>
-    <div class="subtitle">세력 매집 패턴 자동 분석기 — 스크린샷을 드래그하세요</div>
-  </div>
-  <div style="font-size:11px;color:var(--tx2);text-align:right;line-height:1.6">
-    ① 하락추세 → ② 바닥형성 → ③ 예열<br>→ ④ 매집완료 → ⑤ 폭발직전
-  </div>
-</header>
-
-<div id="app">
-
-  <!-- 좌측 -->
-  <div id="left">
-    <div id="dropzone" onclick="document.getElementById('file-input').click()">
-      <div class="drop-ui" id="drop-ui">
-        <div class="drop-icon">📊</div>
-        <div class="drop-title">차트 스크린샷 업로드</div>
-        <div class="drop-desc">
-          드래그 & 드롭 또는 클릭하여 파일 선택<br>
-          PNG · JPG · WEBP 지원
-        </div>
-        <button class="drop-btn" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
-          📁 파일 선택
-        </button>
+<div class="inv-root">
+  <div class="inv-app">
+    <div class="inv-topbar">
+      <div class="inv-brand">
+        <h1>홍열이네 창고재고</h1>
+        <p>숫자만 넣으면 발주 리스트가 자동으로 완성돼요</p>
       </div>
-      <img id="preview-img" alt="업로드된 차트">
+      <button id="invModeToggle" class="inv-mode-toggle" type="button">편집</button>
     </div>
-    <div id="toolbar">
-      <button id="analyze-btn" onclick="analyze()" disabled>🔍 AI 분석 시작</button>
-      <button id="clear-btn" onclick="clearAll()">✕ 초기화</button>
-      <span id="file-status">이미지 없음</span>
+
+    <div class="inv-summary" id="invSummary"></div>
+
+    <div class="inv-slip">
+      <div class="inv-slip-head">
+        <span class="inv-slip-title">발주 리스트</span>
+        <span class="inv-slip-date inv-mono" id="invSlipDate"></span>
+      </div>
+      <div id="invSlipBody"></div>
+    </div>
+
+    <div id="invLoading" class="inv-loading">불러오는 중…</div>
+    <main id="invCategories"></main>
+
+    <div class="inv-add-cat-wrap inv-hidden" id="invAddCatWrap">
+      <button class="inv-add-btn" id="invAddCatBtn" type="button">+ 분류 추가</button>
     </div>
   </div>
-
-  <!-- 우측 -->
-  <div id="right">
-    <div id="result-header">
-      <span id="result-title">분석 결과</span>
-      <span id="result-badge">대기중</span>
-    </div>
-    <div id="result-body">
-
-      <!-- 대기 상태 -->
-      <div id="result-idle">
-        <div class="idle-icon">🔬</div>
-        <div class="idle-text">
-          차트 스크린샷을 업로드하면<br>
-          AI가 자동으로 현재 단계를 분석합니다<br><br>
-          <span style="color:var(--tx2);font-size:11px">
-            · VWAP 위치<br>
-            · 거래량 패턴<br>
-            · OI 방향<br>
-            · RSI 수준<br>
-            · 현재 단계 (①~⑤)
-          </span>
-        </div>
-      </div>
-
-      <!-- 로딩 -->
-      <div id="result-loading">
-        <div class="spinner"></div>
-        <div class="loading-text">분석 중<span class="loading-dots"></span></div>
-        <div style="font-size:11px;color:var(--tx2);text-align:center">
-          차트 패턴 인식 중<br>지표 해석 중
-        </div>
-      </div>
-
-    </div>
-  </div>
-
 </div>
 
-<input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
-
+<div class="inv-toast" id="invToast"></div>
 <script>
-let currentImageB64 = null;
-let currentFile = null;
+(function(){
+  var STORAGE_KEY = 'inventory-data-v1';
+  var state = null;
+  var editMode = false;
+  var saveTimer = null;
 
-/* ── 파일 처리 ── */
-const dropzone = document.getElementById('dropzone');
-
-dropzone.addEventListener('dragover', e => {
-  e.preventDefault();
-  dropzone.classList.add('drag-over');
-});
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropzone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if(file && file.type.startsWith('image/')) handleFile(file);
-});
-
-function handleFile(file) {
-  if(!file) return;
-  currentFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const dataUrl = e.target.result;
-    currentImageB64 = dataUrl.split(',')[1];
-
-    const img = document.getElementById('preview-img');
-    img.src = dataUrl;
-    img.style.display = 'block';
-    document.getElementById('drop-ui').style.display = 'none';
-    dropzone.classList.add('has-image');
-
-    document.getElementById('analyze-btn').disabled = false;
-    document.getElementById('file-status').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + 'KB)';
+  var els = {
+    loading: document.getElementById('invLoading'),
+    categories: document.getElementById('invCategories'),
+    summary: document.getElementById('invSummary'),
+    slipBody: document.getElementById('invSlipBody'),
+    slipDate: document.getElementById('invSlipDate'),
+    modeToggle: document.getElementById('invModeToggle'),
+    addCatWrap: document.getElementById('invAddCatWrap'),
+    addCatBtn: document.getElementById('invAddCatBtn'),
+    toast: document.getElementById('invToast')
   };
-  reader.readAsDataURL(file);
-}
 
-function clearAll() {
-  currentImageB64 = null;
-  currentFile = null;
-  document.getElementById('preview-img').style.display = 'none';
-  document.getElementById('preview-img').src = '';
-  document.getElementById('drop-ui').style.display = 'block';
-  dropzone.classList.remove('has-image');
-  document.getElementById('analyze-btn').disabled = true;
-  document.getElementById('file-status').textContent = '이미지 없음';
-  showIdle();
-  document.getElementById('result-badge').textContent = '대기중';
-  document.getElementById('result-badge').style.color = '';
-}
-
-function showIdle() {
-  document.getElementById('result-idle').style.display = 'flex';
-  document.getElementById('result-loading').style.display = 'none';
-  document.querySelectorAll('.result-cards').forEach(el => el.remove());
-}
-
-/* ── AI 분석 ── */
-async function analyze() {
-  if(!currentImageB64) return;
-
-  // UI 전환
-  document.getElementById('result-idle').style.display = 'none';
-  document.getElementById('result-loading').style.display = 'flex';
-  document.querySelectorAll('.result-cards').forEach(el => el.remove());
-  document.getElementById('analyze-btn').disabled = true;
-  document.getElementById('result-badge').textContent = '분석중...';
-  document.getElementById('result-badge').style.color = 'var(--cy)';
-
-  const prompt = `
-당신은 암호화폐 차트 전문 분석가입니다. 다음 5단계 패턴을 기준으로 업로드된 차트를 분석하세요.
-
-## 5단계 패턴 기준:
-① 하락 추세: 지속 하락, 거래량 감소, OI 감소, 시장 관심 식음
-② 바닥 형성: 가격 하락 멈춤, 거래량 매우 낮음, OI 바닥권, 조용한 횡보
-③ 예열 단계: 미세한 반등, 거래량 조금씩 증가, OI 바닥 찍고 반전, RSI 저점 다이버전스
-④ 매집 완료: VWAP 위 안착, 눌림 시 매수세 유입, 거래량 유지, OI 지속 증가
-⑤ 폭발 직전: 거래량 급증, OI 급증, RSI 50 이상, 가격 저항선 돌파 임박
-
-## 반드시 JSON 형식으로만 답변하세요. 다른 텍스트 없이 JSON만:
-{
-  "stage": 숫자(1~5),
-  "stage_name": "단계명",
-  "stage_color": "CSS색상코드(#rrggbb)",
-  "confidence": 숫자(0~100, 확신도%),
-  "indicators": {
-    "vwap": {"status": "위/아래/불명확", "detail": "한줄설명"},
-    "volume": {"status": "감소/낮음/증가/유지/급증/불명확", "detail": "한줄설명"},
-    "oi": {"status": "감소/바닥/반전/증가/급증/불명확", "detail": "한줄설명"},
-    "rsi": {"status": "과매도/다이버전스/50이상/과열/불명확", "detail": "한줄설명", "value": "숫자또는불명확"}
-  },
-  "checklist": [
-    {"item": "OI 바닥 → 반전", "status": "ok/warn/no"},
-    {"item": "거래량 증가 (예열)", "status": "ok/warn/no"},
-    {"item": "VWAP 위 안착", "status": "ok/warn/no"},
-    {"item": "눌림 매수 반복", "status": "ok/warn/no"},
-    {"item": "낙폭 축소", "status": "ok/warn/no"},
-    {"item": "회복 속도 빨라짐", "status": "ok/warn/no"}
-  ],
-  "summary": "현재 상황을 2~3문장으로 설명 (한국어)",
-  "action": "지금 취해야 할 행동 (매수준비/관망/분할매수/추격금지 등)",
-  "action_detail": "구체적인 행동 지침 2~3문장 (한국어)",
-  "warning": "주의사항 1~2문장 (한국어)"
-}`;
-
-  try {
-    const ext = currentFile?.type || 'image/png';
-    const mediaType = ext.includes('jpg') || ext.includes('jpeg') ? 'image/jpeg'
-                    : ext.includes('webp') ? 'image/webp'
-                    : 'image/png';
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: mediaType, data: currentImageB64 }
-            },
-            { type: 'text', text: prompt }
-          ]
-        }]
-      })
-    });
-
-    const data = await response.json();
-    const raw = data.content?.[0]?.text || '';
-
-    // JSON 파싱
-    let result;
-    try {
-      const cleaned = raw.replace(/```json|```/g, '').trim();
-      result = JSON.parse(cleaned);
-    } catch(e) {
-      throw new Error('AI 응답 파싱 실패: ' + raw.substring(0, 100));
-    }
-
-    renderResult(result);
-
-  } catch(err) {
-    renderError(err.message);
+  function uid(){
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
   }
 
-  document.getElementById('analyze-btn').disabled = false;
-}
+  function defaultState(){
+    return {
+      categories: [
+        {
+          id: uid(), name: '식자재',
+          subcategories: [
+            { id: uid(), name: '육류', items: [
+              { id: uid(), name: '삼겹살', unit: 'kg', par: 20, current: null, checkedAt: null }
+            ]},
+            { id: uid(), name: '해산물', items: [] },
+            { id: uid(), name: '채소', items: [
+              { id: uid(), name: '대파', unit: 'kg', par: 5, current: null, checkedAt: null }
+            ]},
+            { id: uid(), name: '소스/양념', items: [] },
+            { id: uid(), name: '냉동/기타', items: [] }
+          ]
+        },
+        {
+          id: uid(), name: '소모품',
+          subcategories: [
+            { id: uid(), name: '일회용품', items: [
+              { id: uid(), name: '위생장갑', unit: '박스', par: 3, current: null, checkedAt: null }
+            ]},
+            { id: uid(), name: '세제/청소용품', items: [] },
+            { id: uid(), name: '포장재', items: [] },
+            { id: uid(), name: '기타', items: [] }
+          ]
+        }
+      ]
+    };
+  }
 
-/* ── 결과 렌더링 ── */
-function renderResult(r) {
-  document.getElementById('result-loading').style.display = 'none';
-  document.getElementById('result-badge').textContent = '분석 완료';
-  document.getElementById('result-badge').style.color = 'var(--up)';
+  function showToast(msg){
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ els.toast.classList.remove('show'); }, 1600);
+  }
 
-  // 단계 색상 매핑
-  const stageColors = {
-    1: { bg: 'rgba(255,68,102,.08)', border: 'var(--dn)',  text: 'var(--dn)' },
-    2: { bg: 'rgba(255,204,0,.06)',  border: 'var(--yl)',  text: 'var(--yl)' },
-    3: { bg: 'rgba(34,221,255,.06)', border: 'var(--cy)',  text: 'var(--cy)' },
-    4: { bg: 'rgba(170,136,255,.06)',border: 'var(--pu)',  text: 'var(--pu)' },
-    5: { bg: 'rgba(0,214,138,.08)',  border: 'var(--up)',  text: 'var(--up)' },
-  };
-  const sc = stageColors[r.stage] || stageColors[1];
+  function queueSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        showToast('저장됨');
+      } catch(e){
+        showToast('저장 실패 — 브라우저 저장공간을 확인해 주세요');
+      }
+    }, 450);
+  }
 
-  // 행동 색상
-  const actionColor = r.action?.includes('매수') ? 'var(--up)'
-                    : r.action?.includes('관망') ? 'var(--tx1)'
-                    : r.action?.includes('추격금지') ? 'var(--dn)'
-                    : 'var(--yl)';
+  function todayLabel(){
+    var d = new Date();
+    var days = ['일','월','화','수','목','금','토'];
+    return (d.getMonth()+1) + '/' + d.getDate() + '(' + days[d.getDay()] + ')';
+  }
 
-  const html = `
-<div class="result-cards">
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
 
-  <!-- 단계 카드 -->
-  <div id="stage-card" style="background:${sc.bg};border-color:${sc.border}">
-    <div id="stage-number" style="color:${sc.text}">⑤ ${r.stage}</div>
-    <div id="stage-name" style="color:${sc.text}">${escHtml(r.stage_name)}</div>
-    <div id="stage-desc" style="color:var(--tx1)">분석 확신도 ${r.confidence}%</div>
-    <div style="margin-top:8px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
-      <div style="width:${r.confidence}%;height:100%;background:${sc.border};border-radius:2px;transition:width 1s"></div>
-    </div>
-  </div>
+  function itemStatus(item){
+    if (item.current === null || item.current === '' || item.current === undefined) return 'empty';
+    if (item.par === null || item.par === '' || item.par === undefined) return 'ok';
+    var shortage = Number(item.par) - Number(item.current);
+    return shortage > 0 ? 'warn' : 'ok';
+  }
 
-  <!-- 지표 4개 -->
-  <div class="indicator-grid">
-    ${renderIndCard('VWAP', r.indicators?.vwap)}
-    ${renderIndCard('거래량', r.indicators?.volume)}
-    ${renderIndCard('OI', r.indicators?.oi)}
-    ${renderIndCard('RSI', r.indicators?.rsi)}
-  </div>
+  function shortage(item){
+    if (item.par === null || item.par === '' || item.par === undefined) return 0;
+    if (item.current === null || item.current === '' || item.current === undefined) return 0;
+    return Math.max(Number(item.par) - Number(item.current), 0);
+  }
 
-  <!-- 체크리스트 -->
-  <div class="sec-card">
-    <div class="sec-title">핵심 조건 체크</div>
-    <div class="checklist">
-      ${(r.checklist||[]).map(c => `
-        <div class="check-item check-${c.status}">
-          <div class="check-dot"></div>
-          <span>${escHtml(c.item)}</span>
-        </div>`).join('')}
-    </div>
-  </div>
+  function findItem(itemId){
+    for (var c=0;c<state.categories.length;c++){
+      var cat = state.categories[c];
+      for (var s=0;s<cat.subcategories.length;s++){
+        var sub = cat.subcategories[s];
+        for (var i=0;i<sub.items.length;i++){
+          if (sub.items[i].id === itemId) return { cat:cat, sub:sub, item:sub.items[i], idx:i };
+        }
+      }
+    }
+    return null;
+  }
 
-  <!-- 현재 상황 -->
-  <div class="sec-card">
-    <div class="sec-title">현재 상황 요약</div>
-    <div class="sec-body">${escHtml(r.summary||'').replace(/\n/g,'<br>')}</div>
-  </div>
+  function findSub(subId){
+    for (var c=0;c<state.categories.length;c++){
+      var cat = state.categories[c];
+      for (var s=0;s<cat.subcategories.length;s++){
+        if (cat.subcategories[s].id === subId) return { cat:cat, sub:cat.subcategories[s] };
+      }
+    }
+    return null;
+  }
 
-  <!-- 행동 지침 -->
-  <div id="verdict-card" style="background:rgba(0,0,0,.2);border-color:${actionColor}">
-    <div id="verdict-title" style="color:${actionColor}">
-      ▶ ${escHtml(r.action||'--')}
-    </div>
-    <div id="verdict-body">${escHtml(r.action_detail||'').replace(/\n/g,'<br>')}</div>
-  </div>
+  function findCat(catId){
+    for (var c=0;c<state.categories.length;c++){
+      if (state.categories[c].id === catId) return state.categories[c];
+    }
+    return null;
+  }
 
-  <!-- 주의사항 -->
-  <div class="warning-box">
-    ⚠ ${escHtml(r.warning||'')}
-  </div>
+  /* ---------- render ---------- */
 
-</div>`;
+  function render(){
+    renderSummaryAndSlip();
+    renderCategories();
+    els.addCatWrap.classList.toggle('inv-hidden', !editMode);
+    els.modeToggle.textContent = editMode ? '완료' : '편집';
+    els.modeToggle.classList.toggle('on', editMode);
+  }
 
-  const body = document.getElementById('result-body');
-  document.querySelectorAll('.result-cards').forEach(el => el.remove());
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  while(div.firstChild) body.appendChild(div.firstChild);
+  function renderSummaryAndSlip(){
+    var warnCount = 0, checkedCount = 0, totalCount = 0;
+    var warnItems = [];
 
-  // 단계 이모지 수정
-  const stageEmojis = ['❌','⚠️','🔵','🟣','🚀'];
-  const snEl = document.getElementById('stage-number');
-  if(snEl) snEl.textContent = (stageEmojis[r.stage-1]||'⭕') + ' 단계 ' + r.stage;
-}
+    state.categories.forEach(function(cat){
+      cat.subcategories.forEach(function(sub){
+        sub.items.forEach(function(item){
+          totalCount++;
+          var st = itemStatus(item);
+          if (st !== 'empty') checkedCount++;
+          if (st === 'warn'){
+            warnCount++;
+            warnItems.push({ name:item.name, unit:item.unit, qty:shortage(item) });
+          }
+        });
+      });
+    });
 
-function renderIndCard(label, ind) {
-  if(!ind) return `<div class="ind-card"><div class="ind-label">${label}</div><div class="ind-value" style="color:var(--tx2)">--</div></div>`;
-  const statusColor = getStatusColor(label, ind.status);
-  return `<div class="ind-card">
-    <div class="ind-label">${label}</div>
-    <div class="ind-value" style="color:${statusColor}">${escHtml(ind.status||'--')}${ind.value && ind.value !== '불명확' ? ' ' + ind.value : ''}</div>
-    <div class="ind-sub">${escHtml(ind.detail||'')}</div>
-  </div>`;
-}
+    els.summary.innerHTML =
+      '<div class="inv-chip warn"><span class="n inv-mono">' + warnCount + '</span><span class="l">발주필요</span></div>' +
+      '<div class="inv-chip"><span class="n inv-mono">' + checkedCount + '/' + totalCount + '</span><span class="l">체크완료</span></div>' +
+      '<div class="inv-chip ok"><span class="n inv-mono">' + totalCount + '</span><span class="l">전체품목</span></div>';
 
-function getStatusColor(label, status) {
-  if(!status) return 'var(--tx2)';
-  const s = status.toLowerCase();
-  if(s.includes('급증') || s.includes('위') || s.includes('과열') || s.includes('증가')) return 'var(--up)';
-  if(s.includes('감소') || s.includes('아래') || s.includes('과매도')) return 'var(--dn)';
-  if(s.includes('바닥') || s.includes('낮음') || s.includes('다이버전스')) return 'var(--yl)';
-  if(s.includes('반전') || s.includes('50이상') || s.includes('유지')) return 'var(--cy)';
-  return 'var(--tx1)';
-}
+    els.slipDate.textContent = todayLabel();
 
-function renderError(msg) {
-  document.getElementById('result-loading').style.display = 'none';
-  document.getElementById('result-badge').textContent = '오류';
-  document.getElementById('result-badge').style.color = 'var(--dn)';
-  const body = document.getElementById('result-body');
-  const div = document.createElement('div');
-  div.className = 'result-cards';
-  div.innerHTML = `<div class="warning-box" style="margin-top:16px">
-    <b>분석 오류 발생</b><br>${escHtml(msg)}<br><br>
-    다시 시도하거나 다른 이미지를 사용하세요.
-  </div>`;
-  body.appendChild(div);
-}
+    if (warnItems.length === 0){
+      els.slipBody.innerHTML = '<div class="inv-slip-empty">지금은 발주할 품목이 없어요.</div>';
+    } else {
+      els.slipBody.innerHTML = warnItems.map(function(w){
+        return '<div class="inv-slip-row"><span class="nm">' + escapeHtml(w.name) + '</span>' +
+          '<span class="qty inv-mono">' + formatQty(w.qty) + (w.unit ? escapeHtml(w.unit) : '') + ' 부족</span></div>';
+      }).join('');
+    }
+  }
 
-function escHtml(str) {
-  if(!str) return '';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
+  function formatQty(n){
+    if (Number.isInteger(n)) return String(n);
+    return String(Math.round(n * 100) / 100);
+  }
+
+  function escapeHtml(s){
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function renderCategories(){
+    els.categories.innerHTML = '';
+    state.categories.forEach(function(cat){
+      els.categories.appendChild(renderCategory(cat));
+    });
+  }
+
+  function renderCategory(cat){
+    var details = document.createElement('details');
+    details.className = 'inv-category';
+    details.open = true;
+
+    var summary = document.createElement('summary');
+    var itemCount = 0;
+    cat.subcategories.forEach(function(s){ itemCount += s.items.length; });
+
+    var nameRow = document.createElement('span');
+    nameRow.className = 'inv-cat-name-row';
+    nameRow.innerHTML = '<span class="chev">▶</span>&nbsp;' + escapeHtml(cat.name) +
+      '<span class="inv-category-count">' + itemCount + '개</span>';
+    summary.appendChild(nameRow);
+
+    if (editMode){
+      var actions = document.createElement('span');
+      actions.className = 'inv-cat-edit-actions';
+      actions.innerHTML =
+        '<button type="button" class="inv-icon-btn" data-action="edit-cat" data-cat="' + cat.id + '">이름수정</button>' +
+        '<button type="button" class="inv-icon-btn danger" data-action="del-cat" data-cat="' + cat.id + '">삭제</button>';
+      summary.appendChild(actions);
+    }
+    details.appendChild(summary);
+
+    cat.subcategories.forEach(function(sub){
+      details.appendChild(renderSubcategory(cat, sub));
+    });
+
+    if (editMode){
+      var addSubBtn = document.createElement('button');
+      addSubBtn.type = 'button';
+      addSubBtn.className = 'inv-add-btn';
+      addSubBtn.textContent = '+ 세부분류 추가';
+      addSubBtn.setAttribute('data-action', 'add-sub');
+      addSubBtn.setAttribute('data-cat', cat.id);
+      var wrap = document.createElement('div');
+      wrap.style.padding = '0 16px 14px';
+      wrap.appendChild(addSubBtn);
+      details.appendChild(wrap);
+    }
+
+    return details;
+  }
+
+  function renderSubcategory(cat, sub){
+    var wrap = document.createElement('div');
+    wrap.className = 'inv-subcategory';
+
+    var head = document.createElement('div');
+    head.className = 'inv-sub-head';
+    var headHtml = '<span>' + escapeHtml(sub.name) + '</span>';
+    if (editMode){
+      headHtml += '<span>' +
+        '<button type="button" class="inv-icon-btn" data-action="edit-sub" data-sub="' + sub.id + '">이름수정</button> ' +
+        '<button type="button" class="inv-icon-btn danger" data-action="del-sub" data-sub="' + sub.id + '">삭제</button>' +
+        '</span>';
+    }
+    head.innerHTML = headHtml;
+    wrap.appendChild(head);
+
+    sub.items.forEach(function(item){
+      wrap.appendChild(editMode ? renderItemEdit(item) : renderItemCheck(item));
+    });
+
+    if (editMode){
+      var addItemBtn = document.createElement('button');
+      addItemBtn.type = 'button';
+      addItemBtn.className = 'inv-add-btn';
+      addItemBtn.textContent = '+ 품목 추가';
+      addItemBtn.setAttribute('data-action', 'add-item');
+      addItemBtn.setAttribute('data-sub', sub.id);
+      wrap.appendChild(addItemBtn);
+    }
+
+    return wrap;
+  }
+
+  function renderItemCheck(item){
+    var row = document.createElement('div');
+    row.className = 'inv-item';
+
+    var info = document.createElement('div');
+    info.className = 'inv-item-info';
+    var metaBits = [];
+    if (item.unit) metaBits.push(item.unit);
+    metaBits.push('적정 ' + (item.par === null || item.par === '' || item.par === undefined ? '-' : item.par));
+    if (item.checkedAt) metaBits.push(item.checkedAt.slice(5).replace('-', '/') + ' 체크');
+    info.innerHTML = '<div class="inv-item-name">' + escapeHtml(item.name) + '</div>' +
+      '<div class="inv-item-meta">' + metaBits.map(escapeHtml).join(' · ') + '</div>';
+    row.appendChild(info);
+
+    var input = document.createElement('input');
+    input.className = 'inv-item-input inv-mono';
+    input.type = 'number';
+    input.inputMode = 'decimal';
+    input.min = '0';
+    input.placeholder = '-';
+    input.setAttribute('data-item', item.id);
+    if (item.current !== null && item.current !== undefined) input.value = item.current;
+    row.appendChild(input);
+
+    var st = itemStatus(item);
+    var badge = document.createElement('span');
+    badge.className = 'inv-badge ' + st;
+    badge.textContent = st === 'warn' ? '발주필요' : (st === 'ok' ? '정상' : '미체크');
+    row.appendChild(badge);
+
+    return row;
+  }
+
+  function renderItemEdit(item){
+    var wrap = document.createElement('div');
+    wrap.className = 'inv-item-edit';
+
+    var row1 = document.createElement('div');
+    row1.className = 'row1';
+    row1.innerHTML =
+      '<input class="inv-edit-field" data-field="name" data-item="' + item.id + '" value="' + escapeHtml(item.name) + '" placeholder="품목명">' +
+      '<input class="inv-edit-field narrow" data-field="unit" data-item="' + item.id + '" value="' + escapeHtml(item.unit || '') + '" placeholder="단위">' +
+      '<input class="inv-edit-field narrow" data-field="par" data-item="' + item.id + '" value="' + (item.par === null || item.par === undefined ? '' : item.par) + '" placeholder="적정" inputmode="decimal">';
+    wrap.appendChild(row1);
+
+    var row2 = document.createElement('div');
+    row2.className = 'inv-edit-actions';
+    row2.innerHTML = '<button type="button" class="inv-icon-btn danger" data-action="del-item" data-item="' + item.id + '">삭제</button>';
+    wrap.appendChild(row2);
+
+    return wrap;
+  }
+
+  /* ---------- events ---------- */
+
+  els.modeToggle.addEventListener('click', function(){
+    editMode = !editMode;
+    render();
+  });
+
+  els.addCatBtn.addEventListener('click', function(){
+    var name = prompt('새 분류 이름 (예: 주류)');
+    if (!name) return;
+    state.categories.push({ id: uid(), name: name.trim(), subcategories: [] });
+    queueSave();
+    render();
+  });
+
+  els.categories.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    var action = btn.getAttribute('data-action');
+
+    if (action === 'add-sub'){
+      var cat = findCat(btn.getAttribute('data-cat'));
+      var name = prompt('새 세부분류 이름 (예: 주류)');
+      if (!name || !cat) return;
+      cat.subcategories.push({ id: uid(), name: name.trim(), items: [] });
+      queueSave(); render();
+    }
+
+    if (action === 'edit-cat'){
+      var cat = findCat(btn.getAttribute('data-cat'));
+      if (!cat) return;
+      var name = prompt('분류 이름 수정', cat.name);
+      if (!name) return;
+      cat.name = name.trim();
+      queueSave(); render();
+    }
+
+    if (action === 'del-cat'){
+      var catId = btn.getAttribute('data-cat');
+      var cat = findCat(catId);
+      if (!cat) return;
+      if (!confirm('"' + cat.name + '" 분류를 삭제할까요? 안의 품목도 모두 삭제됩니다.')) return;
+      state.categories = state.categories.filter(function(c){ return c.id !== catId; });
+      queueSave(); render();
+    }
+
+    if (action === 'edit-sub'){
+      var found = findSub(btn.getAttribute('data-sub'));
+      if (!found) return;
+      var name = prompt('세부분류 이름 수정', found.sub.name);
+      if (!name) return;
+      found.sub.name = name.trim();
+      queueSave(); render();
+    }
+
+    if (action === 'del-sub'){
+      var subId = btn.getAttribute('data-sub');
+      var found = findSub(subId);
+      if (!found) return;
+      if (!confirm('"' + found.sub.name + '" 세부분류를 삭제할까요? 안의 품목도 모두 삭제됩니다.')) return;
+      found.cat.subcategories = found.cat.subcategories.filter(function(s){ return s.id !== subId; });
+      queueSave(); render();
+    }
+
+    if (action === 'add-item'){
+      var subId = btn.getAttribute('data-sub');
+      var found = findSub(subId);
+      if (!found) return;
+      var name = prompt('품목명');
+      if (!name) return;
+      var unit = prompt('단위 (예: kg, 박스, 개) — 없으면 비워두세요') || '';
+      var parRaw = prompt('적정재고(Par) 수량 — 모르면 비워두세요');
+      var par = parRaw === null || parRaw.trim() === '' || isNaN(parseFloat(parRaw)) ? null : parseFloat(parRaw);
+      found.sub.items.push({ id: uid(), name: name.trim(), unit: unit.trim(), par: par, current: null, checkedAt: null });
+      queueSave(); render();
+    }
+
+    if (action === 'del-item'){
+      var itemId = btn.getAttribute('data-item');
+      var found = findItem(itemId);
+      if (!found) return;
+      if (!confirm('"' + found.item.name + '" 품목을 삭제할까요?')) return;
+      found.sub.items = found.sub.items.filter(function(i){ return i.id !== itemId; });
+      queueSave(); render();
+    }
+  });
+
+  // 현재재고 입력 (체크 모드)
+  els.categories.addEventListener('input', function(e){
+    var t = e.target;
+    if (t.matches('input[data-item]') && !t.hasAttribute('data-field')){
+      var found = findItem(t.getAttribute('data-item'));
+      if (!found) return;
+      var v = t.value;
+      found.item.current = v === '' ? null : parseFloat(v);
+      found.item.checkedAt = v === '' ? found.item.checkedAt : todayISO();
+      renderSummaryAndSlip();
+      // 배지만 갱신 (전체 재렌더 없이)
+      var badge = t.parentElement.querySelector('.inv-badge');
+      if (badge){
+        var st = itemStatus(found.item);
+        badge.className = 'inv-badge ' + st;
+        badge.textContent = st === 'warn' ? '발주필요' : (st === 'ok' ? '정상' : '미체크');
+      }
+      queueSave();
+    }
+
+    // 편집 모드 필드
+    if (t.matches('input[data-field]')){
+      var itemId = t.getAttribute('data-item');
+      var field = t.getAttribute('data-field');
+      var found2 = findItem(itemId);
+      if (!found2) return;
+      if (field === 'name') found2.item.name = t.value;
+      if (field === 'unit') found2.item.unit = t.value;
+      if (field === 'par') found2.item.par = t.value === '' ? null : parseFloat(t.value);
+      queueSave();
+    }
+  });
+
+  /* ---------- init ---------- */
+
+  function init(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      state = raw ? JSON.parse(raw) : defaultState();
+    } catch(e){
+      state = defaultState();
+    }
+    els.loading.classList.add('inv-hidden');
+    render();
+    if (!localStorage.getItem(STORAGE_KEY)){
+      queueSave();
+    }
+  }
+
+  init();
+})();
 </script>
 </body>
 </html>
